@@ -1,0 +1,19 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="EngineMain" type="KtorApplicationConfigurationType" factoryName="Ktor" nameIsGenerated="true">
+    <option name="MAIN_CLASS_NAME" value="io.ktor.server.netty.EngineMain" />
+    <module name="com.drbrosdev.klinkrealtime.main" />
+    <option name="PROGRAM_PARAMETERS" value="-config=application.local.yaml" />
+    <option name="alternativeJrePath" />
+    <option name="alternativeJrePathEnabled" value="false" />
+    <option name="includeProvidedScope" value="false" />
+    <option name="mainClass" value="io.ktor.server.netty.EngineMain" />
+    <option name="passParentEnvs" value="true" />
+    <option name="programParameters" value="-config=application.local.yaml" />
+    <option name="shortenCommandLine" />
+    <option name="vmParameters" />
+    <option name="workingDirectory" value="$PROJECT_DIR$" />
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>

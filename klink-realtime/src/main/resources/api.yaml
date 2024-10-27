@@ -1,0 +1,147 @@
+openapi: 3.0.0
+info:
+  title: Klink API
+  description: API to manage Klinks
+  version: 1.0.0
+
+servers:
+  - url: "http://localhost:8080/api/v1"
+    description: Local server
+
+paths:
+  /klink:
+    post:
+      summary: "Create a new Klink."
+      operationId: createKlink
+      tags:
+        - klink
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateKlinkPayload'
+      responses:
+        '201': 
+          description: "Collection created."
+        '502':
+          description: "Error."
+  /klink/{klinkId}:
+    get:
+      summary: "Get a klink by id."
+      operationId: getKlink
+      tags:
+        - klink
+      parameters:
+        - in: path
+          name: klinkId
+          schema:
+            type: string
+            format: uuid
+          required: true
+      responses:
+        '200':
+          description: 'Collection retrieved.'
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Klink"
+        '502':
+          description: 'Error'
+    delete:
+      summary: "Delete a klink by id."
+      operationId: deleteKlink
+      tags:
+        - klink
+      parameters:
+        - in: path
+          name: klinkId
+          schema:
+            type: string
+            format: uuid
+          required: true
+      responses:
+        '200':
+          description: 'Collection deleted'
+        '502':
+          description: 'Error'
+  /klink/{klinkId}/sync:
+    post:
+      summary: "Syncrhonize collection by id."
+      operationId: syncKlink
+      tags:
+        - klink
+      parameters:
+        - in: path
+          name: klinkId
+          schema:
+            type: string
+            format: uuid
+          required: true
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Klink'
+      responses:
+        '200':
+          description: "Sync successful."
+        '502':
+          description: "Error."
+
+components:
+  schemas:
+    Klink:
+      type: object
+      properties:
+        id: 
+          type: string
+          format: uuid
+          example: "123e4567-e89b-12d3-a456-426614174000"
+        name:
+          type: string
+          example: "Collection Name"
+        readKey:
+          type: string
+          example: ""
+        writeKey:
+          type: string
+          example: ""
+        description: 
+          type: string
+          example: "Links to random youtube videos."
+        entries:
+          type: array
+          items:
+            $ref: "#/components/schemas/KlinkEntry"
+      required:
+        - id
+        - name
+        - entries
+    KlinkEntry:
+      type: object
+      properties:
+        value: 
+          type: string
+          description: "URL value unique by collection."
+      required:
+        - value
+    CreateKlinkPayload:
+      type: object
+      properties:
+        name:
+          type: string
+          description: "Collection name."
+        id: 
+          type: string
+          format: uuid
+          example: "123e4567-e89b-12d3-a456-426614174000"
+        entries:
+          type: array
+          items:
+            $ref: "#/components/schemas/KlinkEntry"
+      required:
+        - name
+        - id
+        - entries

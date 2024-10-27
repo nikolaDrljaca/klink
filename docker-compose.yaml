@@ -1,0 +1,34 @@
+# PROD docker compose script
+version: '3.4'
+
+services:
+  client:
+    build:
+      context: ./klink-web
+      dockerfile: ./Dockerfile
+    environment:
+      NODE_ENV: production
+    ports:
+      - '3000:3000'
+
+  rest:
+    build:
+      context: ./klink-rest
+      dockerfile: ./Dockerfile
+
+  realtime:
+    build: 
+      context: ./klink-realtime
+      dockerfile: ./Dockerfile
+
+  db:
+    image: "postgres:17-alpine"
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_DB: klinkdb
+      POSTGRES_HOST_AUTH_METHOD: trust  # Disables password requirement
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U exampleuser"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
