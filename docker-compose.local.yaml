@@ -10,8 +10,14 @@ services:
       POSTGRES_HOST_AUTH_METHOD: trust  # Disables password requirement
     ports:
       - '5432:5432' # exposed for local development
+    volumes:
+      - "./db_init.sql:/docker-entrypoint-initdb.d/init.sql"
+      - "pgdata:/var/lib/postgresql/data"
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U exampleuser"]
-      interval: 10s
-      timeout: 5s
+      test: ["CMD-SHELL", "pg_isready"]
+      interval: 30s
+      timeout: 60s
       retries: 5
+
+volumes:
+  pgdata:
