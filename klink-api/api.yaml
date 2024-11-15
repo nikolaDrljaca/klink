@@ -24,6 +24,10 @@ paths:
       responses:
         '201': 
           description: "Collection created."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Klink"
         '502':
           description: "Error."
   /klink/{klinkId}:
@@ -67,7 +71,7 @@ paths:
           description: 'Error'
   /klink/{klinkId}/sync:
     post:
-      summary: "Syncrhonize collection by id."
+      summary: "Synchronize a collection by ID."
       operationId: syncKlink
       tags:
         - klink
@@ -87,6 +91,10 @@ paths:
       responses:
         '200':
           description: "Sync successful."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/KlinkSyncStatus"
         '502':
           description: "Error."
 
@@ -104,12 +112,12 @@ components:
           example: "Collection Name"
         readKey:
           type: string
-          example: "j13c4in"
-          description: "Randomly generated alphanumeric sequece of length 7."
+          example: "j13c4in4"
+          description: "Randomly generated alphanumeric sequece of length 8."
         writeKey:
           type: string
-          example: "j13c4in"
-          description: "Randomly generated alphanumeric sequece of length 7."
+          example: "j13c4in4"
+          description: "Randomly generated alphanumeric sequece of length 8."
         description: 
           type: string
           example: "Links to random youtube videos."
@@ -121,6 +129,8 @@ components:
         - id
         - name
         - entries
+        - readKey
+        - writeKey
     KlinkEntry:
       type: object
       properties:
@@ -147,3 +157,15 @@ components:
         - name
         - id
         - entries
+    KlinkSyncStatus:
+      type: object
+      properties:
+        status:
+          $ref: "#/components/schemas/SyncStatus"
+      required:
+        - status
+    SyncStatus:
+      type: string
+      enum:
+        - IN_SYNC
+        - OUT_OF_SYNC
