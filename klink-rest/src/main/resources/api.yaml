@@ -129,6 +129,8 @@ components:
         - id
         - name
         - entries
+        - readKey
+        - writeKey
     KlinkEntry:
       type: object
       properties:

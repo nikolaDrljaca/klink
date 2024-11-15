@@ -39,17 +39,17 @@ export interface Klink {
      */
     name: string;
     /**
-     * Randomly generated alphanumeric sequece of length 7.
+     * Randomly generated alphanumeric sequece of length 8.
      * @type {string}
      * @memberof Klink
      */
-    readKey?: string;
+    readKey: string;
     /**
-     * Randomly generated alphanumeric sequece of length 7.
+     * Randomly generated alphanumeric sequece of length 8.
      * @type {string}
      * @memberof Klink
      */
-    writeKey?: string;
+    writeKey: string;
     /**
      * 
      * @type {string}
@@ -70,6 +70,8 @@ export interface Klink {
 export function instanceOfKlink(value: object): value is Klink {
     if (!('id' in value) || value['id'] === undefined) return false;
     if (!('name' in value) || value['name'] === undefined) return false;
+    if (!('readKey' in value) || value['readKey'] === undefined) return false;
+    if (!('writeKey' in value) || value['writeKey'] === undefined) return false;
     if (!('entries' in value) || value['entries'] === undefined) return false;
     return true;
 }
@@ -86,8 +88,8 @@ export function KlinkFromJSONTyped(json: any, ignoreDiscriminator: boolean): Kli
         
         'id': json['id'],
         'name': json['name'],
-        'readKey': json['readKey'] == null ? undefined : json['readKey'],
-        'writeKey': json['writeKey'] == null ? undefined : json['writeKey'],
+        'readKey': json['readKey'],
+        'writeKey': json['writeKey'],
         'description': json['description'] == null ? undefined : json['description'],
         'entries': ((json['entries'] as Array<any>).map(KlinkEntryFromJSON)),
     };

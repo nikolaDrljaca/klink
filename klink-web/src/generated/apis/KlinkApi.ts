@@ -17,12 +17,15 @@ import * as runtime from '../runtime';
 import type {
   CreateKlinkPayload,
   Klink,
+  KlinkSyncStatus,
 } from '../models/index';
 import {
     CreateKlinkPayloadFromJSON,
     CreateKlinkPayloadToJSON,
     KlinkFromJSON,
     KlinkToJSON,
+    KlinkSyncStatusFromJSON,
+    KlinkSyncStatusToJSON,
 } from '../models/index';
 
 export interface CreateKlinkRequest {
@@ -50,7 +53,7 @@ export class KlinkApi extends runtime.BaseAPI {
     /**
      * Create a new Klink.
      */
-    async createKlinkRaw(requestParameters: CreateKlinkRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+    async createKlinkRaw(requestParameters: CreateKlinkRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Klink>> {
         if (requestParameters['createKlinkPayload'] == null) {
             throw new runtime.RequiredError(
                 'createKlinkPayload',
@@ -72,14 +75,15 @@ export class KlinkApi extends runtime.BaseAPI {
             body: CreateKlinkPayloadToJSON(requestParameters['createKlinkPayload']),
         }, initOverrides);
 
-        return new runtime.VoidApiResponse(response);
+        return new runtime.JSONApiResponse(response, (jsonValue) => KlinkFromJSON(jsonValue));
     }
 
     /**
      * Create a new Klink.
      */
-    async createKlink(requestParameters: CreateKlinkRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
-        await this.createKlinkRaw(requestParameters, initOverrides);
+    async createKlink(requestParameters: CreateKlinkRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Klink> {
+        const response = await this.createKlinkRaw(requestParameters, initOverrides);
+        return await response.value();
     }
 
     /**
@@ -148,9 +152,9 @@ export class KlinkApi extends runtime.BaseAPI {
     }
 
     /**
-     * Syncrhonize collection by id.
+     * Synchronize a collection by ID.
      */
-    async syncKlinkRaw(requestParameters: SyncKlinkRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+    async syncKlinkRaw(requestParameters: SyncKlinkRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<KlinkSyncStatus>> {
         if (requestParameters['klinkId'] == null) {
             throw new runtime.RequiredError(
                 'klinkId',
@@ -179,14 +183,15 @@ export class KlinkApi extends runtime.BaseAPI {
             body: KlinkToJSON(requestParameters['klink']),
         }, initOverrides);
 
-        return new runtime.VoidApiResponse(response);
+        return new runtime.JSONApiResponse(response, (jsonValue) => KlinkSyncStatusFromJSON(jsonValue));
     }
 
     /**
-     * Syncrhonize collection by id.
+     * Synchronize a collection by ID.
      */
-    async syncKlink(requestParameters: SyncKlinkRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
-        await this.syncKlinkRaw(requestParameters, initOverrides);
+    async syncKlink(requestParameters: SyncKlinkRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<KlinkSyncStatus> {
+        const response = await this.syncKlinkRaw(requestParameters, initOverrides);
+        return await response.value();
     }
 
 }

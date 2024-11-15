@@ -5,5 +5,7 @@ index.ts
 models/CreateKlinkPayload.ts
 models/Klink.ts
 models/KlinkEntry.ts
+models/KlinkSyncStatus.ts
+models/SyncStatus.ts
 models/index.ts
 runtime.ts
