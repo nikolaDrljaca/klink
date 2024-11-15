@@ -8,7 +8,8 @@
     "build": "vite build",
     "serve": "vite preview",
     "copy-api-doc": "cp ../klink-api/api.yaml ./src/api.yaml",
-    "openapi-gen": "npm run copy-api-doc && openapi-generator-cli generate -i ./src/api.yaml -g typescript-fetch -o ./src/generated",
+    "clear-generated": "rm -rf ./src/generated",
+    "openapi-gen": "npm run copy-api-doc && clear-generated && openapi-generator-cli generate -i ./src/api.yaml -g typescript-fetch -o ./src/generated",
     "openapi-gen-only": "openapi-generator-cli generate -i ./src/api.yaml -g typescript-fetch -o ./src/generated"
   },
   "license": "MIT",

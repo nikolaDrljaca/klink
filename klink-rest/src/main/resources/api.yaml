@@ -5,7 +5,7 @@ info:
   version: 1.0.0
 
 servers:
-  - url: "http://localhost:8080/api/v1"
+  - url: "http://localhost:8080/api"
     description: Local server
 
 paths:
@@ -104,10 +104,12 @@ components:
           example: "Collection Name"
         readKey:
           type: string
-          example: ""
+          example: "j13c4in"
+          description: "Randomly generated alphanumeric sequece of length 7."
         writeKey:
           type: string
-          example: ""
+          example: "j13c4in"
+          description: "Randomly generated alphanumeric sequece of length 7."
         description: 
           type: string
           example: "Links to random youtube videos."

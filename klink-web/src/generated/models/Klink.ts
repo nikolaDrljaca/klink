@@ -39,13 +39,13 @@ export interface Klink {
      */
     name: string;
     /**
-     * 
+     * Randomly generated alphanumeric sequece of length 7.
      * @type {string}
      * @memberof Klink
      */
     readKey?: string;
     /**
-     * 
+     * Randomly generated alphanumeric sequece of length 7.
      * @type {string}
      * @memberof Klink
      */

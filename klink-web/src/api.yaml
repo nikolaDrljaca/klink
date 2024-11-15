@@ -104,10 +104,12 @@ components:
           example: "Collection Name"
         readKey:
           type: string
-          example: ""
+          example: "j13c4in"
+          description: "Randomly generated alphanumeric sequece of length 7."
         writeKey:
           type: string
-          example: ""
+          example: "j13c4in"
+          description: "Randomly generated alphanumeric sequece of length 7."
         description: 
           type: string
           example: "Links to random youtube videos."

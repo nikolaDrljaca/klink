@@ -8,6 +8,7 @@ import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
 import io.ktor.server.application.*
 import io.ktor.server.routing.*
+import io.ktor.util.logging.*
 
 fun main(args: Array<String>) {
     io.ktor.server.netty.EngineMain.main(args)
@@ -20,13 +21,9 @@ fun Application.module() {
     configureDatabase()
 
     // register routes
-    klinkRoutes()
     klinkSockets()
 }
 
-fun Application.klinkRoutes() = routing {
-    healthRoute()
-}
 fun Application.klinkSockets() = routing {
     sockets()
 }
@@ -40,7 +37,12 @@ fun Application.configureDatabase() {
     hikariConfig.driverClassName = "org.postgresql.Driver"
     hikariConfig.username = "user"
 //    hikariConfig.password = "dbpassword"
-    val dataSource = HikariDataSource(hikariConfig)
-    val driver = dataSource.asJdbcDriver()
+    try {
+        val dataSource = HikariDataSource(hikariConfig)
+        val driver = dataSource.asJdbcDriver()
+    } catch (e: Exception) {
+        log.error(e)
+        log.info("Database not available. Did you start the Postgres container?")
+    }
     // driver can be used to configure database
 }
