@@ -47,7 +47,7 @@ services:
       --url=jdbc:postgresql://db:5432/klinkdb
       --username=user
       --password=password
-      --changeLogFile=changelog.xml
+      --changeLogFile=/liquibase/scripts/changelog.xml
       --searchPath=/liquibase/scripts
       update
     restart: "no"
