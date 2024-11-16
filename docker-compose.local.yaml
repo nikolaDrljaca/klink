@@ -14,7 +14,7 @@ services:
       - "pgdata:/var/lib/postgresql/data"
     healthcheck:
       test: [ "CMD-SHELL", "pg_isready -d klinkdb -U user" ]
-      interval: 30s
+      interval: 15s
       timeout: 60s
       retries: 5
 
@@ -24,7 +24,7 @@ services:
       db:
         condition: service_healthy
     command: >
-      --url=jdbc:postgresql://user@db:5432/klinkdb
+      --url=jdbc:postgresql://db:5432/klinkdb
       --username=user
       --password=password
       --changeLogFile=changelog.xml

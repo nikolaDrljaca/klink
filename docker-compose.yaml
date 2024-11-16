@@ -44,7 +44,7 @@ services:
       db:
         condition: service_healthy
     command: >
-      --url=jdbc:postgresql://user@db:5432/klinkdb
+      --url=jdbc:postgresql://db:5432/klinkdb
       --username=user
       --password=password
       --changeLogFile=changelog.xml
