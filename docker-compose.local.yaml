@@ -31,7 +31,6 @@ services:
       update
     restart: "no"
     volumes:
-      # - "./liquibase/changelog.xml:/liquibase/changelog.xml"
       - "./liquibase/scripts:/liquibase/scripts"
 
 volumes:
