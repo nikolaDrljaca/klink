@@ -17,21 +17,38 @@ services:
       dockerfile: ./Dockerfile
 
   realtime:
-    build: 
+    build:
       context: ./klink-realtime
       dockerfile: ./Dockerfile
+    depends_on:
+      db:
+        condition: service_healthy
 
   db:
     image: "postgres:17-alpine"
     environment:
       POSTGRES_USER: user
-      POSTGRES_DB: klinkdb
+      POSTGRES_DB: klinkdb # create database named klinkdb
       POSTGRES_HOST_AUTH_METHOD: trust  # Disables password requirement
     volumes:
       - "pgdata:/var/lib/postgresql/data"
-      - "./db_init.sql:/docker-entrypoint-initdb.d/init.sql"
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U exampleuser"]
-      interval: 10s
-      timeout: 5s
+      test: [ "CMD-SHELL", "pg_isready -d klinkdb -U user" ]
+      interval: 15s
+      timeout: 60s
       retries: 5
+
+  liquibase:
+    image: "liquibase:4.30-alpine"
+    depends_on:
+      db:
+        condition: service_healthy
+    command: >
+      --url=jdbc:postgresql://user@db:5432/klinkdb
+      --username=user
+      --password=password
+      --changeLogFile=changelog.xml
+      update
+    volumes:
+      - "./liquibase/changelog.xml:/liquibase/changelog.xml"
+      - "./liquibase/scripts:/liquibase/scripts"

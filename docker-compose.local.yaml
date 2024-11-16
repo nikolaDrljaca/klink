@@ -6,18 +6,32 @@ services:
     image: "postgres:17-alpine"
     environment:
       POSTGRES_USER: user
-      POSTGRES_DB: klinkdb
+      POSTGRES_DB: klinkdb # create database named klinkdb
       POSTGRES_HOST_AUTH_METHOD: trust  # Disables password requirement
     ports:
       - '5432:5432' # exposed for local development
     volumes:
-      - "./db_init.sql:/docker-entrypoint-initdb.d/init.sql"
       - "pgdata:/var/lib/postgresql/data"
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready"]
+      test: [ "CMD-SHELL", "pg_isready -d klinkdb -U user" ]
       interval: 30s
       timeout: 60s
       retries: 5
+
+  liquibase:
+    image: "liquibase:4.30-alpine"
+    depends_on:
+      db:
+        condition: service_healthy
+    command: >
+      --url=jdbc:postgresql://user@db:5432/klinkdb
+      --username=user
+      --password=password
+      --changeLogFile=changelog.xml
+      update
+    volumes:
+      - "./liquibase/changelog.xml:/liquibase/changelog.xml"
+      - "./liquibase/scripts:/liquibase/scripts"
 
 volumes:
   pgdata:
