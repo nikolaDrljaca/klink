@@ -1,25 +1,37 @@
-package com.example
+package com.example.route
 
+import com.example.KlinkDatabase
+import io.ktor.server.application.*
 import io.ktor.server.routing.*
 import io.ktor.server.websocket.*
 import io.ktor.websocket.*
+import org.koin.ktor.ext.inject
+
+fun Application.klinkSockets() {
+    val database: KlinkDatabase by inject()
+    routing {
+        sockets(database)
+    }
+}
 
 // ws://realtime:8081/ws/klink/rw/{klink_id} -- read/write
 // ws://realtime:8081/ws/klink/r/{klink_id} -- read
 // ws://realtime:8081/ws/health -- health
-fun Routing.sockets() {
-
+fun Routing.sockets(database: KlinkDatabase) {
     webSocket("/ws/health") {
         val healthy = mapOf(
             "status" to "healthy"
         )
         sendSerialized(healthy)
+        val klinks = database.klinkQueries.selectAll().executeAsList()
+        send(klinks.toString())
         for (frame in incoming) {
             when (frame) {
                 is Frame.Text -> {
                     val text = frame.readText()
                     sendSerialized(healthy)
                 }
+
                 else -> continue
             }
         }

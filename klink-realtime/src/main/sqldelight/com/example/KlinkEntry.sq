@@ -1,0 +1,8 @@
+CREATE TABLE IF NOT EXISTS klink_entry (
+    id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+    klink_id uuid
+        REFERENCES klink(id)
+        ON DELETE CASCADE,
+    value text
+        NOT NULL
+);

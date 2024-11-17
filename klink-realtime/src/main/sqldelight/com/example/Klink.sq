@@ -1,0 +1,15 @@
+CREATE TABLE IF NOT EXISTS klink (
+    id uuid PRIMARY KEY,
+    name text
+        NOT NULL,
+    description text,
+    created_at TIMESTAMP DEFAULT now()
+        NOT NULL,
+    modified_at TIMESTAMP DEFAULT now()
+        NOT NULL
+);
+
+-- queries
+selectAll:
+SELECT *
+FROM klink;
