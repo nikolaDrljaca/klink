@@ -6,3 +6,9 @@ CREATE TABLE IF NOT EXISTS klink_entry (
     value text
         NOT NULL
 );
+
+-- queries
+findByKlinkId:
+SELECT value
+FROM klink_entry
+WHERE klink_id = :klinkId;

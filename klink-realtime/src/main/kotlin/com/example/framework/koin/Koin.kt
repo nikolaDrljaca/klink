@@ -8,10 +8,6 @@ fun Application.configureKoin() {
     val modules = appModules(this)
     install(Koin) {
         slf4jLogger()
-        modules(
-            listOf(
-                modules
-            )
-        )
+        modules(modules)
     }
 }
