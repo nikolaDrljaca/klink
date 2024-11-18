@@ -1,4 +1,4 @@
-package com.example.plugins
+package com.example.framework
 
 import io.ktor.serialization.kotlinx.*
 import io.ktor.server.application.*
