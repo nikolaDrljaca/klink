@@ -1,5 +1,6 @@
 package com.example.data
 
+import app.cash.sqldelight.db.SqlDriver
 import app.cash.sqldelight.driver.jdbc.asJdbcDriver
 import com.example.KlinkDatabase
 import com.zaxxer.hikari.HikariConfig
@@ -17,8 +18,9 @@ fun provideKlinkDatabase(app: Application): KlinkDatabase {
 
     return try {
         val dataSource = HikariDataSource(hikariConfig)
-        val driver = dataSource.asJdbcDriver()
-        KlinkDatabase(driver)
+        val driver: SqlDriver = dataSource.asJdbcDriver()
+        val notifyDriver = JdbcNotifyDriver(driver)
+        KlinkDatabase(notifyDriver)
     } catch (e: Exception) {
         error("Unable to initialize SQLDelight database!")
     }

@@ -1,6 +1,5 @@
-package com.example.domain
+package com.example.domain.usecase
 
-import com.example.data.GetKlinkKeys
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.util.*

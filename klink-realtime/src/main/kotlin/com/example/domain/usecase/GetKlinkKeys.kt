@@ -1,4 +1,4 @@
-package com.example.data
+package com.example.domain.usecase
 
 import com.example.Klink_key
 import java.util.*
