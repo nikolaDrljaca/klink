@@ -12,6 +12,6 @@ build: web-build rest-build realtime-build
 
 # Run Configurations
 run-local:
-	docker compose -f docker-compose.local.yaml up -d
+	docker compose -f docker-compose.local.yaml up --build -d
 stop-local:
 	docker compose -f docker-compose.local.yaml down

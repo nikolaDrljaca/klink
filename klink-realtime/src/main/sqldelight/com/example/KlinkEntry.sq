@@ -9,6 +9,15 @@ CREATE TABLE IF NOT EXISTS klink_entry (
 
 -- queries
 findByKlinkId:
-SELECT value
+SELECT *
 FROM klink_entry
 WHERE klink_id = :klinkId;
+
+insertKlinkEntry:
+INSERT INTO klink_entry (klink_id, value)
+VALUES (:klinkId, :value);
+
+deleteKlinkEntryByValue:
+DELETE
+FROM klink_entry
+WHERE klink_id = :klinkId AND value = :value;
