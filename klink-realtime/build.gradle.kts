@@ -97,4 +97,8 @@ dependencies {
     implementation("io.insert-koin:koin-core")// Koin for Ktor
     implementation("io.insert-koin:koin-ktor")
     implementation("io.insert-koin:koin-logger-slf4j")
+
+    val arrowVersion = "1.2.4"
+    implementation("io.arrow-kt:arrow-core:$arrowVersion")
+    implementation("io.arrow-kt:arrow-fx-coroutines:$arrowVersion")
 }

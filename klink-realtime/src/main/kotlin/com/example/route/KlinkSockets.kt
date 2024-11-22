@@ -3,12 +3,18 @@ package com.example.route
 import com.example.data.KlinkRepository
 import com.example.domain.usecase.CheckKlinkAccess
 import com.example.domain.usecase.ObserveKlinkEntries
+import com.example.domain.usecase.RunKlinkAccessProbe
+import io.ktor.serialization.*
 import io.ktor.server.application.*
 import io.ktor.server.routing.*
 import io.ktor.server.util.*
 import io.ktor.server.websocket.*
 import io.ktor.websocket.*
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.launch
+import kotlinx.serialization.Serializable
 import org.koin.ktor.ext.inject
 
 object SocketParams {
@@ -18,12 +24,14 @@ object SocketParams {
 
     const val READ_PATH = "/ws/klink/r/{$KLINK_ID}"
     const val WRITE_PATH = "/ws/klink/rw/{$KLINK_ID}"
+    const val WS_SYNC_PATH = "/ws/klink/wsSync/{$KLINK_ID}"
 }
 
 fun Application.klinkSockets() {
     val checkKlinkAccess: CheckKlinkAccess by inject()
     val observeKlinkEntries: ObserveKlinkEntries by inject()
     val klinkRepository: KlinkRepository by inject()
+    val runKlinkAccessProbe: RunKlinkAccessProbe by inject()
     val scope: CoroutineScope by inject()
 
     routing {
@@ -39,6 +47,13 @@ fun Application.klinkSockets() {
             observeKlinkEntries,
             klinkRepository,
             scope
+        )
+
+        klinkWsSyncSocket(
+            runAccessProbe = runKlinkAccessProbe,
+            observeKliEntries = observeKlinkEntries,
+            klinkRepository = klinkRepository,
+            scope = scope
         )
     }
 }
@@ -64,20 +79,40 @@ fun Routing.klinkReadOnlySocket(
         .collect { sendSerialized(it) }
 }
 
+@Serializable
+data class PersistenceData(
+    val key: String, // must be UUID of the klink itself
+    val newValue: String, // stringified JSON List<KlinkEntryApiDto>
+    val timeStamp: Long, // this can be whatever, filled with now
+    val url: String // this can be whatever
+)
+
 // ws://realtime:8081/ws/health -- health
-fun Routing.healthSocket() = webSocket("/ws/health") {
+fun Routing.healthSocket() {
     val healthy = mapOf(
         "status" to "healthy"
     )
-    sendSerialized(healthy)
-    for (frame in incoming) {
-        when (frame) {
-            is Frame.Text -> {
-                val text = frame.readText()
-                sendSerialized(healthy)
-            }
+    val messageResponseFlow = MutableSharedFlow<PersistenceData>()
+    val sharedFlow = messageResponseFlow.asSharedFlow()
 
-            else -> continue
+    webSocket("/ws/health") {
+        val job = launch {
+            sharedFlow.collect { message ->
+                sendSerialized(message)
+            }
+        }
+//        sendSerialized(healthy)
+        for (frame in incoming) {
+            when (frame) {
+                is Frame.Text -> {
+                    val data = converter!!.deserialize<PersistenceData>(frame)
+//                    sendSerialized(text)
+                    messageResponseFlow.emit(data)
+                }
+
+                else -> continue
+            }
         }
     }
 }
+
