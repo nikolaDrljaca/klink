@@ -4,17 +4,12 @@ import com.example.data.KlinkRepository
 import com.example.domain.usecase.CheckKlinkAccess
 import com.example.domain.usecase.ObserveKlinkEntries
 import com.example.domain.usecase.RunKlinkAccessProbe
-import io.ktor.serialization.*
 import io.ktor.server.application.*
 import io.ktor.server.routing.*
 import io.ktor.server.util.*
 import io.ktor.server.websocket.*
 import io.ktor.websocket.*
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.asSharedFlow
-import kotlinx.coroutines.launch
-import kotlinx.serialization.Serializable
 import org.koin.ktor.ext.inject
 
 object SocketParams {
@@ -79,35 +74,17 @@ fun Routing.klinkReadOnlySocket(
         .collect { sendSerialized(it) }
 }
 
-@Serializable
-data class PersistenceData(
-    val key: String, // must be UUID of the klink itself
-    val newValue: String, // stringified JSON List<KlinkEntryApiDto>
-    val timeStamp: Long, // this can be whatever, filled with now
-    val url: String // this can be whatever
-)
-
 // ws://realtime:8081/ws/health -- health
 fun Routing.healthSocket() {
     val healthy = mapOf(
         "status" to "healthy"
     )
-    val messageResponseFlow = MutableSharedFlow<PersistenceData>()
-    val sharedFlow = messageResponseFlow.asSharedFlow()
-
     webSocket("/ws/health") {
-        val job = launch {
-            sharedFlow.collect { message ->
-                sendSerialized(message)
-            }
-        }
-//        sendSerialized(healthy)
+        sendSerialized(healthy)
         for (frame in incoming) {
             when (frame) {
                 is Frame.Text -> {
-                    val data = converter!!.deserialize<PersistenceData>(frame)
-//                    sendSerialized(text)
-                    messageResponseFlow.emit(data)
+                    sendSerialized(healthy)
                 }
 
                 else -> continue

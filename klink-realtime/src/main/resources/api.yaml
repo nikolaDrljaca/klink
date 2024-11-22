@@ -174,17 +174,17 @@ components:
       properties:
         key:
           type: string
-          description: ""
+          description: "Klink id - UUID as string."
         newValue:
           type: string
-          description: ""
+          description: "Stringified JSON value of type List-KlinkEntryApiDto-."
         timeStamp:
           type: integer
           format: int64
-          description: ""
+          description: "Unix timestamp."
         url:
           type: string
-          description: ""
+          description: "Can be ignored."
       required:
         - key
         - newValue
