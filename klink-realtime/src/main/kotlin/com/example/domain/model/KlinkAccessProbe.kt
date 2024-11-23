@@ -19,23 +19,20 @@ data class KlinkAccessProbe(
         ): Either<Unit, KlinkAccessProbe> {
             if (writeKey == null) {
                 return either {
-                    ensure(readKey.length == 8) { Unit }
                     ensure(klinkId.isUuid()) { Unit }
                     KlinkAccessProbe(
-                        UUID.fromString(readKey),
-                        ReadKey(readKey),
+                        UUID.fromString(klinkId),
+                        ReadKey(readKey).bind(),
                         null
                     )
                 }
             }
             return either {
-                ensure(readKey.length == 8) { Unit }
-                ensure(writeKey.length == 8) { Unit }
-                ensure(klinkId.isUuid()) { Unit }
+                ensure(klinkId.isUuid()) { }
                 KlinkAccessProbe(
-                    UUID.fromString(readKey),
-                    ReadKey(readKey),
-                    WriteKey(writeKey),
+                    UUID.fromString(klinkId),
+                    ReadKey(readKey).bind(),
+                    WriteKey(writeKey).bind(),
                 )
             }
         }

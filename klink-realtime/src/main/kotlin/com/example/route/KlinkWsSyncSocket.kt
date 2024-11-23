@@ -1,8 +1,7 @@
 package com.example.route
 
 import com.example.data.KlinkRepository
-import com.example.domain.KlinkEntryEvent
-import com.example.domain.KlinkSocketEventProcessor
+import com.example.domain.KlinkSyncProcessor
 import com.example.domain.model.KlinkAccessProbe
 import com.example.domain.usecase.ObserveKlinkEntries
 import com.example.domain.usecase.RunKlinkAccessProbe
@@ -16,6 +15,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+import org.openapitools.client.models.KlinkEntryApiDto
 import org.openapitools.client.models.SyncPersistenceDataApiDto
 
 
@@ -25,7 +25,7 @@ fun Routing.klinkWsSyncSocket(
     klinkRepository: KlinkRepository,
     scope: CoroutineScope,
 ) {
-    val sessions = mutableMapOf<String, KlinkSocketEventProcessor>()
+    val sessions = mutableMapOf<String, KlinkSyncProcessor>()
 
     webSocket(SocketParams.WS_SYNC_PATH) {
         val klinkId = call.parameters.getOrFail(SocketParams.KLINK_ID)
@@ -38,11 +38,12 @@ fun Routing.klinkWsSyncSocket(
         )
         if (accessProbe.isLeft()) {
             close(CloseReason(CloseReason.Codes.NORMAL, "Invalid request."))
+            return@webSocket
         }
         val accessResult = runAccessProbe.execute(accessProbe.getOrNull()!!)
         // create processor
         val processor = sessions.getOrPut(klinkId) {
-            KlinkSocketEventProcessor(
+            KlinkSyncProcessor(
                 scope = scope,
                 repo = klinkRepository,
                 klinkId = klinkId
@@ -71,7 +72,7 @@ fun Routing.klinkWsSyncSocket(
                         if (accessResult == RunKlinkAccessProbe.Result.FULL_ACCESS) {
                             // TODO map and deserialize
                             val payload = Json.decodeFromString<SyncPersistenceDataApiDto>(frame.readText())
-                            val event = payload.toEvent()
+                            val event = payload.toPayload()
                             processor.push(event)
                         }
                     }
@@ -87,14 +88,11 @@ fun Routing.klinkWsSyncSocket(
     }
 }
 
-fun SyncPersistenceDataApiDto.toEvent(): KlinkEntryEvent {
-    /* TODO
-    The processor needs to change -> look to extract a possible interface?
-    Instead of taking in events, it needs to take the whole list of entries and store it
-    in a single transaction delete all and store
-    OR
-    find diff between list and execute it, lookup is possible by value
-    even with a single query with an IN check
-    */
-    return TODO()
+// TODO will need to create domain type and that type should validate -> Payload should contain KlinkEntry type
+fun SyncPersistenceDataApiDto.toPayload(): KlinkSyncProcessor.Payload {
+    //newValue - list of KlinkEntryApiDto
+    val dtos = Json.decodeFromString<List<KlinkEntryApiDto>>(newValue)
+    return KlinkSyncProcessor.Payload(
+        entries = dtos.map { it.value }
+    )
 }

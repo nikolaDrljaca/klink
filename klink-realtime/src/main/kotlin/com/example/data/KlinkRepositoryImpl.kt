@@ -26,4 +26,23 @@ class KlinkRepositoryImpl(
         keysDao.findByKlinkId(klinkId)
             .executeAsOneOrNull()
     }
+
+    override suspend fun insertAll(klinkId: UUID, entries: List<String>) = withContext(dispatcher) {
+        klinkEntryDao.transaction {
+            entries.forEach { entry -> klinkEntryDao.insertKlinkEntry(klinkId, entry) }
+        }
+    }
+
+    override suspend fun deleteAllEntriesByKlinkId(klinkId: UUID) = withContext(dispatcher) {
+        klinkEntryDao.deleteByKlinkId(klinkId)
+    }
+
+    override suspend fun replaceEntries(klinkId: UUID, entries: List<String>) = withContext(dispatcher) {
+        klinkEntryDao.transaction {
+            // delete existing entries
+            klinkEntryDao.deleteByKlinkId(klinkId)
+            // insert new ones
+            entries.forEach { entry -> klinkEntryDao.insertKlinkEntry(klinkId, entry) }
+        }
+    }
 }
