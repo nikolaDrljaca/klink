@@ -3,6 +3,7 @@ package com.example.route
 import com.example.data.KlinkRepository
 import com.example.domain.usecase.CheckKlinkAccess
 import com.example.domain.usecase.ObserveKlinkEntries
+import com.example.domain.usecase.RunKlinkAccessProbe
 import io.ktor.server.application.*
 import io.ktor.server.routing.*
 import io.ktor.server.util.*
@@ -18,12 +19,14 @@ object SocketParams {
 
     const val READ_PATH = "/ws/klink/r/{$KLINK_ID}"
     const val WRITE_PATH = "/ws/klink/rw/{$KLINK_ID}"
+    const val WS_SYNC_PATH = "/ws/klink/wsSync/{$KLINK_ID}"
 }
 
 fun Application.klinkSockets() {
     val checkKlinkAccess: CheckKlinkAccess by inject()
     val observeKlinkEntries: ObserveKlinkEntries by inject()
     val klinkRepository: KlinkRepository by inject()
+    val runKlinkAccessProbe: RunKlinkAccessProbe by inject()
     val scope: CoroutineScope by inject()
 
     routing {
@@ -39,6 +42,13 @@ fun Application.klinkSockets() {
             observeKlinkEntries,
             klinkRepository,
             scope
+        )
+
+        klinkWsSyncSocket(
+            runAccessProbe = runKlinkAccessProbe,
+            observeKliEntries = observeKlinkEntries,
+            klinkRepository = klinkRepository,
+            scope = scope
         )
     }
 }
@@ -65,19 +75,21 @@ fun Routing.klinkReadOnlySocket(
 }
 
 // ws://realtime:8081/ws/health -- health
-fun Routing.healthSocket() = webSocket("/ws/health") {
+fun Routing.healthSocket() {
     val healthy = mapOf(
         "status" to "healthy"
     )
-    sendSerialized(healthy)
-    for (frame in incoming) {
-        when (frame) {
-            is Frame.Text -> {
-                val text = frame.readText()
-                sendSerialized(healthy)
-            }
+    webSocket("/ws/health") {
+        sendSerialized(healthy)
+        for (frame in incoming) {
+            when (frame) {
+                is Frame.Text -> {
+                    sendSerialized(healthy)
+                }
 
-            else -> continue
+                else -> continue
+            }
         }
     }
 }
+

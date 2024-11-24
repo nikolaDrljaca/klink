@@ -7,6 +7,7 @@ import com.example.data.provideKlinkDatabase
 import com.example.domain.usecase.CheckKlinkAccess
 import com.example.domain.usecase.GetKlinkKeys
 import com.example.domain.usecase.ObserveKlinkEntries
+import com.example.domain.usecase.RunKlinkAccessProbe
 import io.ktor.server.application.*
 import org.koin.core.module.Module
 import org.koin.core.qualifier.named
@@ -43,10 +44,16 @@ fun dataModule() = module {
 }
 
 fun domainModule() = module {
-    factory { CheckKlinkAccess(get()) }
-    factory { ObserveKlinkEntries(get()) }
     factory {
         val dao: KlinkRepository = get()
         GetKlinkKeys { id -> dao.findKeysByKlinkId(id) }
+    }
+    factory { CheckKlinkAccess(get()) }
+    factory { ObserveKlinkEntries(get()) }
+    factory {
+        RunKlinkAccessProbe(
+            dispatcher = get(named(CoroutineModuleName.Default)),
+            getKeys = get()
+        )
     }
 }

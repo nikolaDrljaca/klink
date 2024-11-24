@@ -21,3 +21,8 @@ deleteKlinkEntryByValue:
 DELETE
 FROM klink_entry
 WHERE klink_id = :klinkId AND value = :value;
+
+deleteByKlinkId:
+DELETE
+FROM klink_entry
+WHERE klink_id = :klinkId;
