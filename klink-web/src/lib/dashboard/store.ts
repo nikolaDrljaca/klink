@@ -26,7 +26,9 @@ export type DashboardActions = {
         writeKey?: string
     }) => void,
 
-    deleteKlink: (klinkId: string) => void
+    deleteKlink: (klinkId: string) => void,
+
+    selectKlink: (klinkId: string) => void
 }
 
 export type Klink = {
@@ -53,8 +55,8 @@ export function createAppStore() {
 
     const actions: DashboardActions = {
         createKlink: function(payload: {
-            name: string;
-            description?: string;
+            name: string
+            description?: string
         }): void {
             const klink: Klink = {
                 id: crypto.randomUUID(),
@@ -63,22 +65,26 @@ export function createAppStore() {
                 readKey: null,
                 writeKey: null
             }
-            setState('klinks', (currentKlinks) => [klink, ...currentKlinks]);
+            setState('klinks', (currentKlinks) => [klink, ...currentKlinks])
         },
 
         importKlink: function(payload: {
-            klinkId: string;
-            readKey: string;
-            writeKey?: string;
+            klinkId: string
+            readKey: string
+            writeKey?: string
         }): void {
-            throw new Error("Function not implemented.");
+            throw new Error("Function not implemented.")
         },
 
         deleteKlink: function(klinkId: string): void {
             setState(
                 'klinks',
                 (currentKlinks) => currentKlinks.filter(it => it.id !== klinkId)
-            );
+            )
+        },
+
+        selectKlink: function(klinkId: string): void {
+            setState('selectedKlinkId', klinkId);
         }
     }
 
