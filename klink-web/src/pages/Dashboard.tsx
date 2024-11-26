@@ -3,17 +3,12 @@ import { useDashboardActions, useDashboardStore } from "~/lib/dashboard/context"
 import { Plus, Import, Share, Trash } from "lucide-solid"
 import { Klink } from "~/lib/dashboard/store";
 import clsx from "clsx";
+import CreateKlinkModal from "~/components/CreateKlinkModal";
 
 
 const Dashboard: Component = () => {
   const state = useDashboardStore();
   const actions = useDashboardActions();
-
-  const onCreateKlinkClick = () => {
-    actions.createKlink({
-      name: Math.random().toString(36).slice(2, 7)
-    });
-  }
 
   const onDeleteKlinkItemClick = (id: string) => {
     actions.deleteKlink(id);
@@ -29,10 +24,15 @@ const Dashboard: Component = () => {
 
     {/* Button Row */}
     <div class="flex flex-row gap-x-4 px-4 pt-2 pb-4 items-center justify-center w-full">
-      <button class="btn btn-neutral btn-sm w-1/2" onClick={onCreateKlinkClick}>
-        <Plus size={20} />
-        Create
-      </button>
+      {/* Create Modal */}
+      <CreateKlinkModal onSubmit={actions.createKlink}>
+        {(open) =>
+          <button class="btn btn-neutral btn-sm w-1/2" onClick={open}>
+            <Plus size={20} />
+            Create
+          </button>
+        }
+      </CreateKlinkModal>
       <button class="btn btn-sm w-1/2">
         <Import size={20} />
         Import
@@ -52,7 +52,6 @@ const Dashboard: Component = () => {
         }
       </For>
     </div>
-
   </div>);
 }
 
