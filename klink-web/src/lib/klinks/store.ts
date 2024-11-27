@@ -3,12 +3,12 @@ import localforage from "localforage"
 import { createStore } from "solid-js/store"
 import { KlinkApi } from "~/generated"
 
-export type DashboardStore = {
+export type KlinkCollectionStore = {
     klinks: Array<Klink>,
     selectedKlinkId: string | null
 }
 
-export type DashboardActions = {
+export type KlinkCollectionActions = {
     createKlink: (payload: {
         name: string,
         description?: string,
@@ -40,7 +40,7 @@ export type Klink = {
 }
 
 export function createAppStore() {
-    const store = createStore<DashboardStore>({
+    const store = createStore<KlinkCollectionStore>({
         klinks: [],
         selectedKlinkId: null
     });
@@ -53,7 +53,7 @@ export function createAppStore() {
     );
     const api = new KlinkApi();
 
-    const actions: DashboardActions = {
+    const actions: KlinkCollectionActions = {
         createKlink: function(payload: {
             name: string
             description?: string

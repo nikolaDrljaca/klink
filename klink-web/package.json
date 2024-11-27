@@ -27,6 +27,7 @@
   "dependencies": {
     "@openapitools/openapi-generator-cli": "^2.15.0",
     "@solid-primitives/storage": "^4.2.1",
+    "@solidjs/router": "^0.15.1",
     "clsx": "^2.1.1",
     "localforage": "^1.10.0",
     "lucide-solid": "^0.461.0",

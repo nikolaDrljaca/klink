@@ -1,21 +1,29 @@
 import { Component, For } from "solid-js";
-import { useDashboardActions, useDashboardStore } from "~/lib/dashboard/context";
-import { Plus, Import, Share, Trash } from "lucide-solid"
-import { Klink } from "~/lib/dashboard/store";
+import { Plus, Import, Share, Trash, Pencil } from "lucide-solid"
 import clsx from "clsx";
 import CreateKlinkModal from "~/components/CreateKlinkModal";
+import { useKlinkCollectionActions, useKlinkCollectionStore } from "~/lib/klinks/context";
+import { Klink } from "~/lib/klinks/store";
+import { useNavigate, useParams } from "@solidjs/router";
 
 
-const Dashboard: Component = () => {
-  const state = useDashboardStore();
-  const actions = useDashboardActions();
+const KlinkCollection: Component = () => {
+  const state = useKlinkCollectionStore();
+  const actions = useKlinkCollectionActions();
+
+  const navigate = useNavigate();
+  const params = useParams();
+  const pathKlinkId = () => params.klinkId;
 
   const onDeleteKlinkItemClick = (id: string) => {
+    if (id === pathKlinkId()) {
+      navigate("/c");
+    }
     actions.deleteKlink(id);
   }
 
   const onSelectKlink = (id: string) => {
-    actions.selectKlink(id);
+    navigate(`/c/${id}`);
   }
 
   return (<div class="flex flex-col w-full h-full grow overflow-y-scroll scrollbar-hidden">
@@ -46,8 +54,10 @@ const Dashboard: Component = () => {
         {(item,) =>
           <KlinkListItem
             item={item}
+            pathKlinkId={pathKlinkId()}
             onDeleteClick={() => onDeleteKlinkItemClick(item.id)}
             onSelect={() => onSelectKlink(item.id)}
+            onEditClick={() => { }}
           />
         }
       </For>
@@ -57,24 +67,29 @@ const Dashboard: Component = () => {
 
 type KlinkListItemProps = {
   item: Klink,
+  pathKlinkId?: string,
   onDeleteClick: () => void,
+  onEditClick: () => void,
   onSelect: () => void
 }
 
 const KlinkListItem: Component<KlinkListItemProps> = (props) => {
-  const isSelected = () => true;
-  const classes = clsx(
+  const isSelected = () => props.pathKlinkId === props.item.id;
+  const classes = () => clsx(
     'flex flex-col p-2 w-full justify-center border-b-2 border-zinc-900',
     isSelected() && 'bg-neutral'
   );
 
   return (
-    <div class={classes}>
+    <div class={classes()}>
       <div class="flex flex-col w-full hover:cursor-pointer" onClick={props.onSelect}>
         <p class="text-xs font-light text-zinc-400 pl-4">Updated at 15:43</p>
         <p class="pl-4 text-lg">{props.item.name}</p>
       </div>
       <div class="flex flex-row items-center justify-around w-full pt-2 pl-4">
+        <button class="btn btn-circle btn-ghost btn-sm" onClick={props.onEditClick}>
+          <Pencil size={14} />
+        </button>
         <button class="btn btn-circle btn-ghost btn-sm" onClick={props.onSelect}>
           <Share size={14} />
         </button>
@@ -86,4 +101,4 @@ const KlinkListItem: Component<KlinkListItemProps> = (props) => {
   );
 }
 
-export default Dashboard;
+export default KlinkCollection;

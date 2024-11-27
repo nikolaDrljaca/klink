@@ -27,6 +27,9 @@ const CreateKlinkModal: Component<CreateKlinkModalProps> = (props) => {
       description: desc()
     });
     dialogRef.close();
+    // clear form
+    setName("");
+    setDesc("");
   }
 
   return (
