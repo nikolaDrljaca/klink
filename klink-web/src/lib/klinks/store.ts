@@ -1,7 +1,8 @@
 import { makePersisted } from "@solid-primitives/storage"
 import localforage from "localforage"
 import { createStore } from "solid-js/store"
-import { KlinkApi } from "~/generated"
+import toast from "solid-toast"
+import { CreateKlinkRequest, KlinkApi } from "~/generated"
 
 export type KlinkCollectionStore = {
     klinks: Array<Klink>,
@@ -14,8 +15,7 @@ export type KlinkCollectionActions = {
         description?: string,
     }) => void,
 
-    // TODO: move to KlinkStore (wsSync)
-    // shareKlink: (klinkId: string) => void,
+    shareKlink: (klinkId: string) => void,
     //
     // TODO: move to KlinkStore (wsSync)
     // witholdKlink: (klinkId: string) => void,
@@ -65,7 +65,8 @@ export function createAppStore() {
                 readKey: null,
                 writeKey: null
             }
-            setState('klinks', (currentKlinks) => [klink, ...currentKlinks])
+            setState('klinks', (currentKlinks) => [klink, ...currentKlinks]);
+            toast.success(`${klink.name} created!`);
         },
 
         importKlink: function(payload: {
@@ -80,11 +81,34 @@ export function createAppStore() {
             setState(
                 'klinks',
                 (currentKlinks) => currentKlinks.filter(it => it.id !== klinkId)
-            )
+            );
         },
 
         selectKlink: function(klinkId: string): void {
             setState('selectedKlinkId', klinkId);
+        },
+
+        shareKlink: function(klinkId: string): void {
+            const current = state.klinks.find(it => it.id === klinkId);
+            if (!current) {
+                return;
+            }
+            const params: CreateKlinkRequest = {
+                createKlinkPayload: {
+                    name: current.name,
+                    id: current.id,
+                    entries: []
+                }
+            }
+            api.createKlink(params)
+                .then((response) => {
+                    setState(
+                        'klinks',
+                        (klinks: Klink[]) => klinks.map(it => it.id === response.id ? { ...it, readKey: response.readKey, writeKey: response.writeKey } : it)
+                    );
+                    toast("Klink shared!");
+                })
+                .catch(() => toast.error("Something went wrong."));
         }
     }
 

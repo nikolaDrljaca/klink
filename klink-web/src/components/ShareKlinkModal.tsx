@@ -1,6 +1,8 @@
 import { writeClipboard } from "@solid-primitives/clipboard";
 import { Copy, GlobeLock } from "lucide-solid";
 import { Component, Match, Switch } from "solid-js";
+import toast from "solid-toast";
+import { useKlinkCollectionActions } from "~/lib/klinks/context";
 import { Klink } from "~/lib/klinks/store";
 
 type ShareKlinkModalProps = {
@@ -34,6 +36,12 @@ const ShareKlinkModal: Component<ShareKlinkModalProps> = (props) => {
   // TODO: create a slice off the klinkStore and provide `isShared` and upload actions
   const isShared = () => props.item.readKey && props.item.writeKey;
 
+  const actions = useKlinkCollectionActions();
+
+  const onShare = () => {
+    actions.shareKlink(props.item.id);
+  }
+
   return (
     <div class="flex flex-col space-y-2">
       <p class="text-lg">Share Controls</p>
@@ -57,7 +65,7 @@ const ShareKlinkModal: Component<ShareKlinkModalProps> = (props) => {
           <GlobeLock size={24} />
           <p class="text-lg">This klink is <b>local only</b>.</p>
           <p class="pb-2">To be able to share it with others, <b>upload</b> the collection to the cloud first.</p>
-          <button class="btn btn-primary btn-sm">Upload</button>
+          <button class="btn btn-primary btn-sm" onClick={onShare}>Upload</button>
         </Match>
       </Switch>
     </div>
