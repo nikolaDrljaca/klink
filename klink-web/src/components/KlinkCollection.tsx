@@ -2,9 +2,12 @@ import { Component, For } from "solid-js";
 import { Plus, Import, Share, Trash, Pencil } from "lucide-solid"
 import clsx from "clsx";
 import CreateKlinkModal from "~/components/CreateKlinkModal";
+import DeleteKlinkModal from "~/components/DeleteKlinkModal";
+import ShareKlinkModal from "~/components/ShareKlinkModal";
 import { useKlinkCollectionActions, useKlinkCollectionStore } from "~/lib/klinks/context";
 import { Klink } from "~/lib/klinks/store";
 import { useNavigate, useParams } from "@solidjs/router";
+import createModal from "~/components/modal/Modal";
 
 
 const KlinkCollection: Component = () => {
@@ -26,43 +29,45 @@ const KlinkCollection: Component = () => {
     navigate(`/c/${id}`);
   }
 
-  return (<div class="flex flex-col w-full h-full grow overflow-y-scroll scrollbar-hidden">
+  return (
+    <div class="flex flex-col w-full h-full grow overflow-y-scroll scrollbar-hidden">
 
-    <p class="text-2xl px-4 pt-4 pb-2"># Collections</p>
+      <p class="text-2xl px-4 pt-4 pb-2"># Collections</p>
 
-    {/* Button Row */}
-    <div class="flex flex-row gap-x-4 px-4 pt-2 pb-4 items-center justify-center w-full">
-      {/* Create Modal */}
-      <CreateKlinkModal onSubmit={actions.createKlink}>
-        {(open) =>
-          <button class="btn btn-neutral btn-sm w-1/2" onClick={open}>
-            <Plus size={20} />
-            Create
-          </button>
-        }
-      </CreateKlinkModal>
-      <button class="btn btn-sm w-1/2">
-        <Import size={20} />
-        Import
-      </button>
+      {/* Button Row */}
+      <div class="flex flex-row gap-x-4 px-4 pt-2 pb-4 items-center justify-center w-full">
+        {/* Create Modal */}
+        <CreateKlinkModal onSubmit={actions.createKlink}>
+          {(open) =>
+            <button class="btn btn-neutral btn-sm w-1/2" onClick={open}>
+              <Plus size={20} />
+              Create
+            </button>
+          }
+        </CreateKlinkModal>
+        <button class="btn btn-sm w-1/2">
+          <Import size={20} />
+          Import
+        </button>
+      </div>
+
+      {/* Klink List - Container */}
+      <div class="container items-center w-full">
+        {/* List Item */}
+        <For each={state.klinks}>
+          {(item,) =>
+            <KlinkListItem
+              item={item}
+              pathKlinkId={pathKlinkId()}
+              onDeleteClick={() => onDeleteKlinkItemClick(item.id)}
+              onSelect={() => onSelectKlink(item.id)}
+              onEditClick={() => { }}
+            />
+          }
+        </For>
+      </div>
     </div>
-
-    {/* Klink List - Container */}
-    <div class="container items-center w-full">
-      {/* List Item */}
-      <For each={state.klinks}>
-        {(item,) =>
-          <KlinkListItem
-            item={item}
-            pathKlinkId={pathKlinkId()}
-            onDeleteClick={() => onDeleteKlinkItemClick(item.id)}
-            onSelect={() => onSelectKlink(item.id)}
-            onEditClick={() => { }}
-          />
-        }
-      </For>
-    </div>
-  </div>);
+  );
 }
 
 type KlinkListItemProps = {
@@ -80,6 +85,9 @@ const KlinkListItem: Component<KlinkListItemProps> = (props) => {
     isSelected() && 'bg-neutral'
   );
 
+  const deleteModal = createModal();
+  const shareModal = createModal();
+
   return (
     <div class={classes()}>
       <div class="flex flex-col w-full hover:cursor-pointer" onClick={props.onSelect}>
@@ -90,12 +98,22 @@ const KlinkListItem: Component<KlinkListItemProps> = (props) => {
         <button class="btn btn-circle btn-ghost btn-sm" onClick={props.onEditClick}>
           <Pencil size={14} />
         </button>
-        <button class="btn btn-circle btn-ghost btn-sm" onClick={props.onSelect}>
+        <button class="btn btn-circle btn-ghost btn-sm" onClick={shareModal.controller.open}>
           <Share size={14} />
         </button>
-        <button class="btn btn-circle btn-sm btn-ghost" onClick={props.onDeleteClick}>
+        <button class="btn btn-circle btn-sm btn-ghost" onClick={() => deleteModal.controller.open()}>
           <Trash size={14} />
         </button>
+
+        <deleteModal.Modal>
+          <DeleteKlinkModal
+            klink={props.item}
+            onClose={deleteModal.controller.close}
+            onSubmit={props.onDeleteClick} />
+        </deleteModal.Modal>
+        <shareModal.Modal>
+          <ShareKlinkModal item={props.item} />
+        </shareModal.Modal>
       </div>
     </div>
   );
