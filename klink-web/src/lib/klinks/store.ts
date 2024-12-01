@@ -28,7 +28,9 @@ export type KlinkCollectionActions = {
 
     deleteKlink: (klinkId: string) => void,
 
-    selectKlink: (klinkId: string) => void
+    selectKlink: (klinkId: string) => void,
+
+    copyKlink: (klinkId: string) => void
 }
 
 export type Klink = {
@@ -65,7 +67,7 @@ export function createAppStore() {
                 readKey: null,
                 writeKey: null
             }
-            setState('klinks', (currentKlinks) => [klink, ...currentKlinks]);
+            setState('klinks', (currentKlinks) => [klink, ...currentKlinks])
             toast.success(`${klink.name} created!`);
         },
 
@@ -81,15 +83,15 @@ export function createAppStore() {
             setState(
                 'klinks',
                 (currentKlinks) => currentKlinks.filter(it => it.id !== klinkId)
-            );
+            )
         },
 
         selectKlink: function(klinkId: string): void {
-            setState('selectedKlinkId', klinkId);
+            setState('selectedKlinkId', klinkId)
         },
 
         shareKlink: function(klinkId: string): void {
-            const current = state.klinks.find(it => it.id === klinkId);
+            const current = state.klinks.find(it => it.id === klinkId)
             if (!current) {
                 return;
             }
@@ -106,9 +108,24 @@ export function createAppStore() {
                         'klinks',
                         (klinks: Klink[]) => klinks.map(it => it.id === response.id ? { ...it, readKey: response.readKey, writeKey: response.writeKey } : it)
                     );
-                    toast("Klink shared!");
+                    toast.success("Klink shared!");
                 })
                 .catch(() => toast.error("Something went wrong."));
+        },
+
+        copyKlink: function(klinkId: string): void {
+            const current = state.klinks.find(it => it.id === klinkId);
+            if (!current) {
+                return;
+            }
+            const updated: Klink = {
+                ...current,
+                name: `Copy of ${current.name}`,
+                id: crypto.randomUUID(),
+                readKey: null,
+                writeKey: null
+            }
+            setState('klinks', it => [updated, ...it]);
         }
     }
 

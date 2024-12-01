@@ -1,5 +1,5 @@
 import { Component, For } from "solid-js";
-import { Plus, Import, Share, Trash, Pencil } from "lucide-solid"
+import { Plus, Import, Share, Trash, Copy, Edit } from "lucide-solid"
 import clsx from "clsx";
 import CreateKlinkModal from "~/components/CreateKlinkModal";
 import DeleteKlinkModal from "~/components/DeleteKlinkModal";
@@ -28,6 +28,10 @@ const KlinkCollection: Component = () => {
   const onSelectKlink = (id: string) => {
     navigate(`/c/${id}`);
     actions.selectKlink(id);
+  }
+
+  const onCopyKlink = (id: string) => {
+    actions.copyKlink(id);
   }
 
   return (
@@ -62,7 +66,7 @@ const KlinkCollection: Component = () => {
               pathKlinkId={pathKlinkId()}
               onDeleteClick={() => onDeleteKlinkItemClick(item.id)}
               onSelect={() => onSelectKlink(item.id)}
-              onEditClick={() => { }}
+              onCopyClick={() => onCopyKlink(item.id)}
             />
           }
         </For>
@@ -75,7 +79,7 @@ type KlinkListItemProps = {
   item: Klink,
   pathKlinkId?: string,
   onDeleteClick: () => void,
-  onEditClick: () => void,
+  onCopyClick: () => void,
   onSelect: () => void
 }
 
@@ -95,9 +99,12 @@ const KlinkListItem: Component<KlinkListItemProps> = (props) => {
         <p class="text-xs font-light text-zinc-400 pl-4">Updated at 15:43</p>
         <p class="pl-4 text-lg">{props.item.name}</p>
       </div>
-      <div class="flex flex-row items-center justify-around w-full pt-2 pl-4">
-        <button class="btn btn-circle btn-ghost btn-sm" onClick={props.onEditClick}>
-          <Pencil size={14} />
+      <div class="flex flex-row items-center justify-around w-full pt-4 pl-4">
+        <button class="btn btn-circle btn-ghost btn-sm" onClick={() => { }}>
+          <Edit size={14} />
+        </button>
+        <button class="btn btn-circle btn-ghost btn-sm" onClick={props.onCopyClick}>
+          <Copy size={14} />
         </button>
         <button class="btn btn-circle btn-ghost btn-sm" onClick={shareModal.controller.open}>
           <Share size={14} />

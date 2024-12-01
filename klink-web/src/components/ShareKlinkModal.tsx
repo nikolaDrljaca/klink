@@ -1,7 +1,6 @@
 import { writeClipboard } from "@solid-primitives/clipboard";
 import { Copy, GlobeLock } from "lucide-solid";
 import { Component, Match, Switch } from "solid-js";
-import toast from "solid-toast";
 import { useKlinkCollectionActions } from "~/lib/klinks/context";
 import { Klink } from "~/lib/klinks/store";
 
@@ -44,7 +43,7 @@ const ShareKlinkModal: Component<ShareKlinkModalProps> = (props) => {
 
   return (
     <div class="flex flex-col space-y-2">
-      <p class="text-lg">Share Controls</p>
+      <p class="text-lg">Share Controls - <b>{props.item.name}</b></p>
       <p class="font-light text-sm text-zinc-400">Manage sharing information for this collection.</p>
       {/* Keys Row */}
       <Switch>
