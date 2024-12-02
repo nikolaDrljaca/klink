@@ -8,6 +8,7 @@ import { useKlinkCollectionActions, useKlinkCollectionStore } from "~/lib/klinks
 import { Klink } from "~/lib/klinks/store";
 import { useNavigate, useParams } from "@solidjs/router";
 import createModal from "~/components/modal/Modal";
+import toast from "solid-toast";
 
 
 const KlinkCollection: Component = () => {
@@ -34,6 +35,11 @@ const KlinkCollection: Component = () => {
     actions.copyKlink(id);
   }
 
+  const onImportClick = () => {
+    // TODO: Import not implemented.
+    toast("Not Implemented.");
+  }
+
   return (
     <div class="flex flex-col w-full h-full grow overflow-y-scroll scrollbar-hidden">
 
@@ -50,7 +56,7 @@ const KlinkCollection: Component = () => {
             </button>
           }
         </CreateKlinkModal>
-        <button class="btn btn-sm w-1/2">
+        <button class="btn btn-sm w-1/2" onClick={onImportClick}>
           <Import size={20} />
           Import
         </button>
@@ -93,6 +99,11 @@ const KlinkListItem: Component<KlinkListItemProps> = (props) => {
   const deleteModal = createModal();
   const shareModal = createModal();
 
+  const onEdit = () => {
+    //TODO: 
+    toast("Not implemented.");
+  }
+
   return (
     <div class={classes()}>
       <div class="flex flex-col w-full hover:cursor-pointer" onClick={props.onSelect}>
@@ -100,7 +111,7 @@ const KlinkListItem: Component<KlinkListItemProps> = (props) => {
         <p class="pl-4 text-lg">{props.item.name}</p>
       </div>
       <div class="flex flex-row items-center justify-around w-full pt-4 pl-4">
-        <button class="btn btn-circle btn-ghost btn-sm" onClick={() => { }}>
+        <button class="btn btn-circle btn-ghost btn-sm" onClick={onEdit}>
           <Edit size={14} />
         </button>
         <button class="btn btn-circle btn-ghost btn-sm" onClick={props.onCopyClick}>

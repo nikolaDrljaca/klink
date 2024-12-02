@@ -83,7 +83,7 @@ export function createAppStore() {
             setState(
                 'klinks',
                 (currentKlinks) => currentKlinks.filter(it => it.id !== klinkId)
-            )
+            );
         },
 
         selectKlink: function(klinkId: string): void {
