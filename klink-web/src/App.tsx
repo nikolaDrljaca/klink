@@ -21,7 +21,7 @@ const App: Component = () => {
       <Router root={RootLayout}>
         <Route path="/" component={() => <Navigate href="/c" />} />
         <Route path="/c/:klinkId?" component={KlinkCollectionRoute} />
-        <Route path="/c/:klinkId?/c" component={KlinkRoute} />
+        <Route path="/c/:klinkId/k" component={KlinkRoute} />
         <Route path="*param" component={NotFoundRoute} />
       </Router>
     </>

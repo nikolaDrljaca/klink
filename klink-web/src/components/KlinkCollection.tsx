@@ -27,7 +27,7 @@ const KlinkCollection: Component = () => {
   }
 
   const onSelectKlink = (id: string) => {
-    navigate(`/c/${id}`);
+    navigate(`/c/${id}/k`);
     actions.selectKlink(id);
   }
 
@@ -106,10 +106,10 @@ const KlinkListItem: Component<KlinkListItemProps> = (props) => {
 
   return (
     <div class={classes()}>
-      <div class="flex flex-col w-full hover:cursor-pointer" onClick={props.onSelect}>
+      <a class="flex flex-col w-full hover:cursor-pointer" onClick={props.onSelect}>
         <p class="text-xs font-light text-zinc-400 pl-4">Updated at 15:43</p>
         <p class="pl-4 text-lg">{props.item.name}</p>
-      </div>
+      </a>
       <div class="flex flex-row items-center justify-around w-full pt-4 pl-4">
         <button class="btn btn-circle btn-ghost btn-sm" onClick={onEdit}>
           <Edit size={14} />

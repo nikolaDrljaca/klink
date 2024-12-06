@@ -1,7 +1,6 @@
 import { Component } from "solid-js";
 import KlinkCollection from "~/components/KlinkCollection";
 import KlinkSidebar from "~/components/KlinkSidebar";
-import { KlinkCollectionStoreProvider } from "~/lib/klinks/context";
 
 const KlinkCollectionRoute: Component = () => {
   return (
@@ -10,9 +9,7 @@ const KlinkCollectionRoute: Component = () => {
         <KlinkSidebar />
       </div>
       <div class="w-2/6 h-full border-zinc-900 border-r-2">
-        <KlinkCollectionStoreProvider>
-          <KlinkCollection />
-        </KlinkCollectionStoreProvider>
+        <KlinkCollection />
       </div>
     </div>
   );

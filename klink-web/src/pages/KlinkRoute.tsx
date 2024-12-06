@@ -1,9 +1,14 @@
-import { Component } from "solid-js";
+import { Component, Show } from "solid-js";
 import KlinkCollection from "~/components/KlinkCollection";
+import KlinkDetails from "~/components/KlinkDetails";
 import KlinkSidebar from "~/components/KlinkSidebar";
-import { KlinkCollectionStoreProvider } from "~/lib/klinks/context";
+import useKlink from "~/lib/klinks/useKlink";
+import useKlinkIdParam from "~/lib/useKlinkIdParam";
 
 const KlinkRoute: Component = () => {
+  const klinkId = useKlinkIdParam();
+  const klink = useKlink(klinkId);
+
   return (
     <div class="flex flex-row h-screen">
       {/* Sidebar */}
@@ -13,13 +18,15 @@ const KlinkRoute: Component = () => {
 
       {/* KlinkCollection */}
       <div class="w-2/6 h-full border-zinc-900 border-r-2">
-        <KlinkCollectionStoreProvider>
-          <KlinkCollection />
-        </KlinkCollectionStoreProvider>
+        <KlinkCollection />
       </div>
 
-      <div class="w-1/6 h-full border-zinc-900 border-r-2">
-        <KlinkSidebar />
+      {/* Klink Details */}
+      <div class="w-2/6 h-full border-zinc-900 border-r-2">
+        {/* TODO: Modify fallback */}
+        <Show when={!!klink()} fallback={<div class="">Klink Not Found.</div>}>
+          <KlinkDetails klink={klink} />
+        </Show>
       </div>
     </div>
   );
