@@ -15,7 +15,16 @@ const getDetails = query((url: string) => getPageMetadata(url), "pageMetadataByU
 
 const KlinkEntryListItem: Component<KlinkEntryListItemProps> = (props) => {
   // createAsync - new primitive that will replace `createResource` - works with `query` to cache 
-  const details = createAsync(() => getDetails(props.entry.value));
+  const pageDetails = createAsync(() => getDetails(props.entry.value));
+
+  const title = () => pageDetails()?.title ?? props.entry.value;
+  const description = () => pageDetails()?.description ?? "No details found.";
+  const url = () => {
+    if (title() === props.entry.value) {
+      return null;
+    }
+    return props.entry.value;
+  }
 
   const LoadingBar: Component = () => <div class="skeleton h-5 w-full"></div>;
 
@@ -41,14 +50,17 @@ const KlinkEntryListItem: Component<KlinkEntryListItemProps> = (props) => {
               target="_blank"
               rel="noopener noreferrer"
               class="flex items-center space-x-1 hover:underline">
-              <span>{props.entry.value}</span>
+              <span>{title()}</span>
             </a>
           </h3>
           <Suspense fallback={<LoadingBar />}>
-            <Show when={!!details()}>
-              <p class="text-xs font-light text-zinc-400">{details().title ?? "No details found."}</p>
+            <Show when={!!pageDetails()}>
+              <p class="text-xs font-light text-zinc-400">{description()}</p>
             </Show>
           </Suspense>
+          <Show when={url()}>
+            <p class="text-xs font-light text-zinc-400 underline pt-1">{url()}</p>
+          </Show>
         </div>
 
         {/* TODO: Too much space taken by button. Redesign!  */}
