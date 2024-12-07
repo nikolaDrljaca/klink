@@ -27,7 +27,7 @@ const KlinkCollection: Component = () => {
   }
 
   const onSelectKlink = (id: string) => {
-    navigate(`/c/${id}/k`);
+    navigate(`/c/${id}`);
     actions.selectKlink(id);
   }
 
