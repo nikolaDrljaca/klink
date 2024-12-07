@@ -1,11 +1,13 @@
 import { createAsync, query } from "@solidjs/router";
 import { Image } from "@unpic/solid";
+import { Trash } from "lucide-solid";
 import { Component, Show, Suspense } from "solid-js";
 import { KlinkEntry } from "~/generated";
 import { getPageMetadata } from "~/lib/pageMetadata";
 
 type KlinkEntryListItemProps = {
-  entry: KlinkEntry
+  entry: KlinkEntry,
+  onDeleteClick: () => void
 }
 
 // define a query - `query` can be used to cache request responses
@@ -48,6 +50,11 @@ const KlinkEntryListItem: Component<KlinkEntryListItemProps> = (props) => {
             </Show>
           </Suspense>
         </div>
+
+        {/* TODO: Too much space taken by button. Redesign!  */}
+        <button class="btn btn-circle btn-sm btn-ghost text-error" onClick={props.onDeleteClick}>
+          <Trash size={12} />
+        </button>
 
       </div>
     </div>

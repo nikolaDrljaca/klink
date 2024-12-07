@@ -27,6 +27,10 @@ const KlinkEntries: Component<KlinkDetailsProps> = (props) => {
     entries().onAddEntry(inputUrl());
   }
 
+  const deleteEntry = (value: string) => {
+    entries().onRemoveEntry(value);
+  }
+
   return (
     <div class="flex flex-col w-full h-full grow overflow-y-scroll scrollbar-hidden">
 
@@ -71,6 +75,7 @@ const KlinkEntries: Component<KlinkDetailsProps> = (props) => {
           {(item,) =>
             <KlinkEntryListItem
               entry={item}
+              onDeleteClick={() => deleteEntry(item.value)}
             />
           }
         </For>
