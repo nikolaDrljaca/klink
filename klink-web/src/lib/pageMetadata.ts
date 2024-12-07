@@ -1,10 +1,9 @@
-
+/**
+ * Retrieve Page metadata such as the head.title
+ */
 export async function getPageMetadata(url: string): Promise<{ title?: string, error?: string }> {
     try {
         const response = await fetch(url);
-        if (!response.ok) {
-
-        }
         const html = await response.text();
 
         const parser = new DOMParser();

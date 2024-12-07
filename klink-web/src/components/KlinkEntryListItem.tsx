@@ -8,9 +8,10 @@ type KlinkEntryListItemProps = {
   entry: KlinkEntry
 }
 
+// define a query - `query` can be used to cache request responses
+const getDetails = query((url: string) => getPageMetadata(url), "pageMetadataByUrl");
+
 const KlinkEntryListItem: Component<KlinkEntryListItemProps> = (props) => {
-  // define a query - `query` can be used to cache request responses
-  const getDetails = query((url: string) => getPageMetadata(url), "pageMetadataByUrl");
   // createAsync - new primitive that will replace `createResource` - works with `query` to cache 
   const details = createAsync(() => getDetails(props.entry.value));
 

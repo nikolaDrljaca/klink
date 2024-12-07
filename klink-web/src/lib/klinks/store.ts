@@ -67,7 +67,7 @@ export function createAppStore() {
                 readKey: null,
                 writeKey: null
             }
-            setState('klinks', (currentKlinks) => [klink, ...currentKlinks])
+            setState('klinks', (currentKlinks) => [klink, ...currentKlinks]);
             toast.success(`${klink.name} created!`);
         },
 
@@ -76,14 +76,18 @@ export function createAppStore() {
             readKey: string
             writeKey?: string
         }): void {
-            throw new Error("Function not implemented.")
+            throw new Error("Function not implemented.");
         },
 
         deleteKlink: function(klinkId: string): void {
+            // clear from klink state
             setState(
                 'klinks',
                 (currentKlinks) => currentKlinks.filter(it => it.id !== klinkId)
             );
+            // clear cached klink entries
+            localforage.removeItem(`klink-items-${klinkId}`).then();
+            // TODO: make call to `rest` if deleteRemote is true -> Look at dialog
         },
 
         selectKlink: function(klinkId: string): void {

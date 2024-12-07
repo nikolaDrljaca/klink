@@ -1,6 +1,6 @@
 import { Component, Show } from "solid-js";
 import KlinkCollection from "~/components/KlinkCollection";
-import KlinkDetails from "~/components/KlinkDetails";
+import KlinkEntries from "~/components/KlinkEntries";
 import KlinkSidebar from "~/components/KlinkSidebar";
 import useKlink from "~/lib/klinks/useKlink";
 import useKlinkIdParam from "~/lib/useKlinkIdParam";
@@ -25,7 +25,7 @@ const KlinkRoute: Component = () => {
       <div class="w-2/6 h-full border-zinc-900 border-r-2">
         {/* TODO: Modify fallback */}
         <Show when={!!klink()} fallback={<div class="">Klink Not Found.</div>}>
-          <KlinkDetails klink={klink} />
+          <KlinkEntries klink={klink} />
         </Show>
       </div>
     </div>
