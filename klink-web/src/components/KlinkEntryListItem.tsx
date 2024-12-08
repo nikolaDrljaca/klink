@@ -50,13 +50,13 @@ const KlinkEntryListItem: Component<KlinkEntryListItemProps> = (props) => {
 
         {/* Url value */}
         <Suspense fallback={<LoadingBar />}>
-          <div class="flex-grow space-y-1">
+          <div class="flex-grow space-y-1 min-w-0">
             <h3 class="font-semibold">
               <a
                 href={props.entry.value}
                 target="_blank"
                 rel="noopener noreferrer"
-                class="flex items-center space-x-1 hover:underline">
+                class="hover:underline block break-words whitespace-normal">
                 <span>{title()}</span>
               </a>
             </h3>
@@ -67,12 +67,12 @@ const KlinkEntryListItem: Component<KlinkEntryListItemProps> = (props) => {
               <p class="text-xs font-light text-zinc-400 underline pt-1">{url()}</p>
             </Show>
           </div>
-
-          {/* TODO: Too much space taken by button. Redesign!  */}
-          <button class="btn btn-circle btn-sm btn-ghost text-error" onClick={props.onDeleteClick}>
-            <Trash size={12} />
-          </button>
         </Suspense>
+
+        {/* TODO: Too much space taken by button. Redesign!  */}
+        <button class="btn btn-circle btn-sm btn-ghost text-error" onClick={props.onDeleteClick}>
+          <Trash size={12} />
+        </button>
 
       </div>
     </div>
