@@ -1,11 +1,14 @@
 import { ParentComponent } from "solid-js";
+import { KlinkCollectionStoreProvider } from "~/lib/klinks/context";
 
 
 const RootLayout: ParentComponent = (props) => {
   return (
-    <div class="overflow-none h-screen">
-      {props.children}
-    </div>
+    <KlinkCollectionStoreProvider>
+      <div class="container overflow-none h-screen mx-auto">
+        {props.children}
+      </div>
+    </KlinkCollectionStoreProvider>
   );
 }
 
