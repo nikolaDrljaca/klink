@@ -17,7 +17,7 @@ export function createKlinkEntriesStore(klink: Klink): KlinkEntriesStore {
     const WS_PATH = import.meta.env.VITE_WS_PATH;
 
     const klinkItemsStore = createStore<Array<KlinkEntry>>([], { name: forageKey });
-    // TODO: will need to pass keys -> fetch whole klink using params
+    // TODO: will need to pass keys
     const socket = new WebSocket(`${WS_PATH}/klink/wsSync/${klinkId}`);
     socket.onmessage = (e: MessageEvent) => {
         const data: PersistenceSyncData = JSON.parse(e.data);

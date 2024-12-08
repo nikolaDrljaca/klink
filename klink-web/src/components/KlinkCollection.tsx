@@ -50,7 +50,7 @@ const KlinkCollection: Component = () => {
         {/* Create Modal */}
         <CreateKlinkModal onSubmit={actions.createKlink}>
           {(open) =>
-            <button class="btn btn-neutral btn-sm w-1/2" onClick={open}>
+            <button class="btn btn-sm btn-neutral w-1/2" onClick={open}>
               <Plus size={20} />
               Create
             </button>
@@ -106,10 +106,13 @@ const KlinkListItem: Component<KlinkListItemProps> = (props) => {
 
   return (
     <div class={classes()}>
-      <a class="flex flex-col w-full hover:cursor-pointer" onClick={props.onSelect}>
-        <p class="text-xs font-light text-zinc-400 pl-4">Updated at 15:43</p>
-        <p class="pl-4 text-lg">{props.item.name}</p>
+      {/* Top Anchor */}
+      <a class="flex flex-col w-full px-4 hover:cursor-pointer" onClick={props.onSelect}>
+        <p class="text-xs font-light text-zinc-400">Updated at 15:43</p>
+        <p class="text-lg">{props.item.name}</p>
+        <span class="text-sm py-2">{props.item.description}</span>
       </a>
+      {/* Button Row */}
       <div class="flex flex-row items-center justify-around w-full pt-4 pl-4">
         <button class="btn btn-circle btn-ghost btn-sm" onClick={onEdit}>
           <Edit size={14} />

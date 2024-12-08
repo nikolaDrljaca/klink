@@ -1,7 +1,8 @@
+import { makeCache } from "@solid-primitives/resource";
 import { createAsync, query } from "@solidjs/router";
 import { Image } from "@unpic/solid";
 import { Trash } from "lucide-solid";
-import { Component, Show, Suspense } from "solid-js";
+import { Component, createResource, Show, Suspense } from "solid-js";
 import { KlinkEntry } from "~/generated";
 import { getPageMetadata } from "~/lib/pageMetadata";
 
@@ -10,12 +11,17 @@ type KlinkEntryListItemProps = {
   onDeleteClick: () => void
 }
 
-// define a query - `query` can be used to cache request responses
-const getDetails = query((url: string) => getPageMetadata(url), "pageMetadataByUrl");
+// cache each request to URL metadata for 5 hours
+const [getDetails, invalidate] = makeCache(
+  (url: string) => getPageMetadata(url),
+  {
+    storage: localStorage,
+    expires: 5 * 60 * 60 * 1000
+  }
+);
 
 const KlinkEntryListItem: Component<KlinkEntryListItemProps> = (props) => {
-  // createAsync - new primitive that will replace `createResource` - works with `query` to cache 
-  const pageDetails = createAsync(() => getDetails(props.entry.value));
+  const [pageDetails, { }] = createResource(props.entry.value, getDetails);
 
   const title = () => pageDetails()?.title ?? props.entry.value;
   const description = () => pageDetails()?.description ?? "No details found.";
@@ -26,7 +32,7 @@ const KlinkEntryListItem: Component<KlinkEntryListItemProps> = (props) => {
     return props.entry.value;
   }
 
-  const LoadingBar: Component = () => <div class="skeleton h-5 w-full"></div>;
+  const LoadingBar: Component = () => <div class="skeleton h-20 w-full"></div>;
 
   return (
     <div class="card card-compact bg-neutral w-full">
@@ -43,30 +49,30 @@ const KlinkEntryListItem: Component<KlinkEntryListItemProps> = (props) => {
         </div>
 
         {/* Url value */}
-        <div class="flex-grow">
-          <h3 class="font-semibold">
-            <a
-              href={props.entry.value}
-              target="_blank"
-              rel="noopener noreferrer"
-              class="flex items-center space-x-1 hover:underline">
-              <span>{title()}</span>
-            </a>
-          </h3>
-          <Suspense fallback={<LoadingBar />}>
+        <Suspense fallback={<LoadingBar />}>
+          <div class="flex-grow space-y-1">
+            <h3 class="font-semibold">
+              <a
+                href={props.entry.value}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="flex items-center space-x-1 hover:underline">
+                <span>{title()}</span>
+              </a>
+            </h3>
             <Show when={!!pageDetails()}>
               <p class="text-xs font-light text-zinc-400">{description()}</p>
             </Show>
-          </Suspense>
-          <Show when={url()}>
-            <p class="text-xs font-light text-zinc-400 underline pt-1">{url()}</p>
-          </Show>
-        </div>
+            <Show when={url()}>
+              <p class="text-xs font-light text-zinc-400 underline pt-1">{url()}</p>
+            </Show>
+          </div>
 
-        {/* TODO: Too much space taken by button. Redesign!  */}
-        <button class="btn btn-circle btn-sm btn-ghost text-error" onClick={props.onDeleteClick}>
-          <Trash size={12} />
-        </button>
+          {/* TODO: Too much space taken by button. Redesign!  */}
+          <button class="btn btn-circle btn-sm btn-ghost text-error" onClick={props.onDeleteClick}>
+            <Trash size={12} />
+          </button>
+        </Suspense>
 
       </div>
     </div>
