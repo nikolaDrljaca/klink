@@ -1,4 +1,4 @@
-package com.drbrosdev.klinkrest;
+package com.drbrosdev.klinkrest.activity;
 
 import org.apache.commons.lang3.NotImplementedException;
 import org.openapitools.api.KlinkApi;
