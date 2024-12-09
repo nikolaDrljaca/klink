@@ -1,4 +1,4 @@
-package com.drbrosdev.klinkrest;
+package com.drbrosdev.klinkrest.controller;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
