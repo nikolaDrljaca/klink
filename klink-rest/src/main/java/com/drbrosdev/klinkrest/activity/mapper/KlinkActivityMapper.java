@@ -1,16 +1,23 @@
 package com.drbrosdev.klinkrest.activity.mapper;
 
-import com.drbrosdev.klinkrest.application.dto.CreateKlinkPayloadDto;
-import com.drbrosdev.klinkrest.application.dto.KlinkDto;
+import com.drbrosdev.klinkrest.domain.dto.KlinkDto;
+import com.drbrosdev.klinkrest.domain.dto.KlinkEntryDto;
+import com.drbrosdev.klinkrest.framework.OptionalMapperUtils;
 import org.mapstruct.Mapper;
-import org.openapitools.model.CreateKlinkPayloadApiDto;
 import org.openapitools.model.KlinkApiDto;
+import org.openapitools.model.KlinkEntryApiDto;
 
-@Mapper(componentModel = "spring")
+import java.util.List;
+
+@Mapper(
+        componentModel = "spring",
+        uses = OptionalMapperUtils.class)
 public interface KlinkActivityMapper {
 
-    CreateKlinkPayloadDto mapTo(final CreateKlinkPayloadApiDto createKlinkPayloadDto);
-
     KlinkApiDto mapTo(final KlinkDto klinkDto);
+
+    KlinkEntryDto mapTo(KlinkEntryApiDto entry);
+
+    List<KlinkEntryDto> mapToEntries(final List<KlinkEntryApiDto> entries);
 
 }

@@ -1,8 +1,10 @@
 package com.drbrosdev.klinkrest.persistence.entity;
 
-import jakarta.annotation.Nullable;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
@@ -11,7 +13,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.time.LocalDate;
 import java.util.UUID;
 
 @Entity
@@ -20,20 +21,15 @@ import java.util.UUID;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "klink")
-public class KlinkEntity {
+@Table(name = "klink_entry")
+public class KlinkEntryEntity {
 
     @Id
-    private UUID id;
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    UUID id;
 
-    String name;
+    @Column(name = "klink_id")
+    UUID klinkId;
 
-    @Nullable
-    String description;
-
-    @Column(name = "created_at")
-    LocalDate createdAt;
-
-    @Column(name = "modified_at")
-    LocalDate modifiedAt;
+    String value;
 }

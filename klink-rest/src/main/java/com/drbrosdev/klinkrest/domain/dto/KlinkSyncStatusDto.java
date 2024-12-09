@@ -1,4 +1,4 @@
-package com.drbrosdev.klinkrest.application.dto;
+package com.drbrosdev.klinkrest.domain.dto;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
