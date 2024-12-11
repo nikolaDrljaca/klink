@@ -1,19 +1,18 @@
-import { Component, For } from "solid-js";
-import { Plus, Import, Share, Trash, Copy, Edit } from "lucide-solid"
+import { Component, For, Show } from "solid-js";
+import { Plus, Import } from "lucide-solid"
 import clsx from "clsx";
 import CreateKlinkModal from "~/components/CreateKlinkModal";
-import DeleteKlinkModal from "~/components/DeleteKlinkModal";
-import ShareKlinkModal from "~/components/ShareKlinkModal";
 import { useKlinkCollectionActions, useKlinkCollectionStore } from "~/lib/klinks/context";
-import { Klink } from "~/lib/klinks/store";
 import { useNavigate, useParams } from "@solidjs/router";
-import createModal from "~/components/modal/Modal";
 import toast from "solid-toast";
+import KlinkListItem from "~/components/KlinkListItem";
 
 
 const KlinkCollection: Component = () => {
   const state = useKlinkCollectionStore();
   const actions = useKlinkCollectionActions();
+
+  const klinkNotEmpty = () => state.klinks.length > 0;
 
   const navigate = useNavigate();
   const params = useParams();
@@ -40,6 +39,12 @@ const KlinkCollection: Component = () => {
     toast("Not Implemented.");
   }
 
+  const createButtonClass = () => clsx(
+    'btn btn-sm w-1/2',
+    !klinkNotEmpty() && 'btn-primary animate-pulse',
+    klinkNotEmpty() && 'btn-neutral'
+  );
+
   return (
     <div class="flex flex-col w-full h-full grow overflow-y-scroll scrollbar-hidden">
 
@@ -50,7 +55,7 @@ const KlinkCollection: Component = () => {
         {/* Create Modal */}
         <CreateKlinkModal onSubmit={actions.createKlink}>
           {(open) =>
-            <button class="btn btn-sm btn-neutral w-1/2" onClick={open}>
+            <button class={createButtonClass()} onClick={open}>
               <Plus size={20} />
               Create
             </button>
