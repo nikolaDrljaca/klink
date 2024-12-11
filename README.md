@@ -47,4 +47,6 @@ These routes are per `nginx` configuration located in `klink-web/nginx.conf`.
 
 This way the application stack can be tested locally as if it were running in a production environment.
 
+Stop the stack with `make stop-prodlike`.
+
 To view db contents, use the IntelliJ integrated DB tool.
