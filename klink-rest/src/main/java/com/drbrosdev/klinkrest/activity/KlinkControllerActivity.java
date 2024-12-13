@@ -28,7 +28,7 @@ public class KlinkControllerActivity implements KlinkApi {
     @Override
     public ResponseEntity<KlinkApiDto> createKlink(CreateKlinkPayloadApiDto createKlinkPayloadApiDto) {
         log.info(
-                "createKlink called with {}",
+                "createKlink called with payload: {}",
                 createKlinkPayloadApiDto);
         var klink = klinkDomainService.createKlink(
                 createKlinkPayloadApiDto.getId(),
@@ -45,7 +45,7 @@ public class KlinkControllerActivity implements KlinkApi {
     @Override
     public ResponseEntity<KlinkApiDto> getKlink(UUID klinkId) {
         log.info(
-                "getKlink called with {}",
+                "getKlink called with klinkId: {}",
                 klinkId);
         var klink = klinkDomainService.getKlink(klinkId);
         return ok(mapper.mapTo(klink));

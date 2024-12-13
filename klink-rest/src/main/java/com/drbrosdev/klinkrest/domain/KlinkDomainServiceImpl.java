@@ -68,6 +68,7 @@ public class KlinkDomainServiceImpl implements KlinkDomainService {
         var savedEntries = klinkEntryRepository.saveAll(entryEntities);
         // create key
         var savedKeys = klinkKeyRepository.save(key);
+        // map to domain model
         return mapper.mapTo(
                 savedKlink,
                 savedEntries,
@@ -79,14 +80,15 @@ public class KlinkDomainServiceImpl implements KlinkDomainService {
     public KlinkDto getKlink(UUID uuid){
         var klink = klinkRepository.findById(uuid)
                 .orElseThrow(() -> new EntityNotFoundException("Klink not found for ID: " + uuid));
-
-        var klikEntries = klinkEntryRepository.findByKlinkId(uuid)
-                .orElseThrow(() -> new EntityNotFoundException("KlikEntries not found for Klink ID: " + uuid));
-
+        var klinkEntries = klinkEntryRepository.findByKlinkId(uuid)
+                .orElseThrow(() -> new EntityNotFoundException("KlinkEntries not found for Klink ID: " + uuid));
         var klinkKeys = klinkKeyRepository.findByKlinkId(uuid)
                 .orElseThrow(() -> new EntityNotFoundException("KlinkKeys not found for Klink ID: " + uuid));
-
-        return mapper.mapTo(klink, klikEntries, klinkKeys);
+        // map to domain model
+        return mapper.mapTo(
+                klink,
+                klinkEntries,
+                klinkKeys);
     }
 
 
