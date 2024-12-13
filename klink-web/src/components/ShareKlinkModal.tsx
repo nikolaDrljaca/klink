@@ -1,17 +1,18 @@
 import { writeClipboard } from "@solid-primitives/clipboard";
 import { Copy, GlobeLock } from "lucide-solid";
-import { Component, Match, Switch } from "solid-js";
-import { useKlinkCollectionActions } from "~/lib/klinks/context";
-import { Klink } from "~/lib/klinks/store";
+import { Component, Match, onCleanup, Switch } from "solid-js";
+import toast from "solid-toast";
+import shareKlinkStore from "~/lib/shareKlinkStore";
 
 type ShareKlinkModalProps = {
-  item: Klink,
+  klinkId: string,
 }
 
 const KlinkKeyField: Component<{ key: string, title: string }> = (props) => {
 
   const onCopy = async () => {
     await writeClipboard(props.key);
+    toast("Key Copied!");
   }
 
   return (
@@ -32,39 +33,50 @@ const KlinkKeyField: Component<{ key: string, title: string }> = (props) => {
 }
 
 const ShareKlinkModal: Component<ShareKlinkModalProps> = (props) => {
-  // TODO: create a slice off the klinkStore and provide `isShared` and upload actions
-  const isShared = () => props.item.readKey && props.item.writeKey;
+  const klinkId = props.klinkId;
+  const store = shareKlinkStore(klinkId);
 
-  const actions = useKlinkCollectionActions();
+  const unsub = store.listen(event => {
+    switch (event.type) {
+      case "success":
+        toast.success("Klink shared!");
+        break;
+      case "failure":
+        toast.error("Something went wrong!");
+        break;
+      case "readWrite":
+        break;
+      case "readOnly":
+        break;
+    }
+  });
 
-  const onShare = () => {
-    actions.shareKlink(props.item.id);
-  }
+  onCleanup(() => unsub());
 
   return (
     <div class="flex flex-col space-y-2">
-      <p class="text-lg">Share Controls - <b>{props.item.name}</b></p>
+      <p class="text-lg">Share Controls - <b>{store.klinkStore.klink.name}</b></p>
       <p class="font-light text-sm text-zinc-400">Manage sharing information for this collection.</p>
       {/* Keys Row */}
       <Switch>
         {/* Shared Component */}
-        <Match when={isShared()}>
+        <Match when={store.klinkStore.isShared}>
           <div class="flex w-full justify-between space-x-4 py-6">
-            <KlinkKeyField key={props.item.readKey} title={"Read Key"} />
+            <KlinkKeyField key={store.klinkStore.klink.readKey} title={"Read Key"} />
             <div class="divider divider-horizontal"></div>
-            <KlinkKeyField key={props.item.writeKey} title={"Write Key"} />
+            <KlinkKeyField key={store.klinkStore.klink.writeKey} title={"Write Key"} />
           </div>
-          <button class="btn btn-primary btn-sm">Share</button>
-          <button class="btn btn-primary btn-sm">Share as Read Only</button>
+          <button class="btn btn-primary btn-sm" onClick={store.createShareLink}>Share</button>
+          <button class="btn btn-primary btn-sm" onClick={store.createReadOnlyLink}>Share as Read Only</button>
         </Match>
 
         {/* Local Only */}
-        <Match when={!isShared()}>
+        <Match when={!store.klinkStore.isShared}>
           <div class="pt-4"></div>
           <GlobeLock size={24} />
           <p class="text-lg">This klink is <b>local only</b>.</p>
           <p class="pb-2">To be able to share it with others, <b>upload</b> the collection to the cloud first.</p>
-          <button class="btn btn-primary btn-sm" onClick={onShare}>Upload</button>
+          <button class="btn btn-primary btn-sm" onClick={store.shareKlink}>Upload</button>
         </Match>
       </Switch>
     </div>

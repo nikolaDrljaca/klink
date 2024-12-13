@@ -4,6 +4,8 @@ import { createStore } from "solid-js/store";
 import { KlinkEntry } from "~/generated/models";
 import { Klink } from "~/lib/klinks/store";
 
+// TODO: Introduce local type for KlinkEntry!!
+
 type KlinkEntriesStore = {
     state: KlinkEntry[];
     onAddEntry: (url: string) => void;
