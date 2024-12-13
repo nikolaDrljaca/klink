@@ -2,6 +2,7 @@ package com.drbrosdev.klinkrest.activity.exception;
 
 import com.drbrosdev.klinkrest.activity.exception.model.Error;
 import jakarta.annotation.Nullable;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -51,6 +52,17 @@ public class ExceptionHandlerControllerActivity {
                 .status(HttpStatus.BAD_REQUEST)
                 .body(createErrorResponse(
                         HttpStatus.BAD_REQUEST.toString(),
+                        ex.getMessage(),
+                        asList(ex.getStackTrace())));
+    }
+
+    @ExceptionHandler(value = {EntityNotFoundException.class})
+    public ResponseEntity<Error> handleEntityNotFound(EntityNotFoundException ex) {
+        log.error("Entity not found: {}", ex.getMessage());
+        return ResponseEntity
+                .status(HttpStatus.NOT_FOUND)
+                .body(createErrorResponse(
+                        HttpStatus.NOT_FOUND.toString(),
                         ex.getMessage(),
                         asList(ex.getStackTrace())));
     }
