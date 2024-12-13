@@ -44,7 +44,11 @@ public class KlinkControllerActivity implements KlinkApi {
 
     @Override
     public ResponseEntity<KlinkApiDto> getKlink(UUID klinkId) {
-        throw new NotImplementedException("TODO");
+        log.info(
+                "getKlink called with {}",
+                klinkId);
+        var klink = klinkDomainService.getKlink(klinkId);
+        return ok(mapper.mapTo(klink));
     }
 
     @Override

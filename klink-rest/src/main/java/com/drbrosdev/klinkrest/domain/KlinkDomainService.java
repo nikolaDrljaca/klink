@@ -13,4 +13,6 @@ public interface KlinkDomainService {
             String name,
             List<KlinkEntryDto> entries);
 
+    KlinkDto getKlink(UUID id);
+
 }

@@ -9,6 +9,7 @@ import com.drbrosdev.klinkrest.persistence.entity.KlinkKeyEntity;
 import com.drbrosdev.klinkrest.persistence.repository.KlinkEntryRepository;
 import com.drbrosdev.klinkrest.persistence.repository.KlinkKeyRepository;
 import com.drbrosdev.klinkrest.persistence.repository.KlinkRepository;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -72,6 +73,22 @@ public class KlinkDomainServiceImpl implements KlinkDomainService {
                 savedEntries,
                 savedKeys);
     }
+
+    @Override
+    @Transactional
+    public KlinkDto getKlink(UUID uuid){
+        var klink = klinkRepository.findById(uuid)
+                .orElseThrow(() -> new EntityNotFoundException("Klink not found for ID: " + uuid));
+
+        var klikEntries = klinkEntryRepository.findByKlinkId(uuid)
+                .orElseThrow(() -> new EntityNotFoundException("KlikEntries not found for Klink ID: " + uuid));
+
+        var klinkKeys = klinkKeyRepository.findByKlinkId(uuid)
+                .orElseThrow(() -> new EntityNotFoundException("KlinkKeys not found for Klink ID: " + uuid));
+
+        return mapper.mapTo(klink, klikEntries, klinkKeys);
+    }
+
 
     private String createKey() {
         // Keep non-static import
