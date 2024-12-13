@@ -80,8 +80,7 @@ public class KlinkDomainServiceImpl implements KlinkDomainService {
     public KlinkDto getKlink(UUID uuid){
         var klink = klinkRepository.findById(uuid)
                 .orElseThrow(() -> new EntityNotFoundException("Klink not found for ID: " + uuid));
-        var klinkEntries = klinkEntryRepository.findByKlinkId(uuid)
-                .orElseThrow(() -> new EntityNotFoundException("KlinkEntries not found for Klink ID: " + uuid));
+        var klinkEntries = klinkEntryRepository.findByKlinkId(uuid);
         var klinkKeys = klinkKeyRepository.findByKlinkId(uuid)
                 .orElseThrow(() -> new EntityNotFoundException("KlinkKeys not found for Klink ID: " + uuid));
         // map to domain model
