@@ -1,35 +1,11 @@
-import { writeClipboard } from "@solid-primitives/clipboard";
-import { Copy, GlobeLock } from "lucide-solid";
+import { GlobeLock } from "lucide-solid";
 import { Component, Match, onCleanup, Switch } from "solid-js";
 import toast from "solid-toast";
 import shareKlinkStore from "~/lib/shareKlinkStore";
+import KlinkKeyField from "~/components/KlinkKeyField";
 
 type ShareKlinkModalProps = {
   klinkId: string,
-}
-
-const KlinkKeyField: Component<{ key: string, title: string }> = (props) => {
-
-  const onCopy = async () => {
-    await writeClipboard(props.key);
-    toast("Key Copied!");
-  }
-
-  return (
-    <div class="flex flex-col space-y-2">
-      <p class="text-sm text-zinc-400">{props.title}</p>
-      <div class="join">
-        <input
-          type="text"
-          value={props.key}
-          disabled={true}
-          class="input input-bordered w-full max-w-xs join-item" />
-        <button class="btn join-item" onClick={onCopy}>
-          <Copy size={14} />
-        </button>
-      </div>
-    </div>
-  )
 }
 
 const ShareKlinkModal: Component<ShareKlinkModalProps> = (props) => {
@@ -67,7 +43,7 @@ const ShareKlinkModal: Component<ShareKlinkModalProps> = (props) => {
             <KlinkKeyField key={store.klinkStore.klink.writeKey} title={"Write Key"} />
           </div>
           <button class="btn btn-primary btn-sm" onClick={store.createShareLink}>Share</button>
-          <button class="btn btn-primary btn-sm" onClick={store.createReadOnlyLink}>Share as Read Only</button>
+          <button class="btn btn-primary btn-sm btn-outline" onClick={store.createReadOnlyLink}>Share as Read Only</button>
         </Match>
 
         {/* Local Only */}
