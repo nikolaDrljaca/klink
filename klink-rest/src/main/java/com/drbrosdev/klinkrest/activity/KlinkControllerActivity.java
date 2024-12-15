@@ -1,7 +1,9 @@
 package com.drbrosdev.klinkrest.activity;
 
 import com.drbrosdev.klinkrest.activity.mapper.KlinkActivityMapper;
+import com.drbrosdev.klinkrest.application.KlinkApplicationService;
 import com.drbrosdev.klinkrest.domain.KlinkDomainService;
+import jakarta.annotation.Nullable;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.NotImplementedException;
@@ -23,6 +25,8 @@ public class KlinkControllerActivity implements KlinkApi {
 
     private final KlinkDomainService klinkDomainService;
 
+    private final KlinkApplicationService klinkApplicationService;
+
     private final KlinkActivityMapper mapper;
 
     @Override
@@ -43,11 +47,19 @@ public class KlinkControllerActivity implements KlinkApi {
     }
 
     @Override
-    public ResponseEntity<KlinkApiDto> getKlink(UUID klinkId) {
+    public ResponseEntity<KlinkApiDto> getKlink(
+            UUID klinkId,
+            String readKey,
+            @Nullable String writeKey) {
         log.info(
-                "getKlink called with klinkId: {}",
-                klinkId);
-        var klink = klinkDomainService.getKlink(klinkId);
+                "getKlink called with klinkId: {}, readKey: {}, writeKey: {}",
+                klinkId,
+                readKey,
+                writeKey);
+        var klink = klinkApplicationService.getKlinkById(
+                klinkId,
+                readKey,
+                writeKey);
         return ok(mapper.mapTo(klink));
     }
 

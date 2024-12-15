@@ -2,8 +2,8 @@ import useKlinkKeyParams from "~/lib/useKlinkKeyParams";
 import useKlinkIdParam from "~/lib/useKlinkIdParam";
 import { KlinkApi } from "~/generated";
 import { createResource } from "solid-js";
-import { Klink } from "./klinks/store";
-import { useAppStore } from "./klinks/context";
+import { Klink } from "~/lib/klinks/store";
+import { useAppStore } from "~/lib/klinks/context";
 
 export default function importKlinkStore() {
     const { readKey, writeKey } = useKlinkKeyParams();
@@ -15,7 +15,9 @@ export default function importKlinkStore() {
             return Promise.reject();
         }
         return api.getKlink({
-            klinkId: curr
+            klinkId: curr,
+            readKey: readKey,
+            writeKey: writeKey
         });
     }
     const [data, { refetch }] = createResource(request);
