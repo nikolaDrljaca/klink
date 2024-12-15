@@ -5,7 +5,7 @@ import { KlinkCollectionStoreProvider } from "~/lib/klinks/context";
 const RootLayout: ParentComponent = (props) => {
   return (
     <KlinkCollectionStoreProvider>
-      <div class="container overflow-none h-screen mx-auto">
+      <div class="lg:container lg:mx-auto h-screen overflow-none">
         {props.children}
       </div>
     </KlinkCollectionStoreProvider>

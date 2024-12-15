@@ -42,7 +42,7 @@ const ShareKlinkModal: Component<ShareKlinkModalProps> = (props) => {
       <Switch>
         {/* Shared Component */}
         <Match when={store.klinkStore.isShared}>
-          <div class="flex w-full justify-between space-x-4 py-6">
+          <div class="flex flex-col lg:flex-row w-full space-y-4 lg:space-x-4 lg:space-y-0 py-6">
             <KlinkKeyField key={store.klinkStore.klink.readKey} title={"Read Key"} />
             <div class="divider divider-horizontal"></div>
             <KlinkKeyField key={store.klinkStore.klink.writeKey} title={"Write Key"} />

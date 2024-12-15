@@ -10,15 +10,15 @@ const KlinkCollectionRoute: Component = () => {
   );
 
   return (
-    <div class="flex flex-row h-screen">
-      <div class="w-1/6 h-full border-zinc-900 border-r-2">
+    <div class="flex flex-col lg:flex-row h-screen">
+      <div class="w-full lg:w-1/6 lg:h-full border-zinc-900 lg:border-r-2 border-b-2">
         <KlinkSidebar />
       </div>
-      <div class="w-2/6 h-full border-zinc-900 border-r-2">
+      <div class="w-full lg:w-2/6 h-full border-zinc-900 lg:border-r-2">
         <KlinkCollection />
       </div>
       <Show when={shouldShowPlaceholder()}>
-        <div class="w-2/6 h-full border-zinc-900 border-r-2">
+        <div class="hidden lg:block lg:w-2/6 h-full border-zinc-900 lg:border-r-2">
           <div class="flex h-full w-full items-center justify-center">
             {/* Select Placeholder */}
             <div class="flex flex-col items-center space-y-8">

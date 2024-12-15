@@ -65,7 +65,7 @@ const KlinkCollection: Component = () => {
 
       {/* Klink List - Container */}
       <Show when={klinkNotEmpty()} fallback={<KlinkListEmpty />}>
-        <div class="container items-center w-full">
+        <div class="lg:container items-center w-full">
           {/* List Item */}
           <For each={store.state.klinks}>
             {(item,) =>
@@ -86,7 +86,7 @@ const KlinkCollection: Component = () => {
 
 const KlinkListEmpty: Component = () => {
   return (
-    <div class="flex flex-col w-full h-full items-center justify-center">
+    <div class="flex flex-col w-full h-full items-center justify-center p-4 text-center">
       <p>Use the 'Create' button to make a new Klink.</p>
     </div>
   );

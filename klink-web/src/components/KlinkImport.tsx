@@ -33,7 +33,7 @@ const KlinkImport: Component = () => {
           <p class="font-medium text-xl">Something went wrong.</p>
           <p>We could not find that collection.</p>
           <p>Check that you have the correct access keys.</p>
-          <div class="flex flex-row pt-4">
+          <div class="flex flex-col xl:flex-row pt-4 space-y-4 xl:space-y-0">
             <KlinkKeyField key={store.readKey} title={"Read Key"} />
             <div class="divider divider-horizontal"></div>
             <KlinkKeyField key={store.writeKey} title={"Write Key"} />
