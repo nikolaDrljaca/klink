@@ -39,7 +39,11 @@ public class KlinkControllerActivity implements KlinkApi {
 
     @Override
     public ResponseEntity<Void> deleteKlink(UUID klinkId) {
-        throw new NotImplementedException("TODO");
+        log.info(
+                "deleteKlink called with klinkId: {}",
+                klinkId);
+        klinkDomainService.deleteKlink(klinkId);
+        return ResponseEntity.noContent().build();
     }
 
     @Override

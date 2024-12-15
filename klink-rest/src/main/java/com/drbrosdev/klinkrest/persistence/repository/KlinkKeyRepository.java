@@ -11,4 +11,6 @@ import java.util.UUID;
 public interface KlinkKeyRepository extends JpaRepository<KlinkKeyEntity, UUID> {
 
     Optional<KlinkKeyEntity> findByKlinkId(UUID klinkId);
+    boolean existsByKlinkId(UUID uuid);
+    void deleteByKlinkId(UUID uuid);
 }

@@ -77,7 +77,7 @@ public class KlinkDomainServiceImpl implements KlinkDomainService {
 
     @Override
     @Transactional
-    public KlinkDto getKlink(UUID uuid){
+    public KlinkDto getKlink(UUID uuid) {
         var klink = klinkRepository.findById(uuid)
                 .orElseThrow(() -> new EntityNotFoundException("Klink not found for ID: " + uuid));
         var klinkEntries = klinkEntryRepository.findByKlinkId(uuid);
@@ -88,6 +88,25 @@ public class KlinkDomainServiceImpl implements KlinkDomainService {
                 klink,
                 klinkEntries,
                 klinkKeys);
+    }
+
+    @Override
+    @Transactional
+    public void deleteKlink(UUID uuid) {
+        if(!klinkRepository.existsById(uuid)) {
+            throw new EntityNotFoundException("Klink not found for ID: " + uuid);
+        }
+        klinkRepository.deleteById(uuid);
+
+        if(klinkEntryRepository.findByKlinkId(uuid).isEmpty()) {
+            throw new EntityNotFoundException("KlinkEntries not found for ID: " + uuid);
+        }
+        klinkEntryRepository.deleteAllByKlinkId(uuid);
+
+        if(!klinkKeyRepository.existsByKlinkId(uuid)) {
+            throw new EntityNotFoundException("KlinkKey not found for ID: " + uuid);
+        }
+        klinkKeyRepository.deleteByKlinkId(uuid);
     }
 
 
