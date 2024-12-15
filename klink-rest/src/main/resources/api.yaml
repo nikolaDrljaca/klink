@@ -22,7 +22,7 @@ paths:
             schema:
               $ref: '#/components/schemas/CreateKlinkPayload'
       responses:
-        '201': 
+        '201':
           description: "Collection created."
           content:
             application/json:
@@ -43,6 +43,15 @@ paths:
             type: string
             format: uuid
           required: true
+        - in: query
+          name: readKey
+          schema:
+            type: string
+          required: true
+        - in: query
+          name: writeKey
+          schema:
+            type: string
       responses:
         '200':
           description: 'Collection retrieved.'
@@ -103,7 +112,7 @@ components:
     Klink:
       type: object
       properties:
-        id: 
+        id:
           type: string
           format: uuid
           example: "123e4567-e89b-12d3-a456-426614174000"
@@ -118,7 +127,7 @@ components:
           type: string
           example: "j13c4in4"
           description: "Randomly generated alphanumeric sequece of length 8."
-        description: 
+        description:
           type: string
           example: "Links to random youtube videos."
         entries:
@@ -134,7 +143,7 @@ components:
     KlinkEntry:
       type: object
       properties:
-        value: 
+        value:
           type: string
           description: "URL value unique by collection."
       required:
@@ -145,7 +154,7 @@ components:
         name:
           type: string
           description: "Collection name."
-        id: 
+        id:
           type: string
           format: uuid
           example: "123e4567-e89b-12d3-a456-426614174000"
@@ -169,3 +178,24 @@ components:
       enum:
         - IN_SYNC
         - OUT_OF_SYNC
+    SyncPersistenceData:
+      type: object
+      properties:
+        key:
+          type: string
+          description: "Klink id - UUID as string."
+        newValue:
+          type: string
+          description: "Stringified JSON value of type List-KlinkEntryApiDto-."
+        timeStamp:
+          type: integer
+          format: int64
+          description: "Unix timestamp."
+        url:
+          type: string
+          description: "Can be ignored."
+      required:
+        - key
+        - newValue
+        - timeStamp
+        - url

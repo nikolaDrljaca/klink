@@ -8,7 +8,7 @@ export default function collectionStore() {
 
     const deleteKlink = (id: string) => {
         update(state => {
-            state.klinks = state.klinks.filter(it => it.id === id);
+            state.klinks = state.klinks.filter(it => it.id !== id);
         });
     }
 

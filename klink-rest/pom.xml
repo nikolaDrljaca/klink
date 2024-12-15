@@ -180,7 +180,6 @@
 						<interfaceOnly>true</interfaceOnly> <!-- Generate only the interfaces for controllers -->
 						<skipDefaultInterface>true</skipDefaultInterface>
 						<useJakartaEe>true</useJakartaEe> <!-- Use Jakarta instead of javax -->
-						<useOptional>true</useOptional>
 					</configOptions>
 				</configuration>
 			</plugin>

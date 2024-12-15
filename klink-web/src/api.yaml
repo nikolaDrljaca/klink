@@ -43,6 +43,15 @@ paths:
             type: string
             format: uuid
           required: true
+        - in: query
+          name: readKey
+          schema:
+            type: string
+          required: true
+        - in: query
+          name: writeKey
+          schema:
+            type: string
       responses:
         '200':
           description: 'Collection retrieved.'
