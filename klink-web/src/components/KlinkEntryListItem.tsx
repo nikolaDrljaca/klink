@@ -1,5 +1,4 @@
 import { makeCache } from "@solid-primitives/resource";
-import { createAsync, query } from "@solidjs/router";
 import { Image } from "@unpic/solid";
 import { Trash } from "lucide-solid";
 import { Component, createResource, Show, Suspense } from "solid-js";

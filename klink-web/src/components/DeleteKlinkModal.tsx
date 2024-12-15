@@ -12,6 +12,9 @@ const DeleteKlinkModal: Component<DeleteKlinkModalProps> = (props) => {
   const isKlinkShared = () => props.klink.readKey;
   const [shouldDeleteShared, setShouldDeleteShared] = createSignal(false);
 
+  // TODO: Instead of delegating with props, should use its own viewModel/store to achieve
+  // desired functionality -> Will keep components cleaner and scope responsibility
+
   const onSubmit = (event: SubmitEvent) => {
     event.preventDefault();
     event.stopPropagation();

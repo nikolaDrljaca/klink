@@ -60,7 +60,7 @@ const KlinkListItem: Component<KlinkListItemProps> = (props) => {
             onSubmit={props.onDeleteClick} />
         </deleteModal.Modal>
         <shareModal.Modal>
-          <ShareKlinkModal item={props.item} />
+          <ShareKlinkModal klinkId={props.item.id} />
         </shareModal.Modal>
       </div>
     </div>

@@ -2,12 +2,12 @@ import { Component, Show } from "solid-js";
 import KlinkCollection from "~/components/KlinkCollection";
 import KlinkEntries from "~/components/KlinkEntries";
 import KlinkSidebar from "~/components/KlinkSidebar";
-import useKlink from "~/lib/klinks/useKlink";
+import useSelector from "~/lib/klinks/useSelector";
 import useKlinkIdParam from "~/lib/useKlinkIdParam";
 
 const KlinkRoute: Component = () => {
   const klinkId = useKlinkIdParam();
-  const klink = useKlink(klinkId);
+  const klink = useSelector(store => store.klinks.find(it => it.id === klinkId())!);
 
   return (
     <div class="flex flex-row h-screen">

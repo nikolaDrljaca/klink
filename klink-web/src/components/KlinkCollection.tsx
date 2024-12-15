@@ -2,36 +2,32 @@ import { Component, For, Show } from "solid-js";
 import { Plus, Import } from "lucide-solid"
 import clsx from "clsx";
 import CreateKlinkModal from "~/components/CreateKlinkModal";
-import { useKlinkCollectionActions, useKlinkCollectionStore } from "~/lib/klinks/context";
-import { useNavigate, useParams } from "@solidjs/router";
+import { useNavigate } from "@solidjs/router";
 import toast from "solid-toast";
 import KlinkListItem from "~/components/KlinkListItem";
-
+import collectionStore from "~/lib/collectionStore";
 
 const KlinkCollection: Component = () => {
-  const state = useKlinkCollectionStore();
-  const actions = useKlinkCollectionActions();
+  const store = collectionStore();
 
-  const klinkNotEmpty = () => state.klinks.length > 0;
+  const klinkNotEmpty = () => store.state.klinks.length > 0;
 
   const navigate = useNavigate();
-  const params = useParams();
-  const pathKlinkId = () => params.klinkId;
 
   const onDeleteKlinkItemClick = (id: string) => {
-    if (id === pathKlinkId()) {
+    if (id === store.pathKlinkId()) {
       navigate("/c");
     }
-    actions.deleteKlink(id);
+    store.deleteKlink(id);
   }
 
   const onSelectKlink = (id: string) => {
     navigate(`/c/${id}`);
-    actions.selectKlink(id);
+    store.selectKlink(id);
   }
 
   const onCopyKlink = (id: string) => {
-    actions.copyKlink(id);
+    store.copyKlink(id);
   }
 
   const onImportClick = () => {
@@ -48,12 +44,12 @@ const KlinkCollection: Component = () => {
   return (
     <div class="flex flex-col w-full h-full grow overflow-y-scroll scrollbar-hidden">
 
-      <p class="text-2xl px-4 pt-4 pb-2"># Collections</p>
+      <p class="text-2xl px-4 pt-6 pb-2"># Collections</p>
 
       {/* Button Row */}
       <div class="flex flex-row gap-x-4 px-4 pt-2 pb-4 items-center justify-center w-full">
         {/* Create Modal */}
-        <CreateKlinkModal onSubmit={actions.createKlink}>
+        <CreateKlinkModal onSubmit={store.createKlink}>
           {(open) =>
             <button class={createButtonClass()} onClick={open}>
               <Plus size={20} />
@@ -71,11 +67,11 @@ const KlinkCollection: Component = () => {
       <Show when={klinkNotEmpty()} fallback={<KlinkListEmpty />}>
         <div class="container items-center w-full">
           {/* List Item */}
-          <For each={state.klinks}>
+          <For each={store.state.klinks}>
             {(item,) =>
               <KlinkListItem
                 item={item}
-                pathKlinkId={pathKlinkId()}
+                pathKlinkId={store.pathKlinkId()}
                 onDeleteClick={() => onDeleteKlinkItemClick(item.id)}
                 onSelect={() => onSelectKlink(item.id)}
                 onCopyClick={() => onCopyKlink(item.id)}

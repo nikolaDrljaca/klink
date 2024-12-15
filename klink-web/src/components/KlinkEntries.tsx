@@ -25,6 +25,7 @@ const KlinkEntries: Component<KlinkDetailsProps> = (props) => {
     event.preventDefault();
     event.stopPropagation();
     entries().onAddEntry(inputUrl());
+    setInputUrl("");
   }
 
   const deleteEntry = (value: string) => {
@@ -34,17 +35,22 @@ const KlinkEntries: Component<KlinkDetailsProps> = (props) => {
   return (
     <div class="flex flex-col w-full h-full grow overflow-y-scroll scrollbar-hidden">
 
+      {/* Top Row */}
       <div class="flex w-full justify-between items-center px-4 pt-4 pb-2">
         <p class="text-2xl"># {props.klink().name}</p>
         <Switch>
           <Match when={isShared()}>
             <div class="tooltip tooltip-left hover:cursor-pointer" data-tip="This collection is shared.">
-              <Globe size={20} />
+              <button class="btn btn-square btn-primary no-animation">
+                <Globe size={24} />
+              </button>
             </div>
           </Match>
           <Match when={!isShared()}>
             <div class="tooltip tooltip-left hover:cursor-pointer" data-tip="This collection is local.">
-              <GlobeLock size={20} />
+              <button class="btn btn-square btn-ghost no-animation">
+                <GlobeLock size={24} />
+              </button>
             </div>
           </Match>
         </Switch>
