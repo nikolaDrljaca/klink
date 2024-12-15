@@ -38,6 +38,7 @@ const KlinkImport: Component = () => {
             <div class="divider divider-horizontal"></div>
             <KlinkKeyField key={store.writeKey} title={"Write Key"} />
           </div>
+          <button class="btn btn-sm btn-primary mt-4 w-1/2" onClick={store.refetch}>Retry</button>
         </div>
       </div>
     );

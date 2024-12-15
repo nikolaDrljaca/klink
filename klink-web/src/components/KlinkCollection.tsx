@@ -44,7 +44,7 @@ const KlinkCollection: Component = () => {
   return (
     <div class="flex flex-col w-full h-full grow overflow-y-scroll scrollbar-hidden">
 
-      <p class="text-2xl px-4 pt-4 pb-2"># Collections</p>
+      <p class="text-2xl px-4 pt-6 pb-2"># Collections</p>
 
       {/* Button Row */}
       <div class="flex flex-row gap-x-4 px-4 pt-2 pb-4 items-center justify-center w-full">

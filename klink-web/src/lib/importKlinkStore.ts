@@ -18,7 +18,7 @@ export default function importKlinkStore() {
             klinkId: curr
         });
     }
-    const [data] = createResource(request);
+    const [data, { refetch }] = createResource(request);
     const store = useAppStore();
 
     const importKlink = () => {
@@ -41,6 +41,7 @@ export default function importKlinkStore() {
         data,
         readKey,
         writeKey,
-        importKlink
+        importKlink,
+        refetch
     }
 }
