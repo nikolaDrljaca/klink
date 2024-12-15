@@ -75,7 +75,7 @@ const KlinkEntries: Component<KlinkDetailsProps> = (props) => {
       </div>
 
       {/* Link List - Container */}
-      <div class="container items-center w-full px-4 space-y-2">
+      <div class="lg:container items-center w-full px-4 space-y-2">
         {/* List Item */}
         <For each={entries().state}>
           {(item,) =>

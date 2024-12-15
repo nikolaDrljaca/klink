@@ -13,14 +13,14 @@ const KlinkKeyField: Component<{ key: string, title: string }> = (props) => {
   }
 
   return (
-    <div class="flex flex-col space-y-2">
+    <div class="flex flex-col space-y-2 w-full">
       <p class="text-sm text-zinc-400">{props.title}</p>
       <div class="join">
         <input
           type="text"
           value={props.key ?? ""}
           disabled={true}
-          class="input input-bordered w-full max-w-xs join-item" />
+          class="input input-bordered w-full lg:max-w-xs join-item" />
         <button class="btn join-item" onClick={onCopy}>
           <Copy size={14} />
         </button>
