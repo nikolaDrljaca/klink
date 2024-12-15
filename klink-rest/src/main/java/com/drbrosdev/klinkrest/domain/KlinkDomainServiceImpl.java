@@ -9,6 +9,7 @@ import com.drbrosdev.klinkrest.persistence.entity.KlinkKeyEntity;
 import com.drbrosdev.klinkrest.persistence.repository.KlinkEntryRepository;
 import com.drbrosdev.klinkrest.persistence.repository.KlinkKeyRepository;
 import com.drbrosdev.klinkrest.persistence.repository.KlinkRepository;
+import jakarta.annotation.Nullable;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -18,6 +19,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.UUID;
+import java.util.function.Predicate;
 
 import static java.time.LocalDate.now;
 import static java.util.stream.Collectors.toList;
@@ -90,6 +92,16 @@ public class KlinkDomainServiceImpl implements KlinkDomainService {
                 klinkKeys);
     }
 
+    @Override
+    @Transactional
+    public void deleteKlink(UUID klinkId) {
+        klinkRepository.findById(klinkId).ifPresentOrElse(
+                klinkRepository::delete,
+                () -> {
+                    throw new EntityNotFoundException("Klink with ID " + klinkId + " not found");
+                }
+        );
+    }
 
     private String createKey() {
         // Keep non-static import

@@ -15,4 +15,6 @@ public interface KlinkDomainService {
 
     KlinkDto getKlink(UUID id);
 
+    void deleteKlink(UUID klinkId);
+
 }

@@ -12,4 +12,9 @@ public interface KlinkApplicationService {
             String readKey,
             @Nullable String writeKey);
 
+    void deleteKlinkById(
+            UUID klinkId,
+            String readKey,
+            @Nullable String writeKey);
+
 }
