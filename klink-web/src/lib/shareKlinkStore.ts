@@ -1,8 +1,7 @@
-import { useKlinkCollectionStore } from "~/lib/klinks/context";
+import { useAppStore } from "~/lib/klinks/context";
 import { createStore } from "solid-js/store";
 import { CreateKlinkPayload, KlinkApi, KlinkEntry } from "~/generated";
 import localforage from "localforage";
-import { Klink } from "~/lib/klinks/store";
 import { createEventBus } from "@solid-primitives/event-bus";
 
 type ShareKlinkEvent =
@@ -12,18 +11,19 @@ type ShareKlinkEvent =
     | { type: "readOnly", url: string }
 
 export default function shareKlinkStore(klinkId: string) {
-    const klinkCollectionStore = useKlinkCollectionStore();
-    const klink = klinkCollectionStore.klinks.find(it => it.id === klinkId)!;
+    const appBasePath = import.meta.env.VITE_APP_BASE;
+    const store = useAppStore();
+    const klink = store.state.klinks.find(it => it.id === klinkId)!;
     const api = new KlinkApi();
-    // TODO: expose event bus where UI component will receive events to show toasts
 
     const { listen, emit, clear } = createEventBus<ShareKlinkEvent>();
 
     const [klinkStore, setStore] = createStore({
         klink: klink,
+        loading: false,
         get isShared() {
             return !!klink.readKey && !!klink.writeKey;
-        }
+        },
     });
 
     return {
@@ -31,6 +31,9 @@ export default function shareKlinkStore(klinkId: string) {
         listen,
 
         async shareKlink() {
+            if (klinkStore.loading) {
+                return;
+            }
             const entriesRaw: string = await localforage.getItem(`klink-items-${klinkStore.klink.id}`);
             const entries: KlinkEntry[] = JSON.parse(entriesRaw);
             const payload: CreateKlinkPayload = {
@@ -39,23 +42,40 @@ export default function shareKlinkStore(klinkId: string) {
                 entries: entries
             }
             try {
+                setStore('loading', true);
                 const response = await api.createKlink({ createKlinkPayload: payload });
-                setStore(
-                    'klink',
-                    (curr: Klink) => ({ ...curr, writeKey: response.writeKey, readKey: response.readKey })
-                );
+                store.update(state => {
+                    const curr = state.klinks.find(it => it.id === response.id);
+                    if (curr) {
+                        curr.readKey = response.readKey;
+                        curr.writeKey = response.writeKey;
+                    }
+                });
+                setStore('loading', false);
                 emit({ type: "success" });
             } catch (e) {
                 emit({ type: "failure" });
+                setStore('loading', false);
             }
         },
 
         createShareLink() {
-
+            const url = [`${appBasePath}/c/${klinkStore.klink.id}/i?read_key=${klinkStore.klink.readKey}`];
+            if (klinkStore.klink.writeKey) {
+                url.push(`&write_key=${klinkStore.klink.writeKey}`);
+            }
+            emit({
+                type: 'readWrite',
+                url: url.join("")
+            });
         },
 
         createReadOnlyLink() {
-
+            const url = [`${appBasePath}/c/${klinkStore.klink.id}/i?read_key=${klinkStore.klink.readKey}`];
+            emit({
+                type: 'readOnly',
+                url: url.join("")
+            });
         }
     }
 }

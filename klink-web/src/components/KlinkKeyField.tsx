@@ -6,8 +6,10 @@ import toast from "solid-toast";
 const KlinkKeyField: Component<{ key: string, title: string }> = (props) => {
 
   const onCopy = async () => {
-    await writeClipboard(props.key);
-    toast("Key Copied!");
+    if (props.key) {
+      await writeClipboard(props.key);
+      toast("Key Copied!");
+    }
   }
 
   return (
@@ -16,7 +18,7 @@ const KlinkKeyField: Component<{ key: string, title: string }> = (props) => {
       <div class="join">
         <input
           type="text"
-          value={props.key}
+          value={props.key ?? ""}
           disabled={true}
           class="input input-bordered w-full max-w-xs join-item" />
         <button class="btn join-item" onClick={onCopy}>

@@ -22,7 +22,12 @@ export function createKlinkEntriesStore(klink: Klink): KlinkEntriesStore {
         {
             name: forageKey,
             storage: localforage,
-            sync: createKlinkSyncApi(klink, forageKey)
+            sync: createKlinkSyncApi(
+                klink,
+                forageKey,
+                // use created store directly for received messages to avoid feedback loop
+                // with `setState`
+                (value) => klinkItemsStore[1](JSON.parse(value)))
         }
     );
     const onAddEntry = (url: string) => {
@@ -49,7 +54,7 @@ export function createKlinkEntriesStore(klink: Klink): KlinkEntriesStore {
     }
 }
 
-function createKlinkSyncApi(klink: Klink, forageKey: string): PersistenceSyncAPI | undefined {
+function createKlinkSyncApi(klink: Klink, forageKey: string, onMessage: (value: string) => void): PersistenceSyncAPI | undefined {
     // if keys are missing, collection is local, do NOT connect to socket
     if (!klink.readKey || !klink.writeKey) {
         return undefined;
@@ -62,7 +67,10 @@ function createKlinkSyncApi(klink: Klink, forageKey: string): PersistenceSyncAPI
     // manually pull down using event listener
     socket.onmessage = (e: MessageEvent) => {
         const data: PersistenceSyncData = JSON.parse(e.data);
+        // set local storage
         localforage.setItem(forageKey, data.newValue);
+        // notify that a message was received
+        onMessage(data.newValue);
     }
     return wsSync(socket, true);
 }

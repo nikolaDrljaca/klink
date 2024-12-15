@@ -25,6 +25,7 @@ const KlinkEntries: Component<KlinkDetailsProps> = (props) => {
     event.preventDefault();
     event.stopPropagation();
     entries().onAddEntry(inputUrl());
+    setInputUrl("");
   }
 
   const deleteEntry = (value: string) => {

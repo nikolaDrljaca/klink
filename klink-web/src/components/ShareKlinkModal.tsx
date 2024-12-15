@@ -1,8 +1,9 @@
 import { GlobeLock } from "lucide-solid";
-import { Component, Match, onCleanup, Switch } from "solid-js";
+import { Component, Match, onCleanup, Show, Switch } from "solid-js";
 import toast from "solid-toast";
 import shareKlinkStore from "~/lib/shareKlinkStore";
 import KlinkKeyField from "~/components/KlinkKeyField";
+import { writeClipboard } from "@solid-primitives/clipboard";
 
 type ShareKlinkModalProps = {
   klinkId: string,
@@ -21,8 +22,12 @@ const ShareKlinkModal: Component<ShareKlinkModalProps> = (props) => {
         toast.error("Something went wrong!");
         break;
       case "readWrite":
+        writeClipboard(event.url)
+          .then(() => toast("Copied URL to Cliboard."));
         break;
       case "readOnly":
+        writeClipboard(event.url)
+          .then(() => toast("Copied URL to Cliboard."));
         break;
     }
   });
@@ -52,7 +57,12 @@ const ShareKlinkModal: Component<ShareKlinkModalProps> = (props) => {
           <GlobeLock size={24} />
           <p class="text-lg">This klink is <b>local only</b>.</p>
           <p class="pb-2">To be able to share it with others, <b>upload</b> the collection to the cloud first.</p>
-          <button class="btn btn-primary btn-sm" onClick={store.shareKlink}>Upload</button>
+          <button class="btn btn-primary btn-sm" onClick={store.shareKlink}>
+            <Show when={store.klinkStore.loading}>
+              <span class="loading loading-spinner"></span>
+            </Show>
+            Upload
+          </button>
         </Match>
       </Switch>
     </div>

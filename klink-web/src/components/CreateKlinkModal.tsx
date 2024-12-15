@@ -6,9 +6,6 @@ type CreateKlinkModalProps = {
   onSubmit: (data: { name: string, description?: string }) => void
 }
 
-/**
- * Bespoke version, for others look at Modal.tsx
- */
 const CreateKlinkModal: Component<CreateKlinkModalProps> = (props) => {
   // form state
   const [name, setName] = createSignal("")
