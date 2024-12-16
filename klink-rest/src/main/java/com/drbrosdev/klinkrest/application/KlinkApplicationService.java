@@ -15,6 +15,6 @@ public interface KlinkApplicationService {
     void deleteKlinkById(
             UUID klinkId,
             String readKey,
-            @Nullable String writeKey);
+            String writeKey);
 
 }

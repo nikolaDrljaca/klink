@@ -61,7 +61,6 @@ paths:
                 $ref: "#/components/schemas/Klink"
         '502':
           description: 'Error'
-  /klink/delete/{klinkId}:
     delete:
       summary: "Delete a klink by id."
       operationId: deleteKlink
@@ -83,6 +82,7 @@ paths:
           name: writeKey
           schema:
             type: string
+          required: true
       responses:
         '200':
           description: 'Collection deleted'

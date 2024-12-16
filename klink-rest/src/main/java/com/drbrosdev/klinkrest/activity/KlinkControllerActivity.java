@@ -62,19 +62,17 @@ public class KlinkControllerActivity implements KlinkApi {
     public ResponseEntity<Void> deleteKlink(
             UUID klinkId,
             String readKey,
-            @Nullable String writeKey) {
+            String writeKey) {
         log.info(
                 "deleteKlink called with klinkId: {}, readKey: {}, writeKey: {}",
                 klinkId,
                 readKey,
                 writeKey);
-
         klinkApplicationService.deleteKlinkById(
                 klinkId,
                 readKey,
                 writeKey);
-
-        return ResponseEntity.ok().build();
+        return ok().build();
     }
 
     @Override
