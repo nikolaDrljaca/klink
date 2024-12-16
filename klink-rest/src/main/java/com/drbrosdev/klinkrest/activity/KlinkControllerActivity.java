@@ -42,11 +42,6 @@ public class KlinkControllerActivity implements KlinkApi {
     }
 
     @Override
-    public ResponseEntity<Void> deleteKlink(UUID klinkId) {
-        throw new NotImplementedException("TODO");
-    }
-
-    @Override
     public ResponseEntity<KlinkApiDto> getKlink(
             UUID klinkId,
             String readKey,
@@ -61,6 +56,23 @@ public class KlinkControllerActivity implements KlinkApi {
                 readKey,
                 writeKey);
         return ok(mapper.mapTo(klink));
+    }
+
+    @Override
+    public ResponseEntity<Void> deleteKlink(
+            UUID klinkId,
+            String readKey,
+            String writeKey) {
+        log.info(
+                "deleteKlink called with klinkId: {}, readKey: {}, writeKey: {}",
+                klinkId,
+                readKey,
+                writeKey);
+        klinkApplicationService.deleteKlinkById(
+                klinkId,
+                readKey,
+                writeKey);
+        return ok().build();
     }
 
     @Override

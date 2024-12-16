@@ -9,10 +9,12 @@ import java.util.UUID;
 public interface KlinkDomainService {
 
     KlinkDto createKlink(
-            UUID id,
+            UUID klinkId,
             String name,
             List<KlinkEntryDto> entries);
 
-    KlinkDto getKlink(UUID id);
+    KlinkDto getKlink(UUID klinkId);
+
+    void deleteKlink(UUID klinkId);
 
 }

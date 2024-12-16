@@ -10,11 +10,11 @@ import com.drbrosdev.klinkrest.persistence.repository.KlinkEntryRepository;
 import com.drbrosdev.klinkrest.persistence.repository.KlinkKeyRepository;
 import com.drbrosdev.klinkrest.persistence.repository.KlinkRepository;
 import jakarta.persistence.EntityNotFoundException;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.UUID;
@@ -40,17 +40,17 @@ public class KlinkDomainServiceImpl implements KlinkDomainService {
     @Override
     @Transactional
     public KlinkDto createKlink(
-            UUID id,
+            UUID klinkId,
             String name,
             List<KlinkEntryDto> entries) {
         var entryEntities = entries.stream()
                 .map(it -> KlinkEntryEntity.builder()
                         .value(it.getValue())
-                        .klinkId(id)
+                        .klinkId(klinkId)
                         .build())
                 .collect(toList());
         var klink = KlinkEntity.builder()
-                .id(id)
+                .id(klinkId)
                 .name(name)
                 // TODO: Extension to insert `description`
                 .description("")
@@ -58,7 +58,7 @@ public class KlinkDomainServiceImpl implements KlinkDomainService {
                 .modifiedAt(now())
                 .build();
         var key = KlinkKeyEntity.builder()
-                .klinkId(id)
+                .klinkId(klinkId)
                 .readKey(createKey())
                 .writeKey(createKey())
                 .build();
@@ -76,13 +76,13 @@ public class KlinkDomainServiceImpl implements KlinkDomainService {
     }
 
     @Override
-    @Transactional
-    public KlinkDto getKlink(UUID uuid){
-        var klink = klinkRepository.findById(uuid)
-                .orElseThrow(() -> new EntityNotFoundException("Klink not found for ID: " + uuid));
-        var klinkEntries = klinkEntryRepository.findByKlinkId(uuid);
-        var klinkKeys = klinkKeyRepository.findByKlinkId(uuid)
-                .orElseThrow(() -> new EntityNotFoundException("KlinkKeys not found for Klink ID: " + uuid));
+    @Transactional(readOnly = true)
+    public KlinkDto getKlink(UUID klinkId){
+        var klink = klinkRepository.findById(klinkId)
+                .orElseThrow(() -> new EntityNotFoundException("Klink not found for ID: " + klinkId));
+        var klinkEntries = klinkEntryRepository.findByKlinkId(klinkId);
+        var klinkKeys = klinkKeyRepository.findByKlinkId(klinkId)
+                .orElseThrow(() -> new EntityNotFoundException("KlinkKeys not found for Klink ID: " + klinkId));
         // map to domain model
         return mapper.mapTo(
                 klink,
@@ -90,6 +90,11 @@ public class KlinkDomainServiceImpl implements KlinkDomainService {
                 klinkKeys);
     }
 
+    @Override
+    @Transactional
+    public void deleteKlink(UUID klinkId) {
+        klinkRepository.deleteById(klinkId);
+    }
 
     private String createKey() {
         // Keep non-static import

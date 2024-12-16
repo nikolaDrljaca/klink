@@ -34,6 +34,8 @@ export interface CreateKlinkRequest {
 
 export interface DeleteKlinkRequest {
     klinkId: string;
+    readKey: string;
+    writeKey: string;
 }
 
 export interface GetKlinkRequest {
@@ -99,7 +101,29 @@ export class KlinkApi extends runtime.BaseAPI {
             );
         }
 
+        if (requestParameters['readKey'] == null) {
+            throw new runtime.RequiredError(
+                'readKey',
+                'Required parameter "readKey" was null or undefined when calling deleteKlink().'
+            );
+        }
+
+        if (requestParameters['writeKey'] == null) {
+            throw new runtime.RequiredError(
+                'writeKey',
+                'Required parameter "writeKey" was null or undefined when calling deleteKlink().'
+            );
+        }
+
         const queryParameters: any = {};
+
+        if (requestParameters['readKey'] != null) {
+            queryParameters['readKey'] = requestParameters['readKey'];
+        }
+
+        if (requestParameters['writeKey'] != null) {
+            queryParameters['writeKey'] = requestParameters['writeKey'];
+        }
 
         const headerParameters: runtime.HTTPHeaders = {};
 

@@ -8,7 +8,8 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;
-import java.util.function.Predicate;
+
+import static java.util.Objects.isNull;
 
 @Log4j2
 @Service
@@ -24,37 +25,89 @@ public class KlinkApplicationServiceImpl implements KlinkApplicationService {
             @Nullable String writeKey) {
         // fetch klink
         var klink = klinkDomainService.getKlink(klinkId);
-        // if writeKey is not passed in, compare readKeys and only send down read key
-        Predicate<KlinkDto> readKeyAccess = (value) -> value.getReadKey().equals(readKey);
-        if (writeKey == null) {
-            if (Boolean.FALSE.equals(readKeyAccess.test(klink))) {
-                log.info(
-                        "Access keys did not match for stored: {} and requested: {}",
-                        klink.getReadKey(),
-                        readKey);
-                throw new IllegalArgumentException("Access keys did not match.");
-            }
+        var readAccess = validateReadAccess(
+                klink,
+                readKey);
+        // no read access is granted
+        if (Boolean.FALSE.equals(readAccess)) {
+            log.info(
+                    "Access keys did not match for stored: {} and requested: {}",
+                    klink.getReadKey(),
+                    readKey);
+            throw new IllegalArgumentException("Access keys are not matching");
+        }
+        if (isNull(writeKey)) {
             return KlinkDto.builder()
                     .id(klink.getId())
                     .name(klink.getName())
                     .description(klink.getDescription())
                     .readKey(klink.getReadKey())
-                    // do not send down the write key
-                    .writeKey(null)
+                    .writeKey(null) // Send writeKey only if provided
                     .entries(klink.getEntries())
                     .build();
         }
-        // if write key is present, compare both keys and send down
-        Predicate<KlinkDto> writeKeyAccess = (value) -> value.getWriteKey().equals(writeKey);
-        if (Boolean.FALSE.equals(readKeyAccess.and(writeKeyAccess).test(klink))) {
+        var writeAccess = validateWriteAccess(
+                klink,
+                readKey,
+                writeKey);
+        // no write access is permitted
+        if (Boolean.FALSE.equals(writeAccess)) {
             log.info(
                     "Access keys did not match for stored: ({} | {}) and requested: ({} | {})",
                     klink.getReadKey(),
                     readKey,
                     klink.getWriteKey(),
                     writeKey);
-            throw new IllegalArgumentException("Access keys did not match.");
+            throw new IllegalArgumentException("Access keys are not matching");
         }
-        return klink;
+        return KlinkDto.builder()
+                .id(klink.getId())
+                .name(klink.getName())
+                .description(klink.getDescription())
+                .readKey(klink.getReadKey())
+                .writeKey(klink.getWriteKey())
+                .entries(klink.getEntries())
+                .build();
+    }
+
+    @Override
+    public void deleteKlinkById(
+            UUID klinkId,
+            String readKey,
+            String writeKey) {
+        // fetch klink
+        var klink = klinkDomainService.getKlink(klinkId);
+        // validate read write access
+        var writeAccess = validateWriteAccess(
+                klink,
+                readKey,
+                writeKey);
+        // no write access was granted
+        if (Boolean.FALSE.equals(writeAccess)) {
+            log.info(
+                    "Access keys did not match for stored: ({} | {}) and requested: ({} | {})",
+                    klink.getReadKey(),
+                    readKey,
+                    klink.getWriteKey(),
+                    writeKey);
+            throw new IllegalArgumentException("Access keys are not matching");
+        }
+        klinkDomainService.deleteKlink(klinkId);
+    }
+
+    private boolean validateReadAccess(
+            KlinkDto klink,
+            String readKey) {
+        return klink.getReadKey().equals(readKey);
+    }
+
+    private boolean validateWriteAccess(
+            KlinkDto klink,
+            String readKey,
+            String writeKey) {
+        return klink.getWriteKey().equals(writeKey) &&
+                validateReadAccess(
+                        klink,
+                        readKey);
     }
 }
