@@ -35,11 +35,12 @@ export default function shareKlinkStore(klinkId: string) {
                 return;
             }
             const entriesRaw: string = await localforage.getItem(`klink-items-${klinkStore.klink.id}`);
-            const entries: KlinkEntry[] = JSON.parse(entriesRaw);
+            const entries: KlinkEntry[] = JSON.parse(entriesRaw ?? "[]");
             const payload: CreateKlinkPayload = {
                 name: klinkStore.klink.name,
                 id: klinkStore.klink.id,
-                entries: entries
+                entries: entries,
+                description: klinkStore.klink.description
             }
             try {
                 setStore('loading', true);
