@@ -2,7 +2,6 @@ package com.drbrosdev.klinkrest.activity;
 
 import com.drbrosdev.klinkrest.activity.mapper.KlinkActivityMapper;
 import com.drbrosdev.klinkrest.application.KlinkApplicationService;
-import com.drbrosdev.klinkrest.domain.KlinkDomainService;
 import jakarta.annotation.Nullable;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -23,8 +22,6 @@ import static org.springframework.http.ResponseEntity.ok;
 @RequiredArgsConstructor
 public class KlinkControllerActivity implements KlinkApi {
 
-    private final KlinkDomainService klinkDomainService;
-
     private final KlinkApplicationService klinkApplicationService;
 
     private final KlinkActivityMapper mapper;
@@ -34,11 +31,12 @@ public class KlinkControllerActivity implements KlinkApi {
         log.info(
                 "createKlink called with payload: {}",
                 createKlinkPayloadApiDto);
-        var klink = klinkDomainService.createKlink(
-                createKlinkPayloadApiDto.getId(),
-                createKlinkPayloadApiDto.getName(),
-                mapper.mapToEntries(createKlinkPayloadApiDto.getEntries()));
-        return ok(mapper.mapTo(klink));
+        return ok(mapper.mapTo(
+                klinkApplicationService.createKlink(
+                        createKlinkPayloadApiDto.getId(),
+                        createKlinkPayloadApiDto.getName(),
+                        createKlinkPayloadApiDto.getDescription(),
+                        mapper.mapToEntries(createKlinkPayloadApiDto.getEntries()))));
     }
 
     @Override

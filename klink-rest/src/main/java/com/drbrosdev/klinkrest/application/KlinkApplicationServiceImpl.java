@@ -2,11 +2,14 @@ package com.drbrosdev.klinkrest.application;
 
 import com.drbrosdev.klinkrest.domain.KlinkDomainService;
 import com.drbrosdev.klinkrest.domain.dto.KlinkDto;
+import com.drbrosdev.klinkrest.domain.dto.KlinkEntryDto;
 import jakarta.annotation.Nullable;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.UUID;
 
 import static java.util.Objects.isNull;
@@ -17,6 +20,27 @@ import static java.util.Objects.isNull;
 public class KlinkApplicationServiceImpl implements KlinkApplicationService {
 
     private final KlinkDomainService klinkDomainService;
+
+    private static final Integer KEY_LENGTH = 8;
+
+    @Override
+    public KlinkDto createKlink(
+            UUID klinkId,
+            String name,
+            @Nullable String description,
+            List<KlinkEntryDto> entries) {
+        // create domain klink
+        var klink = KlinkDto.builder()
+                .id(klinkId)
+                .name(name)
+                .description(description)
+                .entries(entries)
+                // assign keys
+                .readKey(createKey())
+                .writeKey(createKey())
+                .build();
+        return klinkDomainService.createKlink(klink);
+    }
 
     @Override
     public KlinkDto getKlinkById(
@@ -109,5 +133,12 @@ public class KlinkApplicationServiceImpl implements KlinkApplicationService {
                 validateReadAccess(
                         klink,
                         readKey);
+    }
+
+    private String createKey() {
+        // Keep non-static import
+        return RandomStringUtils.secure()
+                .nextAlphanumeric(KEY_LENGTH)
+                .toUpperCase();
     }
 }

@@ -39,6 +39,12 @@ export interface CreateKlinkPayload {
      */
     id: string;
     /**
+     * Collection description.
+     * @type {string}
+     * @memberof CreateKlinkPayload
+     */
+    description?: string;
+    /**
      * 
      * @type {Array<KlinkEntry>}
      * @memberof CreateKlinkPayload
@@ -68,6 +74,7 @@ export function CreateKlinkPayloadFromJSONTyped(json: any, ignoreDiscriminator: 
         
         'name': json['name'],
         'id': json['id'],
+        'description': json['description'] == null ? undefined : json['description'],
         'entries': ((json['entries'] as Array<any>).map(KlinkEntryFromJSON)),
     };
 }
@@ -80,6 +87,7 @@ export function CreateKlinkPayloadToJSON(value?: CreateKlinkPayload | null): any
         
         'name': value['name'],
         'id': value['id'],
+        'description': value['description'],
         'entries': ((value['entries'] as Array<any>).map(KlinkEntryToJSON)),
     };
 }

@@ -1,7 +1,6 @@
 package com.drbrosdev.klinkrest.domain;
 
 import com.drbrosdev.klinkrest.domain.dto.KlinkDto;
-import com.drbrosdev.klinkrest.domain.dto.KlinkEntryDto;
 import com.drbrosdev.klinkrest.domain.mapper.KlinkDomainServiceMapper;
 import com.drbrosdev.klinkrest.persistence.entity.KlinkEntity;
 import com.drbrosdev.klinkrest.persistence.entity.KlinkEntryEntity;
@@ -12,7 +11,6 @@ import com.drbrosdev.klinkrest.persistence.repository.KlinkRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -35,49 +33,33 @@ public class KlinkDomainServiceImpl implements KlinkDomainService {
 
     private final KlinkDomainServiceMapper mapper;
 
-    private static final Integer KEY_LENGTH = 8;
-
     @Override
     @Transactional
-    public KlinkDto createKlink(
-            UUID klinkId,
-            String name,
-            List<KlinkEntryDto> entries) {
-        var entryEntities = entries.stream()
-                .map(it -> KlinkEntryEntity.builder()
-                        .value(it.getValue())
-                        .klinkId(klinkId)
-                        .build())
-                .collect(toList());
-        var klink = KlinkEntity.builder()
-                .id(klinkId)
-                .name(name)
-                // TODO: Extension to insert `description`
-                .description("")
-                .createdAt(now())
-                .modifiedAt(now())
-                .build();
-        var key = KlinkKeyEntity.builder()
-                .klinkId(klinkId)
-                .readKey(createKey())
-                .writeKey(createKey())
-                .build();
-        // create klink
-        var savedKlink = klinkRepository.save(klink);
-        // create entries
-        var savedEntries = klinkEntryRepository.saveAll(entryEntities);
-        // create key
-        var savedKeys = klinkKeyRepository.save(key);
-        // map to domain model
+    public KlinkDto createKlink(KlinkDto klink) {
+        // check if klink ID already exists in database
+        klinkRepository.findById(klink.getId())
+                .ifPresent(entity -> {
+                    log.warn(
+                            "Supplied klink UUID {} already exists in the database!",
+                            klink.getId());
+                    throw new IllegalArgumentException("Could not create Klink");
+                });
+        // create and persist klink entity
+        var klinkEntity = klinkRepository.save(createKlinkEntity(klink));
+        // create and persist entries
+        var entries = klinkEntryRepository.saveAll(createKlinkEntryEntity(klink));
+        // create and persist keys
+        var keys = klinkKeyRepository.save(createKeyEntity(klink));
+        // map to domain model and return
         return mapper.mapTo(
-                savedKlink,
-                savedEntries,
-                savedKeys);
+                klinkEntity,
+                entries,
+                keys);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public KlinkDto getKlink(UUID klinkId){
+    public KlinkDto getKlink(UUID klinkId) {
         var klink = klinkRepository.findById(klinkId)
                 .orElseThrow(() -> new EntityNotFoundException("Klink not found for ID: " + klinkId));
         var klinkEntries = klinkEntryRepository.findByKlinkId(klinkId);
@@ -96,10 +78,31 @@ public class KlinkDomainServiceImpl implements KlinkDomainService {
         klinkRepository.deleteById(klinkId);
     }
 
-    private String createKey() {
-        // Keep non-static import
-        return RandomStringUtils.secure()
-                .nextAlphanumeric(KEY_LENGTH)
-                .toUpperCase();
+    private KlinkKeyEntity createKeyEntity(KlinkDto klink) {
+        return KlinkKeyEntity.builder()
+                .klinkId(klink.getId())
+                .readKey(klink.getReadKey())
+                .writeKey(klink.getWriteKey())
+                .build();
+    }
+
+    private KlinkEntity createKlinkEntity(KlinkDto klinkDto) {
+        return KlinkEntity.builder()
+                .id(klinkDto.getId())
+                .name(klinkDto.getName())
+                .description(klinkDto.getDescription())
+                .createdAt(now())
+                .modifiedAt(now())
+                .build();
+    }
+
+    private List<KlinkEntryEntity> createKlinkEntryEntity(KlinkDto klinkDto) {
+        return klinkDto.getEntries()
+                .stream()
+                .map(it -> KlinkEntryEntity.builder()
+                        .klinkId(klinkDto.getId())
+                        .value(it.getValue())
+                        .build())
+                .collect(toList());
     }
 }
