@@ -12,7 +12,9 @@ const KlinkEntries: Component<KlinkDetailsProps> = (props) => {
   const entries = createMemo(() => createKlinkEntriesStore(props.klink()));
 
   const [inputUrl, setInputUrl] = createSignal("");
-  const isShared = () => props.klink().readKey && props.klink().writeKey;
+  const isShared = () => props.klink().readKey;
+  const isReadOnly = () => props.klink().readKey && !props.klink().writeKey;
+  const inputPlaceholder = () => isReadOnly() ? "You don't have access" : "Paste or Type here";
 
   const handlePaste = (e: ClipboardEvent) => {
     e.preventDefault();
@@ -29,6 +31,9 @@ const KlinkEntries: Component<KlinkDetailsProps> = (props) => {
   }
 
   const deleteEntry = (value: string) => {
+    if (isReadOnly()) {
+      return;
+    }
     entries().onRemoveEntry(value);
   }
 
@@ -62,10 +67,11 @@ const KlinkEntries: Component<KlinkDetailsProps> = (props) => {
           <label class="form-control w-full">
             <input
               type="url"
-              placeholder="Paste or Type here"
+              placeholder={inputPlaceholder()}
               value={inputUrl()}
               onInput={(event) => setInputUrl(event.target.value)}
               onPaste={handlePaste}
+              disabled={isReadOnly()}
               class="input input-bordered w-full" />
             <div class="label">
               <span class="label-text-alt">Only accepts URLs</span>
@@ -81,6 +87,7 @@ const KlinkEntries: Component<KlinkDetailsProps> = (props) => {
           {(item,) =>
             <KlinkEntryListItem
               entry={item}
+              isReadOnly={isReadOnly()}
               onDeleteClick={() => deleteEntry(item.value)}
             />
           }

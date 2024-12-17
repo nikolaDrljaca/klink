@@ -7,6 +7,7 @@ import { getPageMetadata } from "~/lib/pageMetadata";
 
 type KlinkEntryListItemProps = {
   entry: KlinkEntry,
+  isReadOnly: boolean,
   onDeleteClick: () => void
 }
 
@@ -69,9 +70,11 @@ const KlinkEntryListItem: Component<KlinkEntryListItemProps> = (props) => {
         </Suspense>
 
         {/* TODO: Too much space taken by button. Redesign!  */}
-        <button class="btn btn-circle btn-sm btn-ghost text-error" onClick={props.onDeleteClick}>
-          <Trash size={12} />
-        </button>
+        <Show when={!props.isReadOnly}>
+          <button class="btn btn-circle btn-sm btn-ghost text-error" onClick={props.onDeleteClick}>
+            <Trash size={12} />
+          </button>
+        </Show>
 
       </div>
     </div>

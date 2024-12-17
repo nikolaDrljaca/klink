@@ -9,7 +9,7 @@ type DeleteKlinkModalProps = {
 
 const DeleteKlinkModal: Component<DeleteKlinkModalProps> = (props) => {
   // form state
-  const isKlinkShared = () => props.klink.readKey;
+  const isKlinkShared = () => props.klink.readKey && props.klink.writeKey;
   const [shouldDeleteShared, setShouldDeleteShared] = createSignal(false);
 
   // TODO: Instead of delegating with props, should use its own viewModel/store to achieve
