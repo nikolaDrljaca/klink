@@ -13,3 +13,8 @@ CREATE TABLE IF NOT EXISTS klink (
 selectAll:
 SELECT *
 FROM klink;
+
+findById:
+SELECT *
+FROM klink
+WHERE id = :id;

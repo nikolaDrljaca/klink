@@ -1,34 +1,43 @@
-import { Component, createSignal, Show } from "solid-js"
-import { Klink } from "~/lib/klinks/store"
+import { useNavigate } from "@solidjs/router";
+import { Component, onCleanup, Show } from "solid-js"
+import toast from "solid-toast";
+import deleteKlinkStore from "~/lib/deleteKlinkStore";
 
 type DeleteKlinkModalProps = {
-  klink: Klink,
+  klinkId: string,
   onClose: () => void,
-  onSubmit: (data: { klinkId: string, deleteRemote: boolean }) => void,
 }
 
 const DeleteKlinkModal: Component<DeleteKlinkModalProps> = (props) => {
   // form state
-  const isKlinkShared = () => props.klink.readKey && props.klink.writeKey;
-  const [shouldDeleteShared, setShouldDeleteShared] = createSignal(false);
+  const store = deleteKlinkStore(props.klinkId);
+  const navigate = useNavigate();
 
-  // TODO: Instead of delegating with props, should use its own viewModel/store to achieve
-  // desired functionality -> Will keep components cleaner and scope responsibility
-
-  const onSubmit = (event: SubmitEvent) => {
+  const onSubmit = async (event: SubmitEvent) => {
     event.preventDefault();
     event.stopPropagation();
     // @ts-ignore
     const confirmed = event.submitter.value === 'yes';
     if (confirmed) {
-      props.onSubmit({
-        klinkId: props.klink.id,
-        deleteRemote: shouldDeleteShared()
-      });
+      await store.deleteKlink();
     } else {
       props.onClose();
     }
   }
+
+  const unsub = store.listen(event => {
+    switch (event.type) {
+      case "success":
+        toast('Klink deleted.');
+        navigate('/c');
+        break;
+      case "failure":
+        toast.error('Something went wrong.');
+        break;
+    }
+  });
+
+  onCleanup(() => unsub());
 
   return (
     <div>
@@ -37,7 +46,7 @@ const DeleteKlinkModal: Component<DeleteKlinkModalProps> = (props) => {
         <p class="text-lg">Are you sure?</p>
         <p class="font-light text-sm text-zinc-400">You are about to delete a klink.</p>
 
-        <Show when={isKlinkShared()}>
+        <Show when={store.state.isShared}>
           <div class="flex flex-col w-full">
             <div class="divider"></div>
             <div class="form-control">
@@ -45,8 +54,8 @@ const DeleteKlinkModal: Component<DeleteKlinkModalProps> = (props) => {
                 <span class="label-text">Delete for everyone?</span>
                 <input
                   type="checkbox"
-                  checked={shouldDeleteShared()}
-                  onInput={e => setShouldDeleteShared(e.target.checked)}
+                  checked={store.state.shouldDeleteShared}
+                  onInput={e => store.setShouldDeleteShared(e.target.checked)}
                   class="checkbox" />
               </label>
             </div>
@@ -56,7 +65,12 @@ const DeleteKlinkModal: Component<DeleteKlinkModalProps> = (props) => {
 
         <div class="flex flex-row space-x-2 justify-end items-center w-full">
           <button class="btn btn-sm" value="no">No</button>
-          <button class="btn btn-primary btn-sm" value="yes">Yes</button>
+          <button class="btn btn-primary btn-sm" value="yes">
+            <Show when={store.state.loading}>
+              <span class="loading loading-spinner"></span>
+            </Show>
+            Yes
+          </button>
         </div>
       </form>
     </div>

@@ -10,7 +10,6 @@ import ShareKlinkModal from "~/components/ShareKlinkModal";
 type KlinkListItemProps = {
   item: Klink,
   pathKlinkId?: string,
-  onDeleteClick: () => void,
   onCopyClick: () => void,
   onSelect: () => void
 }
@@ -55,9 +54,8 @@ const KlinkListItem: Component<KlinkListItemProps> = (props) => {
 
         <deleteModal.Modal>
           <DeleteKlinkModal
-            klink={props.item}
-            onClose={deleteModal.controller.close}
-            onSubmit={props.onDeleteClick} />
+            klinkId={props.item.id}
+            onClose={deleteModal.controller.close} />
         </deleteModal.Modal>
         <shareModal.Modal>
           <ShareKlinkModal klinkId={props.item.id} />

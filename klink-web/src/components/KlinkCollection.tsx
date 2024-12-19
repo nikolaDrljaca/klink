@@ -14,13 +14,6 @@ const KlinkCollection: Component = () => {
 
   const navigate = useNavigate();
 
-  const onDeleteKlinkItemClick = (id: string) => {
-    if (id === store.pathKlinkId()) {
-      navigate("/c");
-    }
-    store.deleteKlink(id);
-  }
-
   const onSelectKlink = (id: string) => {
     navigate(`/c/${id}`);
     store.selectKlink(id);
@@ -72,7 +65,6 @@ const KlinkCollection: Component = () => {
               <KlinkListItem
                 item={item}
                 pathKlinkId={store.pathKlinkId()}
-                onDeleteClick={() => onDeleteKlinkItemClick(item.id)}
                 onSelect={() => onSelectKlink(item.id)}
                 onCopyClick={() => onCopyKlink(item.id)}
               />

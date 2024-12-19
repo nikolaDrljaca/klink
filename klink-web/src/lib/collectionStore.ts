@@ -6,12 +6,6 @@ export default function collectionStore() {
     const { state, update } = useAppStore();
     const pathKlinkId = useKlinkIdParam();
 
-    const deleteKlink = (id: string) => {
-        update(state => {
-            state.klinks = state.klinks.filter(it => it.id !== id);
-        });
-    }
-
     const copyKlink = (id: string) => {
         update(state => {
             const temp = state.klinks.find(it => it.id === id);
@@ -57,6 +51,5 @@ export default function collectionStore() {
         createKlink,
         selectKlink,
         copyKlink,
-        deleteKlink
     }
 }
