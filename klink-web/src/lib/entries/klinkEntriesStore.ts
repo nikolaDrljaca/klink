@@ -3,6 +3,7 @@ import localforage from "localforage";
 import { createStore } from "solid-js/store";
 import { KlinkEntry } from "~/generated/models";
 import { Klink } from "~/lib/klinks/store";
+import { useAppStore } from "../klinks/context";
 
 // TODO: Introduce local type for KlinkEntry!!
 
@@ -16,6 +17,15 @@ export function createKlinkEntriesStore(klink: Klink): KlinkEntriesStore {
     const klinkId = klink.id;
     const forageKey = `klink-items-${klinkId}`;
 
+    const store = useAppStore();
+    const clearKeys = () => {
+        store.update(state => {
+            const klink = state.klinks.find(it => it.id === klinkId)!;
+            klink.readKey = null;
+            klink.writeKey = null;
+        });
+    }
+
     const klinkItemsStore = createStore<Array<KlinkEntry>>([], { name: forageKey });
     const [state, setState] = makePersisted(
         klinkItemsStore,
@@ -25,9 +35,11 @@ export function createKlinkEntriesStore(klink: Klink): KlinkEntriesStore {
             sync: createKlinkSyncApi(
                 klink,
                 forageKey,
-                // use created store directly for received messages to avoid feedback loop
-                // with `setState`
-                (value) => klinkItemsStore[1](JSON.parse(value)))
+                // use created store directly for received messages to avoid feedback loop with `setState`
+                (value) => klinkItemsStore[1](JSON.parse(value)),
+                // 1003 returned -- klink is not found
+                () => clearKeys()
+            )
         }
     );
     const onAddEntry = (url: string) => {
@@ -54,7 +66,12 @@ export function createKlinkEntriesStore(klink: Klink): KlinkEntriesStore {
     }
 }
 
-function createKlinkSyncApi(klink: Klink, forageKey: string, onMessage: (value: string) => void): PersistenceSyncAPI | undefined {
+function createKlinkSyncApi(
+    klink: Klink,
+    forageKey: string,
+    onMessage: (value: string) => void,
+    onClose: () => void = () => { }
+): PersistenceSyncAPI | undefined {
     // if keys are missing, collection is local, do NOT connect to socket
     if (!klink.readKey && !klink.writeKey) {
         return undefined;
@@ -71,6 +88,12 @@ function createKlinkSyncApi(klink: Klink, forageKey: string, onMessage: (value: 
         localforage.setItem(forageKey, data.newValue);
         // notify that a message was received
         onMessage(data.newValue);
+    }
+    socket.onclose = (ev: CloseEvent) => {
+        if (ev.code === 1003) {
+            // collection is no longer shared
+            onClose();
+        }
     }
     return wsSync(socket, true);
 }

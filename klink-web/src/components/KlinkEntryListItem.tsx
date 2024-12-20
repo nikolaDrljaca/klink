@@ -50,7 +50,7 @@ const KlinkEntryListItem: Component<KlinkEntryListItemProps> = (props) => {
 
         {/* Url value */}
         <Suspense fallback={<LoadingBar />}>
-          <div class="flex-grow space-y-1 min-w-0">
+          <div class="flex-grow space-y-1 min-w-0 text-base-content">
             <h3 class="font-semibold">
               <a
                 href={props.entry.value}
@@ -61,10 +61,10 @@ const KlinkEntryListItem: Component<KlinkEntryListItemProps> = (props) => {
               </a>
             </h3>
             <Show when={!!pageDetails()}>
-              <p class="text-xs font-light text-zinc-400">{description()}</p>
+              <p class="text-xs font-light">{description()}</p>
             </Show>
             <Show when={url()}>
-              <p class="text-xs font-light text-zinc-400 underline pt-1">{url()}</p>
+              <p class="text-xs font-light underline pt-1">{url()}</p>
             </Show>
           </div>
         </Suspense>

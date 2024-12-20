@@ -38,13 +38,11 @@ fun Routing.klinkWsSyncSocket(
         )
         if (accessProbe.isLeft()) {
             close(CloseReason(CloseReason.Codes.NORMAL, "Invalid request."))
-            return@webSocket
         }
         val accessResult = runAccessProbe.execute(accessProbe.getOrNull()!!)
         // no keys were found, close socket
         if (accessResult === RunKlinkAccessProbe.Result.NO_ACCESS) {
-            close(CloseReason(CloseReason.Codes.NORMAL, "Invalid request."))
-            return@webSocket
+            close(CloseReason(CloseReason.Codes.CANNOT_ACCEPT, "Invalid request."))
         }
         // create processor
         val processor = sessions.getOrPut(klinkId) {
