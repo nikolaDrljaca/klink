@@ -1,5 +1,5 @@
 import clsx from "clsx";
-import { Component } from "solid-js";
+import { Component, Show } from "solid-js";
 import { Klink } from "~/lib/klinks/store";
 import createModal from "~/components/modal/Modal";
 import toast from "solid-toast";
@@ -17,8 +17,8 @@ type KlinkListItemProps = {
 const KlinkListItem: Component<KlinkListItemProps> = (props) => {
   const isSelected = () => props.pathKlinkId === props.item.id;
   const classes = () => clsx(
-    'flex flex-col p-2 w-full justify-center border-b-2 border-zinc-900',
-    isSelected() && 'bg-neutral'
+    'flex flex-col p-2 w-full justify-center border-b-2 border-base-300',
+    isSelected() && 'bg-base-300'
   );
 
   const deleteModal = createModal();
@@ -32,10 +32,12 @@ const KlinkListItem: Component<KlinkListItemProps> = (props) => {
   return (
     <div class={classes()}>
       {/* Top Anchor */}
-      <a class="flex flex-col w-full px-4 hover:cursor-pointer" onClick={props.onSelect}>
-        <p class="text-xs font-light text-zinc-400">Updated at 15:43</p>
-        <p class="text-lg">{props.item.name}</p>
-        <span class="text-sm py-2">{props.item.description}</span>
+      <a class="flex flex-col w-full px-4 text-base-content hover:cursor-pointer" onClick={props.onSelect}>
+        <p class="text-xs font-light">Updated at 15:43</p>
+        <p class="text-lg pt-1">{props.item.name}</p>
+        <Show when={props.item.description}>
+          <span class="text-sm py-2">{props.item.description}</span>
+        </Show>
       </a>
       {/* Button Row */}
       <div class="flex flex-row items-center justify-around w-full pt-4 pl-4">
