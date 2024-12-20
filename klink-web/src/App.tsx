@@ -6,6 +6,7 @@ import KlinkCollectionRoute from '~/pages/KlinkCollectionRoute'
 import NotFoundRoute from './pages/404Route';
 import { Toaster } from 'solid-toast';
 import KlinkImportRoute from '~/pages/KlinkImportRoute';
+import ComingSoonRoute from './pages/ComingSoonRoute';
 
 const App: Component = () => {
   return (
@@ -24,6 +25,8 @@ const App: Component = () => {
         <Route path="/c" component={KlinkCollectionRoute} />
         <Route path="/c/:klinkId/i" component={KlinkImportRoute} matchFilters={uuidRouteFilter} />
         <Route path="/c/:klinkId" component={KlinkRoute} />
+        <Route path="/settings" component={ComingSoonRoute} />
+        <Route path="/about" component={ComingSoonRoute} />
         <Route path="*param" component={NotFoundRoute} />
       </Router>
     </>

@@ -14,7 +14,7 @@ const KlinkKeyField: Component<{ key: string, title: string }> = (props) => {
 
   return (
     <div class="flex flex-col space-y-2 w-full">
-      <p class="text-sm text-zinc-400">{props.title}</p>
+      <p class="text-sm text-base-content">{props.title}</p>
       <div class="join">
         <input
           type="text"

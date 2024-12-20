@@ -25,7 +25,7 @@ const KlinkImport: Component = () => {
 
   const Error: Component = () => {
     return (
-      <div class="card text-neutral-content w-full">
+      <div class="card text-base-content w-full">
         <div class="card-body items-center text-center">
           <h2 class="card-title text-error py-2">
             <CircleX size={40} />
