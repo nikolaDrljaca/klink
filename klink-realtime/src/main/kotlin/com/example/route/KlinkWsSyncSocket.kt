@@ -21,7 +21,7 @@ import org.openapitools.client.models.SyncPersistenceDataApiDto
 
 fun Routing.klinkWsSyncSocket(
     runAccessProbe: RunKlinkAccessProbe,
-    observeKliEntries: ObserveKlinkEntries,
+    observeKlinkEntries: ObserveKlinkEntries,
     klinkRepository: KlinkRepository,
     scope: CoroutineScope,
 ) {
@@ -41,6 +41,11 @@ fun Routing.klinkWsSyncSocket(
             return@webSocket
         }
         val accessResult = runAccessProbe.execute(accessProbe.getOrNull()!!)
+        // no keys were found, close socket
+        if (accessResult === RunKlinkAccessProbe.Result.NO_ACCESS) {
+            close(CloseReason(CloseReason.Codes.NORMAL, "Invalid request."))
+            return@webSocket
+        }
         // create processor
         val processor = sessions.getOrPut(klinkId) {
             KlinkSyncProcessor(
@@ -51,7 +56,7 @@ fun Routing.klinkWsSyncSocket(
         }
         // send changes down to the client
         val valueFlowJob = launch {
-            observeKliEntries.execute(klinkId)
+            observeKlinkEntries.execute(klinkId)
                 // TODO map and serialize
                 .map {
                     SyncPersistenceDataApiDto(

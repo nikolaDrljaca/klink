@@ -46,7 +46,7 @@ fun Application.klinkSockets() {
 
         klinkWsSyncSocket(
             runAccessProbe = runKlinkAccessProbe,
-            observeKliEntries = observeKlinkEntries,
+            observeKlinkEntries = observeKlinkEntries,
             klinkRepository = klinkRepository,
             scope = scope
         )

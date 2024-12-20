@@ -56,7 +56,7 @@ export function createKlinkEntriesStore(klink: Klink): KlinkEntriesStore {
 
 function createKlinkSyncApi(klink: Klink, forageKey: string, onMessage: (value: string) => void): PersistenceSyncAPI | undefined {
     // if keys are missing, collection is local, do NOT connect to socket
-    if (!klink.readKey || !klink.writeKey) {
+    if (!klink.readKey && !klink.writeKey) {
         return undefined;
     }
     // create socket path
