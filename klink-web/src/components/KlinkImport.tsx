@@ -46,24 +46,32 @@ const KlinkImport: Component = () => {
 
   return (
     <div class="flex flex-col w-full h-full grow overflow-y-scroll scrollbar-hidden">
-      <div class="flex w-full justify-between items-center px-4 pt-4 pb-2">
+      <div class="flex w-full items-center px-4 pt-4 pb-2">
         <p class="text-2xl"># Import Klink</p>
       </div>
 
-      <div class="flex flex-row gap-x-4 px-4 pt-2 pb-4 items-center justify-center h-full w-full">
+      <div class="flex flex-col gap-x-4 px-4 pt-8 items-center h-full w-full">
         <ErrorBoundary fallback={<Error />}>
           <Suspense fallback={<Loading />}>
-            <div class="card bg-neutral text-neutral-content w-96">
+            {/* Klink Card */}
+            <div class="card bg-base-300 text-base-content w-96">
               <div class="card-body items-center text-center">
                 <Show when={store.data()}>
                   <h2 class="card-title">{store.data().name}</h2>
+                  <div class="flex flex-row font-light text-sm space-x-2">
+                    <span>Updated at 15:43</span>
+                    <span>&#8226;</span>
+                    <span>{store.data().entries.length} Entries</span>
+                  </div>
                 </Show>
-                <p class="py-2">Do you want to import this Klink?</p>
-                <div class="card-actions justify-end">
-                  <button class="btn btn-sm btn-primary" onClick={onAccept}>Accept</button>
-                  <button class="btn btn-sm btn-ghost" onClick={onDeny}>Deny</button>
-                </div>
               </div>
+            </div>
+
+            {/* Action Row */}
+            <p class="pt-8">Do you want to import this Klink?</p>
+            <div class="card-actions justify-end pt-3">
+              <button class="btn btn-sm btn-primary" onClick={onAccept}>Accept</button>
+              <button class="btn btn-sm btn-ghost" onClick={onDeny}>Deny</button>
             </div>
           </Suspense>
         </ErrorBoundary>

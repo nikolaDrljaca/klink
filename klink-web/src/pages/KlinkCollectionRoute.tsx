@@ -14,7 +14,7 @@ const KlinkCollectionRoute: Component = () => {
       <div class="w-full lg:w-1/6 lg:h-full border-base-300 lg:border-r-2">
         <KlinkSidebar />
       </div>
-      <div class="w-full lg:w-2/6 h-full border-base-300 lg:border-r-2">
+      <div class="w-full lg:w-2/6 h-full lg:border-base-300 lg:border-r-2">
         <KlinkCollection />
       </div>
       <Show when={shouldShowPlaceholder()}>

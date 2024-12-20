@@ -7,7 +7,7 @@ const KlinkSidebar: Component = () => {
     <div class="flex flex-row lg:flex-col lg:h-full w-full justify-between items-start p-4">
       <A href="/c" class="btn btn-ghost font-semibold text-2xl">Klink</A>
 
-      <div class="flex flex-row lg:flex-col items-start justify-center lg:w-full pt-2 lg:pt-0">
+      <div class="flex flex-row lg:flex-col items-start justify-center lg:w-full pt-2 lg:pt-0 space-x-1 lg:space-y-1">
         <A href="/settings" class="btn btn-ghost btn-sm font-semibold">
           <Settings size={20} />
           Settings

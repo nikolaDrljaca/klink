@@ -22,8 +22,13 @@ export default function importKlinkStore() {
     }
     const [data, { refetch }] = createResource(request);
     const store = useAppStore();
+    const existingIds = store.state.klinks.map(it => it.id);
 
     const importKlink = () => {
+        // if the klink already exists, ignore
+        if (existingIds.includes(data.latest.id)) {
+            return;
+        }
         if (!data.latest) {
             return;
         }
