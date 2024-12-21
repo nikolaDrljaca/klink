@@ -6,6 +6,8 @@ services:
     build:
       context: ./klink-web
       dockerfile: ./Dockerfile
+      args:
+        VITE_BUILD_MODE: prodlike
     environment:
       NODE_ENV: production
     ports:

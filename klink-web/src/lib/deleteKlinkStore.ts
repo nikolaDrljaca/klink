@@ -1,8 +1,8 @@
-import { KlinkApi } from "~/generated";
 import { useAppStore } from "~/lib/klinks/context";
 import { createEventBus } from "@solid-primitives/event-bus";
 import { createStore } from "solid-js/store";
 import localforage from "localforage";
+import klinkApi from "~/lib/klinkApi/api";
 
 type DeleteKlinkEvent =
     | { type: "success" }
@@ -11,7 +11,7 @@ type DeleteKlinkEvent =
 export default function deleteKlinkStore(klinkId: string) {
     const store = useAppStore();
     const klink = store.state.klinks.find(it => it.id === klinkId);
-    const api = new KlinkApi();
+    const api = klinkApi();
 
     const { listen, emit, clear } = createEventBus<DeleteKlinkEvent>();
 

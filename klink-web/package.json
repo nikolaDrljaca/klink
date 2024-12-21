@@ -7,6 +7,7 @@
     "dev": "vite",
     "build": "vite build",
     "serve": "vite preview",
+    "prodlike": "vite build --mode prodlike",
     "copy-api-doc": "cp ../klink-api/api.yaml ./src/api.yaml",
     "clear-generated": "rm -rf ./src/generated",
     "openapi-gen": "npm run copy-api-doc && npm run clear-generated && openapi-generator-cli generate -i ./src/api.yaml -g typescript-fetch -o ./src/generated",

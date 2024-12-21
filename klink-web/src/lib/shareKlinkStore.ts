@@ -1,8 +1,9 @@
 import { useAppStore } from "~/lib/klinks/context";
 import { createStore } from "solid-js/store";
-import { CreateKlinkPayload, KlinkApi, KlinkEntry } from "~/generated";
+import { CreateKlinkPayload, KlinkEntry } from "~/generated";
 import localforage from "localforage";
 import { createEventBus } from "@solid-primitives/event-bus";
+import klinkApi from "~/lib/klinkApi/api";
 
 type ShareKlinkEvent =
     | { type: "success" }
@@ -14,7 +15,7 @@ export default function shareKlinkStore(klinkId: string) {
     const appBasePath = import.meta.env.VITE_APP_BASE;
     const store = useAppStore();
     const klink = store.state.klinks.find(it => it.id === klinkId)!;
-    const api = new KlinkApi();
+    const api = klinkApi();
 
     const { listen, emit, clear } = createEventBus<ShareKlinkEvent>();
 
