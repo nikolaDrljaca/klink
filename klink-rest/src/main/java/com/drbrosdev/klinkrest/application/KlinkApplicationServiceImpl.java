@@ -119,6 +119,23 @@ public class KlinkApplicationServiceImpl implements KlinkApplicationService {
         klinkDomainService.deleteKlink(klinkId);
     }
 
+    @Override
+    public KlinkDto updateKlink(KlinkDto klink) {
+        // retrieve stored klink
+        var stored = klinkDomainService.getKlink(klink.getId());
+        // validate write access
+        if (Boolean.FALSE.equals(validateWriteAccess(
+                klink,
+                stored.getReadKey(),
+                stored.getWriteKey()))) {
+            throw new IllegalArgumentException("Access keys don't match!");
+        }
+        // update klink and return
+        return klinkDomainService.updateKlink(
+                klink.getId(),
+                klink);
+    }
+
     private boolean validateReadAccess(
             KlinkDto klink,
             String readKey) {

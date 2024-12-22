@@ -2,10 +2,10 @@ import clsx from "clsx";
 import { Component, Show } from "solid-js";
 import { Klink } from "~/lib/klinks/store";
 import createModal from "~/components/modal/Modal";
-import toast from "solid-toast";
 import { Copy, Edit, Share, Trash } from "lucide-solid";
 import DeleteKlinkModal from "~/components/DeleteKlinkModal";
 import ShareKlinkModal from "~/components/ShareKlinkModal";
+import EditKlinkModal from "./EditKlinkModal";
 
 type KlinkListItemProps = {
   item: Klink,
@@ -23,11 +23,7 @@ const KlinkListItem: Component<KlinkListItemProps> = (props) => {
 
   const deleteModal = createModal();
   const shareModal = createModal();
-
-  const onEdit = () => {
-    //TODO: 
-    toast("Not implemented.");
-  }
+  const editModal = createModal();
 
   return (
     <div class={classes()}>
@@ -41,7 +37,7 @@ const KlinkListItem: Component<KlinkListItemProps> = (props) => {
       </a>
       {/* Button Row */}
       <div class="flex flex-row items-center justify-around w-full pt-4 pl-4">
-        <button class="btn btn-circle btn-ghost btn-sm" onClick={onEdit}>
+        <button class="btn btn-circle btn-ghost btn-sm" onClick={editModal.controller.open}>
           <Edit size={14} />
         </button>
         <button class="btn btn-circle btn-ghost btn-sm" onClick={props.onCopyClick}>
@@ -62,6 +58,13 @@ const KlinkListItem: Component<KlinkListItemProps> = (props) => {
         <shareModal.Modal>
           <ShareKlinkModal klinkId={props.item.id} />
         </shareModal.Modal>
+        <editModal.Modal>
+          <EditKlinkModal
+            klinkId={props.item.id}
+            onClose={editModal.controller.close}
+          />
+        </editModal.Modal>
+
       </div>
     </div>
   );

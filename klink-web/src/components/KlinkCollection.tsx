@@ -9,10 +9,11 @@ import collectionStore from "~/lib/collectionStore";
 
 const KlinkCollection: Component = () => {
   const store = collectionStore();
-
   const klinkNotEmpty = () => store.state.klinks.length > 0;
-
   const navigate = useNavigate();
+
+  // reload data for shared collections
+  store.reloadKlinkData();
 
   const onSelectKlink = (id: string) => {
     navigate(`/c/${id}`);
@@ -29,7 +30,7 @@ const KlinkCollection: Component = () => {
   }
 
   const createButtonClass = () => clsx(
-    'btn btn-sm w-1/2',
+    'btn btn-sm w-full',
     !klinkNotEmpty() && 'btn-primary animate-pulse',
     klinkNotEmpty() && 'btn-neutral'
   );
@@ -37,7 +38,12 @@ const KlinkCollection: Component = () => {
   return (
     <div class="flex flex-col w-full h-full grow overflow-y-scroll scrollbar-hidden">
 
-      <p class="text-2xl px-4 pt-6 pb-2"># Collections</p>
+      <div class="flex flex-row items-center justify-between px-4 pt-6 pb-2">
+        <p class="text-2xl"># Collections</p>
+        <Show when={store.reloadInProgress()}>
+          <div class="loading loading-spinner"></div>
+        </Show>
+      </div>
 
       {/* Button Row */}
       <div class="flex flex-row gap-x-4 px-4 pt-2 pb-4 items-center justify-center w-full">
@@ -50,10 +56,10 @@ const KlinkCollection: Component = () => {
             </button>
           }
         </CreateKlinkModal>
-        <button class="btn btn-sm w-1/2" onClick={onImportClick}>
-          <Import size={20} />
-          Import
-        </button>
+        {/* <button class="btn btn-sm w-1/2" onClick={onImportClick}> */}
+        {/*   <Import size={20} /> */}
+        {/*   Import */}
+        {/* </button> */}
       </div>
 
       {/* Klink List - Container */}

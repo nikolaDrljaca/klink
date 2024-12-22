@@ -10,6 +10,7 @@ import org.openapitools.api.KlinkApi;
 import org.openapitools.model.CreateKlinkPayloadApiDto;
 import org.openapitools.model.KlinkApiDto;
 import org.openapitools.model.KlinkSyncStatusApiDto;
+import org.openapitools.model.PatchKlinkPayloadApiDto;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -79,4 +80,20 @@ public class KlinkControllerActivity implements KlinkApi {
             KlinkApiDto klinkApiDto) {
         throw new NotImplementedException("TODO");
     }
+
+    @Override
+    public ResponseEntity<KlinkApiDto> updateKlink(
+            UUID klinkId,
+            String readKey,
+            String writeKey,
+            PatchKlinkPayloadApiDto patchKlinkPayloadApiDto) {
+        return ok(mapper.mapTo(klinkApplicationService.updateKlink(
+                mapper.mapTo(
+                        klinkId,
+                        readKey,
+                        writeKey,
+                        patchKlinkPayloadApiDto.getName(),
+                        patchKlinkPayloadApiDto.getDescription()))));
+    }
+
 }

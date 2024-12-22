@@ -25,4 +25,5 @@ public interface KlinkApplicationService {
             String readKey,
             String writeKey);
 
+    KlinkDto updateKlink(KlinkDto klinkDto);
 }

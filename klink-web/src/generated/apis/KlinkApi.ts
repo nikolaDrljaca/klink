@@ -18,6 +18,7 @@ import type {
   CreateKlinkPayload,
   Klink,
   KlinkSyncStatus,
+  PatchKlinkPayload,
 } from '../models/index';
 import {
     CreateKlinkPayloadFromJSON,
@@ -26,6 +27,8 @@ import {
     KlinkToJSON,
     KlinkSyncStatusFromJSON,
     KlinkSyncStatusToJSON,
+    PatchKlinkPayloadFromJSON,
+    PatchKlinkPayloadToJSON,
 } from '../models/index';
 
 export interface CreateKlinkRequest {
@@ -47,6 +50,13 @@ export interface GetKlinkRequest {
 export interface SyncKlinkRequest {
     klinkId: string;
     klink: Klink;
+}
+
+export interface UpdateKlinkRequest {
+    klinkId: string;
+    readKey: string;
+    writeKey: string;
+    patchKlinkPayload: PatchKlinkPayload;
 }
 
 /**
@@ -232,6 +242,71 @@ export class KlinkApi extends runtime.BaseAPI {
      */
     async syncKlink(requestParameters: SyncKlinkRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<KlinkSyncStatus> {
         const response = await this.syncKlinkRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
+     * Update a klink by id.
+     */
+    async updateKlinkRaw(requestParameters: UpdateKlinkRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Klink>> {
+        if (requestParameters['klinkId'] == null) {
+            throw new runtime.RequiredError(
+                'klinkId',
+                'Required parameter "klinkId" was null or undefined when calling updateKlink().'
+            );
+        }
+
+        if (requestParameters['readKey'] == null) {
+            throw new runtime.RequiredError(
+                'readKey',
+                'Required parameter "readKey" was null or undefined when calling updateKlink().'
+            );
+        }
+
+        if (requestParameters['writeKey'] == null) {
+            throw new runtime.RequiredError(
+                'writeKey',
+                'Required parameter "writeKey" was null or undefined when calling updateKlink().'
+            );
+        }
+
+        if (requestParameters['patchKlinkPayload'] == null) {
+            throw new runtime.RequiredError(
+                'patchKlinkPayload',
+                'Required parameter "patchKlinkPayload" was null or undefined when calling updateKlink().'
+            );
+        }
+
+        const queryParameters: any = {};
+
+        if (requestParameters['readKey'] != null) {
+            queryParameters['readKey'] = requestParameters['readKey'];
+        }
+
+        if (requestParameters['writeKey'] != null) {
+            queryParameters['writeKey'] = requestParameters['writeKey'];
+        }
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        headerParameters['Content-Type'] = 'application/json';
+
+        const response = await this.request({
+            path: `/klink/{klinkId}`.replace(`{${"klinkId"}}`, encodeURIComponent(String(requestParameters['klinkId']))),
+            method: 'PATCH',
+            headers: headerParameters,
+            query: queryParameters,
+            body: PatchKlinkPayloadToJSON(requestParameters['patchKlinkPayload']),
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => KlinkFromJSON(jsonValue));
+    }
+
+    /**
+     * Update a klink by id.
+     */
+    async updateKlink(requestParameters: UpdateKlinkRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Klink> {
+        const response = await this.updateKlinkRaw(requestParameters, initOverrides);
         return await response.value();
     }
 
