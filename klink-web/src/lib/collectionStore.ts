@@ -1,10 +1,38 @@
 import { useAppStore } from "~/lib/klinks/context";
 import useKlinkIdParam from "~/lib/useKlinkIdParam";
 import { Klink } from "~/lib/klinks/store";
+import klinkApi from "~/lib/klinkApi/api";
+import { createSignal } from "solid-js";
 
 export default function collectionStore() {
     const { state, update } = useAppStore();
     const pathKlinkId = useKlinkIdParam();
+    const api = klinkApi();
+
+    const [loading, setLoading] = createSignal(false);
+
+    const reloadKlinkData = async () => {
+        setLoading(true);
+        for (const klink of state.klinks) {
+            if (!klink.readKey) {
+                continue;
+            }
+            try {
+                const updated = await api.getKlink({
+                    klinkId: klink.id,
+                    readKey: klink.readKey
+                });
+                update(current => {
+                    const found = current.klinks.find(it => it.id === klink.id)!;
+                    found.name = updated.name;
+                    found.description = updated.description;
+                });
+            } catch (e) {
+                // NOTE: Swallow error.
+            }
+        }
+        setLoading(false);
+    }
 
     const copyKlink = (id: string) => {
         update(state => {
@@ -47,9 +75,11 @@ export default function collectionStore() {
 
     return {
         state,
+        reloadInProgress: loading,
         pathKlinkId,
         createKlink,
         selectKlink,
         copyKlink,
+        reloadKlinkData
     }
 }

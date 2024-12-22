@@ -61,6 +61,43 @@ paths:
                 $ref: "#/components/schemas/Klink"
         '502':
           description: 'Error'
+    patch:
+      summary: "Update a klink by id."
+      operationId: updateKlink
+      tags:
+        - klink
+      parameters:
+        - in: path
+          name: klinkId
+          schema:
+            type: string
+            format: uuid
+          required: true
+        - in: query
+          name: readKey
+          schema:
+            type: string
+          required: true
+        - in: query
+          name: writeKey
+          schema:
+            type: string
+          required: true
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PatchKlinkPayload"
+        required: true
+      responses:
+        '200':
+          description: 'Updated klink.'
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Klink"
+        '502':
+          description: 'Error'
     delete:
       summary: "Delete a klink by id."
       operationId: deleteKlink
@@ -150,6 +187,17 @@ components:
         - entries
         - readKey
         - writeKey
+    PatchKlinkPayload:
+      type: object
+      properties:
+        name:
+          type: string
+          example: "Collection Name"
+        description:
+          type: string
+          example: "Links to random youtube videos."
+      required:
+        - name
     KlinkEntry:
       type: object
       properties:

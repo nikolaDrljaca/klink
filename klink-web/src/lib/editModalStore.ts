@@ -1,5 +1,7 @@
 import { createStore } from "solid-js/store";
 import { useAppStore } from "~/lib/klinks/context";
+import klinkApi from "~/lib/klinkApi/api";
+import { UpdateKlinkRequest } from "~/generated";
 
 type EditKlinkModalEvent =
     | { type: 'success' }
@@ -8,6 +10,7 @@ type EditKlinkModalEvent =
 export default function editKlinkStore(klinkId: string) {
     const appStore = useAppStore();
     const klink = appStore.state.klinks.find(it => it.id === klinkId)!;
+    const api = klinkApi();
 
     const [store, setStore] = createStore({
         name: klink.name,
@@ -39,13 +42,31 @@ export default function editKlinkStore(klinkId: string) {
             return;
         }
         if (isShared) {
-            // TODO: request to server and update from response
-            return { type: 'success' }
+            const payload: UpdateKlinkRequest = {
+                klinkId: klinkId,
+                readKey: klink.readKey,
+                writeKey: klink.writeKey,
+                patchKlinkPayload: {
+                    name: store.name,
+                    description: store.description
+                }
+            }
+            try {
+                setStore('loading', true);
+                const updated = await api.updateKlink(payload);
+                updateKlink({ name: updated.name, description: updated.description });
+                setStore('loading', false);
+                return { type: 'success' }
+            } catch (e) {
+                setStore('loading', false);
+                return { type: 'failure' }
+            }
         }
         // not shared - update local klink only
         updateKlink({ name: store.name, description: store.description });
         return { type: 'success' }
     }
+
     return {
         state: store,
         setName,

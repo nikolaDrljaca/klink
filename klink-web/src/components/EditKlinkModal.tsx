@@ -1,4 +1,5 @@
 import { Component, Show } from "solid-js";
+import toast from "solid-toast";
 import editKlinkStore from "~/lib/editModalStore";
 
 type EditKlinkModalProps = {
@@ -15,6 +16,8 @@ const EditKlinkModal: Component<EditKlinkModalProps> = (props) => {
     const result = await store.submit();
     if (result.type === 'success') {
       props.onClose();
+    } else if (result.type === 'failure') {
+      toast.error('Something went wrong.');
     }
   }
 

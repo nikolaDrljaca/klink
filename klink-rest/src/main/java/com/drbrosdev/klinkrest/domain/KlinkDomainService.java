@@ -12,4 +12,7 @@ public interface KlinkDomainService {
 
     void deleteKlink(UUID klinkId);
 
+    KlinkDto updateKlink(
+            UUID klinkId,
+            KlinkDto klink);
 }
