@@ -23,7 +23,7 @@ const KlinkRoute: Component = () => {
 
       {/* Klink Details */}
       <div class="w-full lg:w-3/6 xl:w-2/6 h-full border-base-300 lg:border-r-2">
-        {/* TODO: Modify fallback -> Custom component for import, if keys are present. Otherwise empty. */}
+        {/* TODO: Modify fallback */}
         <Show when={!!klink()} fallback={<div class="">Klink Not Found.</div>}>
           <KlinkEntries klink={klink} />
         </Show>

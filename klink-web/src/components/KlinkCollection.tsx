@@ -1,11 +1,12 @@
 import { Component, For, Show } from "solid-js";
-import { Plus, Import } from "lucide-solid"
+import { Plus, Import, Text } from "lucide-solid"
 import clsx from "clsx";
 import CreateKlinkModal from "~/components/CreateKlinkModal";
 import { useNavigate } from "@solidjs/router";
 import toast from "solid-toast";
 import KlinkListItem from "~/components/KlinkListItem";
 import collectionStore from "~/lib/collectionStore";
+import CreateKlinkView from "./CreateKlinkView";
 
 const KlinkCollection: Component = () => {
   const store = collectionStore();
@@ -45,22 +46,26 @@ const KlinkCollection: Component = () => {
         </Show>
       </div>
 
+
+      <CreateKlinkView onSubmit={store.createKlink} />
+
       {/* Button Row */}
-      <div class="flex flex-row gap-x-4 px-4 pt-2 pb-4 items-center justify-center w-full">
-        {/* Create Modal */}
-        <CreateKlinkModal onSubmit={store.createKlink}>
-          {(open) =>
-            <button class={createButtonClass()} onClick={open}>
-              <Plus size={20} />
-              Create
-            </button>
-          }
-        </CreateKlinkModal>
-        {/* <button class="btn btn-sm w-1/2" onClick={onImportClick}> */}
-        {/*   <Import size={20} /> */}
-        {/*   Import */}
-        {/* </button> */}
-      </div>
+      {/* <div class="flex flex-row gap-x-4 px-4 pt-2 pb-4 items-center justify-center w-full"> */}
+      {/* Create Modal */}
+      {/* <CreateKlinkModal onSubmit={store.createKlink}> */}
+      {/*   {(open) => */}
+      {/*     <button class={createButtonClass()} onClick={open}> */}
+      {/*       <Plus size={20} /> */}
+      {/*       Create */}
+      {/*     </button> */}
+      {/*   } */}
+      {/* </CreateKlinkModal> */}
+
+      {/* <button class="btn btn-sm w-1/2" onClick={onImportClick}> */}
+      {/*   <Import size={20} /> */}
+      {/*   Import */}
+      {/* </button> */}
+      {/* </div> */}
 
       {/* Klink List - Container */}
       <Show when={klinkNotEmpty()} fallback={<KlinkListEmpty />}>

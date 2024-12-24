@@ -8,8 +8,8 @@ type CreateKlinkModalProps = {
 
 const CreateKlinkModal: Component<CreateKlinkModalProps> = (props) => {
   // form state
-  const [name, setName] = createSignal("")
-  const [desc, setDesc] = createSignal("")
+  const [name, setName] = createSignal("");
+  const [desc, setDesc] = createSignal("");
   const nameNotEmpty = () => name().length < 3;
 
   // modal handling

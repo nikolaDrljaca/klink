@@ -1,15 +1,14 @@
 import { createStore } from "solid-js/store";
-import { useAppStore } from "~/lib/klinks/context";
 import klinkApi from "~/lib/klinkApi/api";
 import { UpdateKlinkRequest } from "~/generated";
+import useKlink from "~/lib/klinks/useKlink";
 
 type EditKlinkModalEvent =
     | { type: 'success' }
     | { type: 'failure' }
 
 export default function editKlinkStore(klinkId: string) {
-    const appStore = useAppStore();
-    const klink = appStore.state.klinks.find(it => it.id === klinkId)!;
+    const { klink, update } = useKlink(klinkId);
     const api = klinkApi();
 
     const [store, setStore] = createStore({
@@ -30,8 +29,7 @@ export default function editKlinkStore(klinkId: string) {
     const setDescription = (value: string) => setStore('description', value);
 
     const updateKlink = (value: { name: string, description?: string }) => {
-        appStore.update(state => {
-            const current = state.klinks.find(it => it.id === klinkId)!;
+        update(current => {
             current.name = value.name;
             current.description = value.description;
         });
@@ -71,6 +69,7 @@ export default function editKlinkStore(klinkId: string) {
         state: store,
         setName,
         setDescription,
-        submit
+        submit,
+        klink
     }
 }
