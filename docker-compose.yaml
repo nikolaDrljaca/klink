@@ -10,11 +10,19 @@ services:
       NODE_ENV: production
     ports:
       - '3000:3000'
+    depends_on:
+      rest: 
+        condition: service_started
+      realtime:
+        condition: service_started
 
   rest:
     build:
       context: ./klink-rest
       dockerfile: ./Dockerfile
+    depends_on:
+      db:
+        condition: service_healthy
 
   realtime:
     build:

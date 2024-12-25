@@ -1,4 +1,3 @@
-
 val kotlin_version: String by project
 val logback_version: String by project
 
@@ -63,7 +62,7 @@ openApiGenerate {
 // sqldelight
 sqldelight {
     databases {
-        create("Database") {
+        create("KlinkDatabase") {
             packageName.set("com.example")
             dialect("app.cash.sqldelight:postgresql-dialect:2.0.2")
         }
@@ -92,4 +91,14 @@ dependencies {
     implementation("com.zaxxer:HikariCP:6.0.0")
     implementation("app.cash.sqldelight:jdbc-driver:2.0.2")
     implementation("app.cash.sqldelight:coroutines-extensions:2.0.2")
+
+    val koinVersion = "4.0.0"
+    implementation(project.dependencies.platform("io.insert-koin:koin-bom:$koinVersion"))
+    implementation("io.insert-koin:koin-core")// Koin for Ktor
+    implementation("io.insert-koin:koin-ktor")
+    implementation("io.insert-koin:koin-logger-slf4j")
+
+    val arrowVersion = "1.2.4"
+    implementation("io.arrow-kt:arrow-core:$arrowVersion")
+    implementation("io.arrow-kt:arrow-fx-coroutines:$arrowVersion")
 }

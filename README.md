@@ -34,4 +34,19 @@ make run-local
 make stop-local
 ```
 
+## Testing before pushing to Prod
+Given that we don't have a server to use as a DEV/QA environment, a prod-like docker compose stack has been created which should effectively act the same way the production stack does.
+
+Start the stack with `make run-prodlike`. This will spin up all containers and migrations.
+
+- Client (web) is accessible at `localhost:3000`
+- Spring backend (rest) is accessible at `localhost:3000/api`
+- Ktor backend (realtime) is accessible at `localhost:3000/ws`
+
+These routes are per `nginx` configuration located in `klink-web/nginx.conf`.
+
+This way the application stack can be tested locally as if it were running in a production environment.
+
+Stop the stack with `make stop-prodlike`.
+
 To view db contents, use the IntelliJ integrated DB tool.

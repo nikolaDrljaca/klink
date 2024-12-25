@@ -8,8 +8,10 @@ COPY package.json package-lock.json ./
 RUN npm ci 
 # Copy all other application files into the working directory
 COPY . .
+# Take vite mode as argument, default to production
+ARG VITE_BUILD_MODE=production
 # Build the Vite application for production
-RUN npm run build
+RUN npm run build -- --mode=$VITE_BUILD_MODE
 
 # Stage 2: Serve with Nginx
 FROM nginx:latest

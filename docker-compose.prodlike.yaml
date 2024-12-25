@@ -1,0 +1,64 @@
+# PRODLike docker compose script
+version: '3.4'
+
+services:
+  client:
+    build:
+      context: ./klink-web
+      dockerfile: ./Dockerfile
+      args:
+        VITE_BUILD_MODE: prodlike
+    environment:
+      NODE_ENV: production
+    ports:
+      - '3000:3000'
+    depends_on:
+      rest: 
+        condition: service_started
+      realtime:
+        condition: service_started
+
+  rest:
+    build:
+      context: ./klink-rest
+      dockerfile: ./Dockerfile
+    depends_on:
+      db:
+        condition: service_healthy
+
+  realtime:
+    build:
+      context: ./klink-realtime
+      dockerfile: ./Dockerfile
+    depends_on:
+      db:
+        condition: service_healthy
+
+  db:
+    image: "postgres:17-alpine"
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_DB: klinkdb # create database named klinkdb
+      POSTGRES_HOST_AUTH_METHOD: trust  # Disables password requirement
+    volumes:
+      - "~/.dockerdata/pgdata:/var/lib/postgresql/data"
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -d klinkdb -U user" ]
+      interval: 15s
+      timeout: 60s
+      retries: 5
+
+  liquibase:
+    build:
+      context: ./liquibase
+      dockerfile: ./Dockerfile
+    depends_on:
+      db:
+        condition: service_healthy
+    command: >
+      --url=jdbc:postgresql://db:5432/klinkdb
+      --username=user
+      --password=password
+      --changeLogFile=/scripts/changelog.xml
+      update
+    restart: "no"
