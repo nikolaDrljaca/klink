@@ -177,6 +177,10 @@ components:
         description:
           type: string
           example: "Links to random youtube videos."
+        updatedAt:
+          type: integer
+          format: int64
+          example: "1735127917 Unix Time."
         entries:
           type: array
           items:
@@ -185,6 +189,7 @@ components:
         - id
         - name
         - entries
+        - updatedAt
         - readKey
         - writeKey
     PatchKlinkPayload:

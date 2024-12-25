@@ -7,6 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Value;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -19,6 +20,8 @@ public class KlinkDto {
     String name;
     String readKey;
     String writeKey;
+
+    LocalDateTime updatedAt;
 
     @Nullable
     String description;

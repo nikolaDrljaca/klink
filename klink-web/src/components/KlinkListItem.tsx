@@ -1,11 +1,12 @@
 import clsx from "clsx";
 import { Component, Show } from "solid-js";
-import { Klink } from "~/lib/klinks/store";
 import createModal from "~/components/modal/Modal";
 import { Copy, Edit, Share, Trash } from "lucide-solid";
 import DeleteKlinkModal from "~/components/DeleteKlinkModal";
 import ShareKlinkModal from "~/components/ShareKlinkModal";
 import EditKlinkModal from "./EditKlinkModal";
+import { Klink } from "~/types/domain";
+import { formatRelative } from "~/lib/relativeTime";
 
 type KlinkListItemProps = {
   item: Klink,
@@ -16,6 +17,9 @@ type KlinkListItemProps = {
 
 const KlinkListItem: Component<KlinkListItemProps> = (props) => {
   const isSelected = () => props.pathKlinkId === props.item.id;
+
+  const date = () => formatRelative(props.item.updatedAt);
+
   const classes = () => clsx(
     'flex flex-col p-2 w-full justify-center border-b-2 border-base-300',
     isSelected() && 'bg-base-300'
@@ -29,7 +33,7 @@ const KlinkListItem: Component<KlinkListItemProps> = (props) => {
     <div class={classes()}>
       {/* Top Anchor */}
       <a class="flex flex-col w-full px-4 text-base-content hover:cursor-pointer" onClick={props.onSelect}>
-        <p class="text-xs font-light">Updated at 15:43</p>
+        <p class="text-xs font-light">Updated {date()}</p>
         <p class="text-lg pt-1">{props.item.name}</p>
         <Show when={props.item.description}>
           <span class="text-sm py-2">{props.item.description}</span>

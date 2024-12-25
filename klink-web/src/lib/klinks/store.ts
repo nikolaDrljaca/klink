@@ -1,18 +1,11 @@
 import { makePersisted } from "@solid-primitives/storage"
 import localforage from "localforage"
 import { createStore, produce } from "solid-js/store"
+import { Klink } from "~/types/domain"
 
 export type KlinkCollectionStore = {
     klinks: Array<Klink>,
     selectedKlinkId: string | null
-}
-
-export type Klink = {
-    id: string,
-    name: string,
-    description: string | null,
-    readKey: string | null,
-    writeKey: string | null,
 }
 
 export type AppStore = {

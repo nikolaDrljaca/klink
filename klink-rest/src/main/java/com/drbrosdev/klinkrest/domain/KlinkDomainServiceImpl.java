@@ -17,7 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.UUID;
 
-import static java.time.LocalDate.now;
+import static java.time.LocalDateTime.now;
 import static java.util.stream.Collectors.toList;
 
 @Service
@@ -103,6 +103,7 @@ public class KlinkDomainServiceImpl implements KlinkDomainService {
             KlinkDto klink) {
         entity.setName(klink.getName());
         entity.setDescription(klink.getDescription());
+        entity.setModifiedAt(now());
     }
 
     private KlinkKeyEntity createKeyEntity(KlinkDto klink) {

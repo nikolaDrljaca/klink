@@ -1,9 +1,10 @@
 import useKlinkKeyParams from "~/lib/useKlinkKeyParams";
 import useKlinkIdParam from "~/lib/useKlinkIdParam";
 import { createResource } from "solid-js";
-import { Klink } from "~/lib/klinks/store";
 import { useAppStore } from "~/lib/klinks/context";
 import klinkApi from "~/lib/klinkApi/api";
+import { Klink } from "~/types/domain";
+import { formatRelative, unixFromReponse } from "~/lib/relativeTime";
 
 export default function importKlinkStore() {
     const { readKey, writeKey } = useKlinkKeyParams();
@@ -36,6 +37,7 @@ export default function importKlinkStore() {
             id: data.latest.id,
             name: data.latest.name,
             description: data.latest.description,
+            updatedAt: unixFromReponse(data.latest.updatedAt),
             readKey: data.latest.readKey,
             writeKey: data.latest.writeKey
         }
@@ -44,8 +46,11 @@ export default function importKlinkStore() {
         });
     }
 
+    const updatedAt = () => formatRelative(unixFromReponse(data.latest.updatedAt));
+
     return {
         data,
+        updatedAt,
         readKey,
         writeKey,
         importKlink,

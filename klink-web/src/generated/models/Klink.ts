@@ -58,6 +58,12 @@ export interface Klink {
     description?: string;
     /**
      * 
+     * @type {number}
+     * @memberof Klink
+     */
+    updatedAt: number;
+    /**
+     * 
      * @type {Array<KlinkEntry>}
      * @memberof Klink
      */
@@ -72,6 +78,7 @@ export function instanceOfKlink(value: object): value is Klink {
     if (!('name' in value) || value['name'] === undefined) return false;
     if (!('readKey' in value) || value['readKey'] === undefined) return false;
     if (!('writeKey' in value) || value['writeKey'] === undefined) return false;
+    if (!('updatedAt' in value) || value['updatedAt'] === undefined) return false;
     if (!('entries' in value) || value['entries'] === undefined) return false;
     return true;
 }
@@ -91,6 +98,7 @@ export function KlinkFromJSONTyped(json: any, ignoreDiscriminator: boolean): Kli
         'readKey': json['readKey'],
         'writeKey': json['writeKey'],
         'description': json['description'] == null ? undefined : json['description'],
+        'updatedAt': json['updatedAt'],
         'entries': ((json['entries'] as Array<any>).map(KlinkEntryFromJSON)),
     };
 }
@@ -106,6 +114,7 @@ export function KlinkToJSON(value?: Klink | null): any {
         'readKey': value['readKey'],
         'writeKey': value['writeKey'],
         'description': value['description'],
+        'updatedAt': value['updatedAt'],
         'entries': ((value['entries'] as Array<any>).map(KlinkEntryToJSON)),
     };
 }

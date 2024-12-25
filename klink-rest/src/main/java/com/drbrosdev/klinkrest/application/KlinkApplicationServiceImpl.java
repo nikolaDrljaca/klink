@@ -65,6 +65,7 @@ public class KlinkApplicationServiceImpl implements KlinkApplicationService {
                     .id(klink.getId())
                     .name(klink.getName())
                     .description(klink.getDescription())
+                    .updatedAt(klink.getUpdatedAt())
                     .readKey(klink.getReadKey())
                     .writeKey(null) // Send writeKey only if provided
                     .entries(klink.getEntries())
@@ -88,6 +89,7 @@ public class KlinkApplicationServiceImpl implements KlinkApplicationService {
                 .id(klink.getId())
                 .name(klink.getName())
                 .description(klink.getDescription())
+                .updatedAt(klink.getUpdatedAt())
                 .readKey(klink.getReadKey())
                 .writeKey(klink.getWriteKey())
                 .entries(klink.getEntries())

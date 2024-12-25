@@ -1,8 +1,8 @@
 import { useAppStore } from "~/lib/klinks/context";
 import useKlinkIdParam from "~/lib/useKlinkIdParam";
-import { Klink } from "~/lib/klinks/store";
 import klinkApi from "~/lib/klinkApi/api";
 import { createSignal } from "solid-js";
+import { Klink } from "~/types/domain";
 
 export default function collectionStore() {
     const { state, update } = useAppStore();
@@ -44,6 +44,7 @@ export default function collectionStore() {
                 id: crypto.randomUUID(),
                 name: `Copy of ${temp.name}`,
                 description: "",
+                updatedAt: Date.now(),
                 readKey: null,
                 writeKey: null
             }
@@ -65,6 +66,7 @@ export default function collectionStore() {
             id: crypto.randomUUID(),
             name: data.name,
             description: data.description,
+            updatedAt: Date.now(),
             readKey: null,
             writeKey: null
         }

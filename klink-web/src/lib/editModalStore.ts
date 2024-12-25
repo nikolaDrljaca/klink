@@ -2,6 +2,7 @@ import { createStore } from "solid-js/store";
 import klinkApi from "~/lib/klinkApi/api";
 import { UpdateKlinkRequest } from "~/generated";
 import useKlink from "~/lib/klinks/useKlink";
+import { unixFromReponse } from "./relativeTime";
 
 type EditKlinkModalEvent =
     | { type: 'success' }
@@ -13,7 +14,7 @@ export default function editKlinkStore(klinkId: string) {
 
     const [store, setStore] = createStore({
         name: klink.name,
-        description: klink.description,
+        description: klink.description ?? "",
         loading: false,
         get isReadOnly() {
             return klink.readKey && !klink.writeKey
@@ -28,10 +29,11 @@ export default function editKlinkStore(klinkId: string) {
     const setName = (value: string) => setStore('name', value);
     const setDescription = (value: string) => setStore('description', value);
 
-    const updateKlink = (value: { name: string, description?: string }) => {
+    const updateKlink = (value: { name: string, description?: string, updatedAt: number }) => {
         update(current => {
             current.name = value.name;
             current.description = value.description;
+            current.updatedAt = value.updatedAt;
         });
     }
 
@@ -52,7 +54,11 @@ export default function editKlinkStore(klinkId: string) {
             try {
                 setStore('loading', true);
                 const updated = await api.updateKlink(payload);
-                updateKlink({ name: updated.name, description: updated.description });
+                updateKlink({
+                    name: updated.name,
+                    description: updated.description,
+                    updatedAt: unixFromReponse(updated.updatedAt)
+                });
                 setStore('loading', false);
                 return { type: 'success' }
             } catch (e) {
@@ -61,7 +67,11 @@ export default function editKlinkStore(klinkId: string) {
             }
         }
         // not shared - update local klink only
-        updateKlink({ name: store.name, description: store.description });
+        updateKlink({
+            name: store.name,
+            description: store.description,
+            updatedAt: Date.now()
+        });
         return { type: 'success' }
     }
 

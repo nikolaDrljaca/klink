@@ -59,7 +59,7 @@ const KlinkImport: Component = () => {
                 <Show when={store.data()}>
                   <h2 class="card-title">{store.data().name}</h2>
                   <div class="flex flex-row font-light text-sm space-x-2">
-                    <span>Updated at 15:43</span>
+                    <span>Updated {store.updatedAt()}</span>
                     <span>&#8226;</span>
                     <span>{store.data().entries.length} Entries</span>
                   </div>

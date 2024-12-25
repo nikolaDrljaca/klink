@@ -4,6 +4,7 @@ import { CreateKlinkPayload, KlinkEntry } from "~/generated";
 import localforage from "localforage";
 import { createEventBus } from "@solid-primitives/event-bus";
 import klinkApi from "~/lib/klinkApi/api";
+import { unixFromReponse } from "./relativeTime";
 
 type ShareKlinkEvent =
     | { type: "success" }
@@ -51,6 +52,7 @@ export default function shareKlinkStore(klinkId: string) {
                     if (curr) {
                         curr.readKey = response.readKey;
                         curr.writeKey = response.writeKey;
+                        curr.updatedAt = unixFromReponse(response.updatedAt)
                     }
                 });
                 setStore('loading', false);

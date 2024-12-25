@@ -15,6 +15,7 @@ public interface KlinkDomainServiceMapper {
     @Mapping(target = "readKey", source = "key.readKey")
     @Mapping(target = "writeKey", source = "key.writeKey")
     @Mapping(target = "id", source = "entity.id")
+    @Mapping(target = "updatedAt", source = "entity.modifiedAt")
     KlinkDto mapTo(
             final KlinkEntity entity,
             final List<KlinkEntryEntity> entries,

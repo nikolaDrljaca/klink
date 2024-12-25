@@ -8,6 +8,8 @@ import org.mapstruct.Mapper;
 import org.openapitools.model.KlinkApiDto;
 import org.openapitools.model.KlinkEntryApiDto;
 
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.List;
 import java.util.UUID;
 
@@ -29,4 +31,8 @@ public interface KlinkActivityMapper {
 
     List<KlinkEntryDto> mapToEntries(final List<KlinkEntryApiDto> entries);
 
+    default Long mapTo(final LocalDateTime date) {
+        var zoneId = ZoneId.systemDefault();
+        return date.atZone(zoneId).toEpochSecond();
+    }
 }
