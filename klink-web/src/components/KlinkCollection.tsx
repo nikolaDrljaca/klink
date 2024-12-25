@@ -1,7 +1,5 @@
 import { Component, For, Show } from "solid-js";
-import { Plus, Import, Text } from "lucide-solid"
 import clsx from "clsx";
-import CreateKlinkModal from "~/components/CreateKlinkModal";
 import { useNavigate } from "@solidjs/router";
 import toast from "solid-toast";
 import KlinkListItem from "~/components/KlinkListItem";
@@ -40,7 +38,7 @@ const KlinkCollection: Component = () => {
     <div class="flex flex-col w-full h-full grow overflow-y-scroll scrollbar-hidden">
 
       <div class="flex flex-row items-center justify-between px-4 pt-6 pb-2">
-        <p class="text-2xl"># Collections</p>
+        <p class="font-inter text-2xl"># Collections</p>
         <Show when={store.reloadInProgress()}>
           <div class="loading loading-spinner"></div>
         </Show>
