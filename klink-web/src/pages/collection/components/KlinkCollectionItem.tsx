@@ -1,7 +1,7 @@
 import clsx from "clsx";
 import { Component, Show } from "solid-js";
 import createModal from "~/components/modal/Modal";
-import { Copy, Edit, Share, Trash } from "lucide-solid";
+import { Copy, Edit, Share2, Trash } from "lucide-solid";
 import DeleteKlinkModal from "~/pages/components/klink-delete-modal/DeleteKlinkModal";
 import ShareKlinkModal from "~/pages/components/klink-share-modal/ShareKlinkModal";
 import EditKlinkModal from "~/pages/components/klink-edit-modal/EditKlinkModal";
@@ -49,7 +49,7 @@ const KlinkCollectionItem: Component<KlinkListItemProps> = (props) => {
           <Copy size={14} />
         </button>
         <button class="btn btn-circle btn-ghost btn-sm" onClick={shareModal.controller.open}>
-          <Share size={14} />
+          <Share2 size={14} />
         </button>
         <button class="btn btn-circle btn-sm btn-ghost" onClick={() => deleteModal.controller.open()}>
           <Trash size={14} />

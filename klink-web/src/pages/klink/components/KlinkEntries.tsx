@@ -14,6 +14,7 @@ const KlinkEntries: Component<KlinkDetailsProps> = (props) => {
   const [inputUrl, setInputUrl] = createSignal("");
   const isShared = () => props.klink().readKey;
   const isReadOnly = () => props.klink().readKey && !props.klink().writeKey;
+
   const inputPlaceholder = () => isReadOnly() ? "You don't have access" : "Paste or Type here";
 
   const handlePaste = (e: ClipboardEvent) => {
@@ -61,7 +62,6 @@ const KlinkEntries: Component<KlinkDetailsProps> = (props) => {
         </Switch>
       </div>
 
-      {/* Button Row */}
       <div class="flex flex-row gap-x-4 px-4 pt-2 pb-4 items-center justify-center w-full">
         <form onSubmit={handleEnter} class="w-full">
           <label class="form-control w-full">
@@ -81,7 +81,7 @@ const KlinkEntries: Component<KlinkDetailsProps> = (props) => {
       </div>
 
       {/* Link List - Container */}
-      <div class="lg:container items-center w-full px-4 space-y-2">
+      <ul class="lg:container items-center w-full px-4 space-y-2">
         {/* List Item */}
         <For each={entries().state}>
           {(item,) =>
@@ -92,7 +92,7 @@ const KlinkEntries: Component<KlinkDetailsProps> = (props) => {
             />
           }
         </For>
-      </div>
+      </ul>
     </div>
   );
 }
