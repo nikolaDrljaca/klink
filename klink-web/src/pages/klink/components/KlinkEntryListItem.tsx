@@ -35,7 +35,7 @@ const KlinkEntryListItem: Component<KlinkEntryListItemProps> = (props) => {
   const LoadingBar: Component = () => <div class="skeleton h-20 w-full"></div>;
 
   return (
-    <div class="card card-compact bg-base-300 w-full">
+    <li class="card card-compact bg-base-300 w-full">
       <div class="flex items-center space-x-4 p-4">
 
         {/* Image */}
@@ -77,7 +77,7 @@ const KlinkEntryListItem: Component<KlinkEntryListItemProps> = (props) => {
         </Show>
 
       </div>
-    </div>
+    </li>
   );
 }
 

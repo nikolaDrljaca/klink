@@ -9,8 +9,6 @@ import makeRelativeTime from "~/lib/relative-time";
 type ShareKlinkEvent =
     | { type: "success" }
     | { type: "failure" }
-    | { type: "readWrite", url: string }
-    | { type: "readOnly", url: string }
 
 export default function shareKlinkStore(klinkId: string) {
     const appBasePath = import.meta.env.VITE_APP_BASE;
@@ -24,14 +22,45 @@ export default function shareKlinkStore(klinkId: string) {
     const [klinkStore, setStore] = createStore({
         klink: klink,
         loading: false,
+        readOnlyChecked: false,
         get isShared() {
             return !!klink.readKey && !!klink.writeKey;
         },
+        get shareLink() {
+            if (klinkStore.readOnlyChecked) {
+                return createReadOnlyLink();
+            }
+            return createShareLink();
+        },
+        get socialShareTarget() {
+            return {
+                title: klinkStore.klink.name,
+                description: klinkStore.klink.description ?? "",
+                url: klinkStore.shareLink
+            }
+        }
     });
+
+    const createShareLink = () => {
+        const url = [`${appBasePath}/c/${klinkStore.klink.id}/i?read_key=${klinkStore.klink.readKey}`];
+        if (klinkStore.klink.writeKey) {
+            url.push(`&write_key=${klinkStore.klink.writeKey}`);
+        }
+        return url.join("");
+    }
+
+    const createReadOnlyLink = () => {
+        const url = [`${appBasePath}/c/${klinkStore.klink.id}/i?read_key=${klinkStore.klink.readKey}`];
+        return url.join("");
+    }
 
     return {
         klinkStore,
         listen,
+
+        setReadOnlyChecked() {
+            setStore('readOnlyChecked', !klinkStore.readOnlyChecked)
+        },
 
         async shareKlink() {
             if (klinkStore.loading) {
@@ -63,24 +92,5 @@ export default function shareKlinkStore(klinkId: string) {
                 setStore('loading', false);
             }
         },
-
-        createShareLink() {
-            const url = [`${appBasePath}/c/${klinkStore.klink.id}/i?read_key=${klinkStore.klink.readKey}`];
-            if (klinkStore.klink.writeKey) {
-                url.push(`&write_key=${klinkStore.klink.writeKey}`);
-            }
-            emit({
-                type: 'readWrite',
-                url: url.join("")
-            });
-        },
-
-        createReadOnlyLink() {
-            const url = [`${appBasePath}/c/${klinkStore.klink.id}/i?read_key=${klinkStore.klink.readKey}`];
-            emit({
-                type: 'readOnly',
-                url: url.join("")
-            });
-        }
     }
 }
