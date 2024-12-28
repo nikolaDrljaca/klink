@@ -42,18 +42,26 @@ const KlinkCollectionItem: Component<KlinkListItemProps> = (props) => {
       </a>
       {/* Button Row */}
       <div class="flex flex-row items-center justify-around w-full pt-4 pl-4">
-        <button class="btn btn-circle btn-ghost btn-sm" onClick={editModal.controller.open}>
-          <Edit size={14} />
-        </button>
-        <button class="btn btn-circle btn-ghost btn-sm" onClick={props.onCopyClick}>
-          <Copy size={14} />
-        </button>
-        <button class="btn btn-circle btn-ghost btn-sm" onClick={shareModal.controller.open}>
-          <Share2 size={14} />
-        </button>
-        <button class="btn btn-circle btn-sm btn-ghost" onClick={() => deleteModal.controller.open()}>
-          <Trash size={14} />
-        </button>
+        <div class="tooltip tooltip-bottom hover:cursor-pointer" data-tip="Edit">
+          <button class="btn btn-circle btn-ghost btn-sm" onClick={editModal.controller.open}>
+            <Edit size={14} />
+          </button>
+        </div>
+        <div class="tooltip tooltip-bottom hover:cursor-pointer" data-tip="Create a Copy">
+          <button class="btn btn-circle btn-ghost btn-sm" onClick={props.onCopyClick}>
+            <Copy size={14} />
+          </button>
+        </div>
+        <div class="tooltip tooltip-bottom hover:cursor-pointer" data-tip="Share">
+          <button class="btn btn-circle btn-ghost btn-sm" onClick={shareModal.controller.open}>
+            <Share2 size={14} />
+          </button>
+        </div>
+        <div class="tooltip tooltip-bottom hover:cursor-pointer" data-tip="Delete">
+          <button class="btn btn-circle btn-sm btn-ghost" onClick={() => deleteModal.controller.open()}>
+            <Trash size={14} />
+          </button>
+        </div>
 
         <deleteModal.Modal>
           <DeleteKlinkModal
