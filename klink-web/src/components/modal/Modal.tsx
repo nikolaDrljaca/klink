@@ -1,7 +1,7 @@
 import { createSignal, ParentProps, Show } from "solid-js";
 import { Portal } from "solid-js/web";
 
-function createModal() {
+function makeModal() {
   const [isOpen, setIsOpen] = createSignal(false);
 
   let dialogRef: HTMLDialogElement;
@@ -42,4 +42,4 @@ function createModal() {
   }
 }
 
-export default createModal;
+export default makeModal;

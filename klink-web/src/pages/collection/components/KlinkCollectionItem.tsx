@@ -1,6 +1,6 @@
 import clsx from "clsx";
 import { Component, Show } from "solid-js";
-import createModal from "~/components/modal/Modal";
+import makeModal from "~/components/modal/Modal";
 import { Copy, Edit, Share2, Trash } from "lucide-solid";
 import DeleteKlinkModal from "~/pages/components/klink-delete-modal/DeleteKlinkModal";
 import ShareKlinkModal from "~/pages/components/klink-share-modal/ShareKlinkModal";
@@ -26,9 +26,9 @@ const KlinkCollectionItem: Component<KlinkListItemProps> = (props) => {
     isSelected() && 'bg-base-300'
   );
 
-  const deleteModal = createModal();
-  const shareModal = createModal();
-  const editModal = createModal();
+  const deleteModal = makeModal();
+  const shareModal = makeModal();
+  const editModal = makeModal();
 
   return (
     <div class={classes()}>
