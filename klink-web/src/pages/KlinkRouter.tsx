@@ -17,7 +17,7 @@ const KlinkRouter: Component = () => {
       <Route path="/" component={() => <Navigate href="/c" />} />
       <Route path="/c" component={KlinkCollectionRoute} />
       <Route path="/c/:klinkId/i" component={KlinkImportRoute} matchFilters={uuidRouteFilter} />
-      <Route path="/c/:klinkId" component={KlinkRoute} />
+      <Route path="/c/:klinkId" component={KlinkRoute} matchFilters={uuidRouteFilter} />
       <Route path="/settings" component={ComingSoonRoute} />
       <Route path="/about" component={ComingSoonRoute} />
       <Route path="*param" component={NotFoundRoute} />

@@ -1,8 +1,11 @@
-import { GlobeLock, Globe } from "lucide-solid";
-import { Accessor, Component, createMemo, createSignal, For, Match, Switch } from "solid-js";
+import { GlobeLock, Globe, ArrowLeft, Share2 } from "lucide-solid";
+import { Accessor, Component, createMemo, createSignal, For, Match, Show, Switch } from "solid-js";
 import { Klink } from "~/types/domain";
 import { createKlinkEntriesStore } from "~/pages/klink/stores/klink-entries-store";
 import KlinkEntryListItem from "~/pages/klink/components/KlinkEntryListItem";
+import { useNavigate } from "@solidjs/router";
+import makeModal from "~/components/modal/Modal";
+import ShareKlinkModal from "~/pages/components/klink-share-modal/ShareKlinkModal";
 
 type KlinkDetailsProps = {
   klink: Accessor<Klink>
@@ -16,6 +19,10 @@ const KlinkEntries: Component<KlinkDetailsProps> = (props) => {
   const isReadOnly = () => props.klink().readKey && !props.klink().writeKey;
 
   const inputPlaceholder = () => isReadOnly() ? "You don't have access" : "Paste or Type here";
+
+  const navigate = useNavigate();
+
+  const shareModal = makeModal();
 
   const handlePaste = (e: ClipboardEvent) => {
     e.preventDefault();
@@ -31,6 +38,16 @@ const KlinkEntries: Component<KlinkDetailsProps> = (props) => {
     setInputUrl("");
   }
 
+  const handleBack = () => {
+    if (history.length <= 2) {
+      navigate('/c', {
+        replace: true
+      });
+    } else {
+      navigate(-1);
+    }
+  }
+
   const deleteEntry = (value: string) => {
     if (isReadOnly()) {
       return;
@@ -41,26 +58,50 @@ const KlinkEntries: Component<KlinkDetailsProps> = (props) => {
   return (
     <div class="flex flex-col w-full h-full grow overflow-y-scroll scrollbar-hidden">
 
-      {/* Top Row */}
+      {/* Share Modal - Shown only on Small Screen */}
+      <shareModal.Modal>
+        <ShareKlinkModal klinkId={props.klink().id} />
+      </shareModal.Modal>
+
+      {/* Top Row - Name */}
       <div class="flex w-full justify-between items-center px-4 pt-4 pb-2">
-        <p class="text-2xl"># {props.klink().name}</p>
-        <Switch>
-          <Match when={isShared()}>
-            <div class="tooltip tooltip-left hover:cursor-pointer" data-tip="This collection is shared.">
-              <button class="btn btn-square btn-primary no-animation">
-                <Globe size={24} />
-              </button>
-            </div>
-          </Match>
-          <Match when={!isShared()}>
-            <div class="tooltip tooltip-left hover:cursor-pointer" data-tip="This collection is local.">
-              <button class="btn btn-square btn-ghost no-animation">
-                <GlobeLock size={24} />
-              </button>
-            </div>
-          </Match>
-        </Switch>
+        <div class="flex items-center gap-x-2">
+          <button class="lg:hidden btn btn-square btn-ghost" onClick={handleBack}>
+            <ArrowLeft size={24} />
+          </button>
+          <p class="text-2xl"># {props.klink().name}</p>
+        </div>
+        <div class="flex items-center gap-x-2">
+          <Switch>
+            <Match when={isShared()}>
+              <div class="tooltip tooltip-left" data-tip="This collection is shared.">
+                <button class="btn btn-square btn-primary no-animation">
+                  <Globe size={24} />
+                </button>
+              </div>
+            </Match>
+            <Match when={!isShared()}>
+              <div class="tooltip tooltip-left" data-tip="This collection is local.">
+                <button class="btn btn-square btn-ghost no-animation">
+                  <GlobeLock size={24} />
+                </button>
+              </div>
+            </Match>
+          </Switch>
+          {/* Share Modal */}
+          <button class="lg:hidden btn" onClick={shareModal.controller.open}>
+            <Share2 size={24} />
+            <p class="sm:block hidden">Share</p>
+          </button>
+        </div>
       </div>
+
+      {/* Description - Only Small Screen */}
+      <Show when={props.klink().description}>
+        {it =>
+          <p class="lg:hidden text-lg text-zinc-400 px-4 pb-2">{it()}</p>
+        }
+      </Show>
 
       <div class="flex flex-row gap-x-4 px-4 pt-2 pb-4 items-center justify-center w-full">
         <form onSubmit={handleEnter} class="w-full">
