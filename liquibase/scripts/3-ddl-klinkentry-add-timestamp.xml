@@ -5,9 +5,13 @@
     xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
 
-    <!-- Include changelogs -->
-    <include file="1-initial-setup.xml" relativeToChangelogFile="true"/>
-    <include file="2-initial-schema.xml" relativeToChangelogFile="true"/>
-    <include file="3-ddl-klinkentry-add-timestamp.xml" relativeToChangelogFile="true"/>
+<changeSet id="add-timestamp-column-to-klink-entry" author="Nemanja Markovic">
+    <addColumn tableName="klink_entry">
+        <column name="created_at" type="timestamp"
+                defaultValueComputed="CURRENT_TIMESTAMP">
+            <constraints nullable="false"/>
+        </column>
+    </addColumn>
+</changeSet>
 
 </databaseChangeLog>
