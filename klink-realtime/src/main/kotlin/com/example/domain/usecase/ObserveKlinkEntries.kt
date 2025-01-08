@@ -1,25 +1,18 @@
 package com.example.domain.usecase
 
-import app.cash.sqldelight.coroutines.asFlow
-import app.cash.sqldelight.coroutines.mapToList
-import com.example.KlinkEntryQueries
-import com.example.Klink_entry
-import kotlinx.coroutines.Dispatchers
+import com.example.domain.model.KlinkEntry
+import com.example.domain.repository.KlinkRepository
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.map
-import org.openapitools.client.models.KlinkEntryApiDto
 import java.util.*
 
+/*
+NOTE: Additional layer present here since the implementation might be replaced with a `Notifier` type abstraction
+if we switch to Exposed and pgjdbc-ng
+ */
 class ObserveKlinkEntries(
-    private val dao: KlinkEntryQueries
+    private val repository: KlinkRepository
 ) {
-
-    fun execute(klinkId: String): Flow<List<KlinkEntryApiDto>> {
-        return dao.findByKlinkId(UUID.fromString(klinkId))
-            .asFlow()
-            .mapToList(Dispatchers.IO)
-            .map { toApiDto(it) }
+    fun execute(klinkId: String): Flow<List<KlinkEntry>> {
+        return repository.findEntriesByKlinkId(UUID.fromString(klinkId))
     }
-
-    private fun toApiDto(values: List<Klink_entry>) = values.map { entry -> KlinkEntryApiDto(entry.value_) }
 }

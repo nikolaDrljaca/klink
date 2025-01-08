@@ -87,6 +87,8 @@ dependencies {
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version")
 
     // project dependencies
+    // NOTE: It's possible to replace this stack with Exposed since it uses https://impossibl.github.io/pgjdbc-ng/ driver
+    // which supports async LISTEN/NOTIFY
     implementation("org.postgresql:postgresql:42.7.4")
     implementation("com.zaxxer:HikariCP:6.0.0")
     implementation("app.cash.sqldelight:jdbc-driver:2.0.2")

@@ -8,5 +8,6 @@
     <!-- Include changelogs -->
     <include file="1-initial-setup.xml" relativeToChangelogFile="true"/>
     <include file="2-initial-schema.xml" relativeToChangelogFile="true"/>
+    <include file="3-klink-notify-change.xml" relativeToChangelogFile="true"/>
 
 </databaseChangeLog>

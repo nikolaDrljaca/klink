@@ -7,26 +7,30 @@ import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
 import io.ktor.server.application.*
 
-fun provideKlinkDatabase(app: Application): KlinkDatabase {
+fun provideHikariDataSource(app: Application): HikariDataSource {
     val url = app.retrieveDatabaseUrl()
-    // extract db host per env
     val hikariConfig = HikariConfig().apply {
         jdbcUrl = url
         driverClassName = "org.postgresql.Driver"
         username = "user"
     }
+    return HikariDataSource(hikariConfig)
+}
 
-    return try {
-        val dataSource = HikariDataSource(hikariConfig)
-        val driver: SqlDriver = dataSource.asJdbcDriver()
+fun provideKlinkDatabase(
+    hikariDataSource: HikariDataSource
+): KlinkDatabase =
+    try {
+        val driver: SqlDriver = hikariDataSource.asJdbcDriver()
+        // wrap in NotifyDriver so klink entry manipulation notifies observers properly
         val notifyDriver = JdbcNotifyDriver(driver)
         KlinkDatabase(notifyDriver)
     } catch (e: Exception) {
         error("Unable to initialize SQLDelight database!")
     }
-}
 
 private fun Application.retrieveDatabaseUrl(): String {
+    // extract db host per env
     val name = "db.url"
     val prop = environment.config.propertyOrNull(name)?.getString()
     if (prop == null) {
