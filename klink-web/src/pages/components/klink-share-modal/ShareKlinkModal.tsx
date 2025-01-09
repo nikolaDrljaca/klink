@@ -95,7 +95,7 @@ const ShareKlinkModal: Component<ShareKlinkModalProps> = (props) => {
           </button>
         </Match>
       </Switch>
-    </div >
+    </div>
   );
 }
 
