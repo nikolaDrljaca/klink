@@ -1,5 +1,5 @@
 import { Copy, GlobeLock } from "lucide-solid";
-import { Component, For, Match, onCleanup, Show, Switch } from "solid-js";
+import { Component, Match, onCleanup, Show, Switch } from "solid-js";
 import toast from "solid-toast";
 import KlinkKeyField from "~/components/KlinkKeyField";
 import { writeClipboard } from "@solid-primitives/clipboard";
@@ -41,17 +41,25 @@ const ShareKlinkModal: Component<ShareKlinkModalProps> = (props) => {
         <Match when={store.klinkStore.isShared}>
           <div class="flex flex-col lg:flex-row w-full space-y-4 lg:space-x-4 lg:space-y-0 py-6">
             <KlinkKeyField key={store.klinkStore.klink.readKey} title={"Read Key"} />
-            <div class="divider divider-horizontal"></div>
-            <KlinkKeyField key={store.klinkStore.klink.writeKey} title={"Write Key"} />
+            <Show when={!store.klinkStore.isReadOnly}>
+              <div class="divider divider-horizontal"></div>
+              <KlinkKeyField key={store.klinkStore.klink.writeKey} title={"Write Key"} />
+            </Show>
           </div>
-          <div class="tooltip" data-tip="Enable to prevent the editing of the Klink by those you share it with.">
-            <div class="form-control">
-              <label class="label cursor-pointer">
-                <span class="">Share as Read Only</span>
-                <input type="checkbox" class="toggle" checked={store.klinkStore.readOnlyChecked} onChange={store.setReadOnlyChecked} />
-              </label>
+          <Show when={!store.klinkStore.isReadOnly}>
+            <div class="tooltip" data-tip="Enable to prevent the editing of the Klink by those you share it with.">
+              <div class="form-control">
+                <label class="label cursor-pointer">
+                  <span class="">Share as Read Only</span>
+                  <input
+                    type="checkbox"
+                    class="toggle"
+                    checked={store.klinkStore.readOnlyChecked}
+                    onChange={store.setReadOnlyChecked} />
+                </label>
+              </div>
             </div>
-          </div>
+          </Show>
 
           <div class="divider">Share</div>
 
@@ -87,7 +95,7 @@ const ShareKlinkModal: Component<ShareKlinkModalProps> = (props) => {
           </button>
         </Match>
       </Switch>
-    </div>
+    </div >
   );
 }
 
