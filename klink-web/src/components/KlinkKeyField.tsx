@@ -20,7 +20,7 @@ const KlinkKeyField: Component<{ key: string, title: string }> = (props) => {
           type="text"
           value={props.key ?? ""}
           disabled={true}
-          class="input input-bordered w-full lg:max-w-xs join-item" />
+          class="input input-bordered w-full join-item" />
         <button class="btn join-item" onClick={onCopy}>
           <Copy size={14} />
         </button>
