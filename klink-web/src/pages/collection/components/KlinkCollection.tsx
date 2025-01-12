@@ -76,7 +76,7 @@ const KlinkCollection: Component = () => {
 
       {/* Klink List - Container */}
       <Show when={klinkNotEmpty()} fallback={<KlinkListEmpty />}>
-        <div class="lg:container items-center w-full">
+        <div class="lg:container items-center w-full" id="klink-collection">
           {/* List Item */}
           <For each={store.state.klinks}>
             {(item,) =>
