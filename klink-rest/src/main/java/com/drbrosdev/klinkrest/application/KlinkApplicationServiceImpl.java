@@ -13,7 +13,9 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Stream;
 
+import static java.util.Collections.emptyList;
 import static java.util.Objects.isNull;
+import static org.apache.commons.collections4.CollectionUtils.isEmpty;
 
 @Log4j2
 @Service
@@ -158,6 +160,14 @@ public class KlinkApplicationServiceImpl implements KlinkApplicationService {
         return klinkDomainService.createKlinkEntries(
                 klinkId,
                 entries);
+    }
+
+    @Override
+    public List<UUID> queryExistingKlinks(List<UUID> klinkIds) {
+        if (isEmpty(klinkIds)) {
+            return emptyList();
+        }
+        return klinkDomainService.queryExistingKlinks(klinkIds);
     }
 
     private boolean validateReadAccess(

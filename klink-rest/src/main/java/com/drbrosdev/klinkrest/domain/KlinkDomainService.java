@@ -22,4 +22,6 @@ public interface KlinkDomainService {
     Stream<KlinkEntryDto> createKlinkEntries(
             UUID klinkId,
             List<KlinkEntryDto> entries);
+
+    List<UUID> queryExistingKlinks(List<UUID> klinkIds);
 }
