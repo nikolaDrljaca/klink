@@ -1,4 +1,4 @@
-import { Component, For, Show } from "solid-js";
+import { Component, For, onMount, Show } from "solid-js";
 import clsx from "clsx";
 import { useNavigate } from "@solidjs/router";
 import toast from "solid-toast";
@@ -20,8 +20,9 @@ const KlinkCollection: Component = () => {
   const navigate = useNavigate();
 
   // reload data for shared collections
-  // TODO: wrap in onMount
-  store.reloadKlinkData();
+  onMount(() => {
+    store.reloadKlinkData();
+  });
 
   const onSelectKlink = (id: string) => {
     navigate(`/c/${id}`);
