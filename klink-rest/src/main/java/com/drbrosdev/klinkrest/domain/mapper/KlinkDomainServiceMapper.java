@@ -1,6 +1,7 @@
 package com.drbrosdev.klinkrest.domain.mapper;
 
 import com.drbrosdev.klinkrest.domain.dto.KlinkDto;
+import com.drbrosdev.klinkrest.domain.dto.KlinkEntryDto;
 import com.drbrosdev.klinkrest.persistence.entity.KlinkEntity;
 import com.drbrosdev.klinkrest.persistence.entity.KlinkEntryEntity;
 import com.drbrosdev.klinkrest.persistence.entity.KlinkKeyEntity;
@@ -20,5 +21,8 @@ public interface KlinkDomainServiceMapper {
             final KlinkEntity entity,
             final List<KlinkEntryEntity> entries,
             final KlinkKeyEntity key);
+
+    @Mapping(target = "value", source = "value")
+    KlinkEntryDto mapTo(final KlinkEntryEntity value);
 
 }
