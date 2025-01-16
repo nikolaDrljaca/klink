@@ -1,6 +1,7 @@
 package com.drbrosdev.klinkrest.domain;
 
 import com.drbrosdev.klinkrest.domain.dto.KlinkDto;
+import com.drbrosdev.klinkrest.domain.dto.KlinkEntryDto;
 import com.drbrosdev.klinkrest.domain.mapper.KlinkDomainServiceMapper;
 import com.drbrosdev.klinkrest.persistence.entity.KlinkEntity;
 import com.drbrosdev.klinkrest.persistence.entity.KlinkEntryEntity;
@@ -16,9 +17,12 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Stream;
 
 import static java.time.LocalDateTime.now;
+import static java.util.function.Predicate.not;
 import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toSet;
 
 @Service
 @RequiredArgsConstructor
@@ -85,6 +89,30 @@ public class KlinkDomainServiceImpl implements KlinkDomainService {
         return retrieveKlink(klinkId);
     }
 
+    @Override
+    @Transactional
+    public Stream<KlinkEntryDto> createKlinkEntries(
+            UUID klinkId,
+            List<KlinkEntryDto> entries) {
+        // fetch existing klinks
+        var existingKlinks = klinkEntryRepository.findByKlinkId(klinkId)
+                .stream()
+                .map(KlinkEntryEntity::getValue)
+                .collect(toSet());
+        // create new klinks
+        var entities = entries.stream()
+                // drop if already existing
+                .filter(not(it -> existingKlinks.contains(it.getValue())))
+                .map(it -> createKlinkEntryEntity(
+                        klinkId,
+                        it))
+                .collect(toList());
+        // map and return
+        return klinkEntryRepository.saveAll(entities)
+                .stream()
+                .map(mapper::mapTo);
+    }
+
     private KlinkDto retrieveKlink(UUID klinkId) {
         var klink = klinkRepository.findById(klinkId)
                 .orElseThrow(() -> new EntityNotFoundException("Klink not found for ID: " + klinkId));
@@ -127,10 +155,18 @@ public class KlinkDomainServiceImpl implements KlinkDomainService {
     private List<KlinkEntryEntity> createKlinkEntryEntity(KlinkDto klinkDto) {
         return klinkDto.getEntries()
                 .stream()
-                .map(it -> KlinkEntryEntity.builder()
-                        .klinkId(klinkDto.getId())
-                        .value(it.getValue())
-                        .build())
+                .map(it -> createKlinkEntryEntity(
+                        klinkDto.getId(),
+                        it))
                 .collect(toList());
+    }
+
+    private KlinkEntryEntity createKlinkEntryEntity(
+            UUID klinkId,
+            KlinkEntryDto entry) {
+        return KlinkEntryEntity.builder()
+                .klinkId(klinkId)
+                .value(entry.getValue())
+                .build();
     }
 }
