@@ -33,4 +33,6 @@ public interface KlinkApplicationService {
             String readKey,
             String writeKey,
             List<KlinkEntryDto> entries);
+
+    List<UUID> queryExistingKlinks(List<UUID> klinkIds);
 }

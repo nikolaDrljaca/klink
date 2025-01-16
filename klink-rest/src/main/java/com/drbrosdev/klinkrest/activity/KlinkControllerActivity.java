@@ -80,6 +80,14 @@ public class KlinkControllerActivity implements KlinkApi {
     }
 
     @Override
+    public ResponseEntity<List<UUID>> queryExisting(List<UUID> klinkIds) {
+        log.info(
+                "queryExisting called with ids: {}",
+                klinkIds);
+        return ok(klinkApplicationService.queryExistingKlinks(klinkIds));
+    }
+
+    @Override
     public ResponseEntity<Void> deleteKlink(
             UUID klinkId,
             String readKey,

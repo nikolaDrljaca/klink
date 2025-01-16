@@ -113,6 +113,14 @@ public class KlinkDomainServiceImpl implements KlinkDomainService {
                 .map(mapper::mapTo);
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    public List<UUID> queryExistingKlinks(List<UUID> klinkIds) {
+        return klinkRepository.findByIdIn(klinkIds)
+                .map(KlinkEntity::getId)
+                .toList();
+    }
+
     private KlinkDto retrieveKlink(UUID klinkId) {
         var klink = klinkRepository.findById(klinkId)
                 .orElseThrow(() -> new EntityNotFoundException("Klink not found for ID: " + klinkId));

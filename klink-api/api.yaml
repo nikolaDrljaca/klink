@@ -30,6 +30,33 @@ paths:
                 $ref: "#/components/schemas/Klink"
         '502':
           description: "Error."
+  /klink/queryExisting:
+    post:
+      summary: "Query existing klinks by ID."
+      operationId: queryExisting
+      tags:
+        - klink
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                type: string
+                format: uuid
+      responses:
+        '200':
+          description: "Collection of klink IDs."
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+                  format: uuid
+        '502':
+          description: "Error."
   /klink/{klinkId}:
     get:
       summary: "Get a klink by id."
