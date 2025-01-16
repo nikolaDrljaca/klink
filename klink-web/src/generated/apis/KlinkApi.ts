@@ -17,6 +17,7 @@ import * as runtime from '../runtime';
 import type {
   CreateKlinkPayload,
   Klink,
+  KlinkEntry,
   KlinkSyncStatus,
   PatchKlinkPayload,
 } from '../models/index';
@@ -25,6 +26,8 @@ import {
     CreateKlinkPayloadToJSON,
     KlinkFromJSON,
     KlinkToJSON,
+    KlinkEntryFromJSON,
+    KlinkEntryToJSON,
     KlinkSyncStatusFromJSON,
     KlinkSyncStatusToJSON,
     PatchKlinkPayloadFromJSON,
@@ -33,6 +36,13 @@ import {
 
 export interface CreateKlinkRequest {
     createKlinkPayload: CreateKlinkPayload;
+}
+
+export interface CreateKlinkEntryRequest {
+    klinkId: string;
+    readKey: string;
+    writeKey: string;
+    klinkEntry: Array<KlinkEntry>;
 }
 
 export interface DeleteKlinkRequest {
@@ -45,6 +55,10 @@ export interface GetKlinkRequest {
     klinkId: string;
     readKey: string;
     writeKey?: string;
+}
+
+export interface QueryExistingRequest {
+    requestBody: Array<string>;
 }
 
 export interface SyncKlinkRequest {
@@ -98,6 +112,70 @@ export class KlinkApi extends runtime.BaseAPI {
     async createKlink(requestParameters: CreateKlinkRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Klink> {
         const response = await this.createKlinkRaw(requestParameters, initOverrides);
         return await response.value();
+    }
+
+    /**
+     * Add a new entry to a Klink.
+     */
+    async createKlinkEntryRaw(requestParameters: CreateKlinkEntryRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+        if (requestParameters['klinkId'] == null) {
+            throw new runtime.RequiredError(
+                'klinkId',
+                'Required parameter "klinkId" was null or undefined when calling createKlinkEntry().'
+            );
+        }
+
+        if (requestParameters['readKey'] == null) {
+            throw new runtime.RequiredError(
+                'readKey',
+                'Required parameter "readKey" was null or undefined when calling createKlinkEntry().'
+            );
+        }
+
+        if (requestParameters['writeKey'] == null) {
+            throw new runtime.RequiredError(
+                'writeKey',
+                'Required parameter "writeKey" was null or undefined when calling createKlinkEntry().'
+            );
+        }
+
+        if (requestParameters['klinkEntry'] == null) {
+            throw new runtime.RequiredError(
+                'klinkEntry',
+                'Required parameter "klinkEntry" was null or undefined when calling createKlinkEntry().'
+            );
+        }
+
+        const queryParameters: any = {};
+
+        if (requestParameters['readKey'] != null) {
+            queryParameters['readKey'] = requestParameters['readKey'];
+        }
+
+        if (requestParameters['writeKey'] != null) {
+            queryParameters['writeKey'] = requestParameters['writeKey'];
+        }
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        headerParameters['Content-Type'] = 'application/json';
+
+        const response = await this.request({
+            path: `/klink/{klinkId}/entries`.replace(`{${"klinkId"}}`, encodeURIComponent(String(requestParameters['klinkId']))),
+            method: 'POST',
+            headers: headerParameters,
+            query: queryParameters,
+            body: requestParameters['klinkEntry']!.map(KlinkEntryToJSON),
+        }, initOverrides);
+
+        return new runtime.VoidApiResponse(response);
+    }
+
+    /**
+     * Add a new entry to a Klink.
+     */
+    async createKlinkEntry(requestParameters: CreateKlinkEntryRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
+        await this.createKlinkEntryRaw(requestParameters, initOverrides);
     }
 
     /**
@@ -199,6 +277,42 @@ export class KlinkApi extends runtime.BaseAPI {
      */
     async getKlink(requestParameters: GetKlinkRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Klink> {
         const response = await this.getKlinkRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
+     * Query existing klinks by ID.
+     */
+    async queryExistingRaw(requestParameters: QueryExistingRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Array<string>>> {
+        if (requestParameters['requestBody'] == null) {
+            throw new runtime.RequiredError(
+                'requestBody',
+                'Required parameter "requestBody" was null or undefined when calling queryExisting().'
+            );
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        headerParameters['Content-Type'] = 'application/json';
+
+        const response = await this.request({
+            path: `/klink/queryExisting`,
+            method: 'POST',
+            headers: headerParameters,
+            query: queryParameters,
+            body: requestParameters['requestBody'],
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse<any>(response);
+    }
+
+    /**
+     * Query existing klinks by ID.
+     */
+    async queryExisting(requestParameters: QueryExistingRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Array<string>> {
+        const response = await this.queryExistingRaw(requestParameters, initOverrides);
         return await response.value();
     }
 

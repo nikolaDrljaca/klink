@@ -13,6 +13,25 @@ export default function collectionStore() {
 
     const reloadKlinkData = async () => {
         setLoading(true);
+        // check existing first
+        const ids = state.klinks
+            // filter out local klinks
+            .filter(it => !!it.readKey)
+            .map(it => it.id);
+        if (ids.length != 0) {
+            const queryExistingResponse = new Set(await api.queryExisting({ requestBody: ids }));
+            update(current => {
+                for (const klink of current.klinks) {
+                    const isShared = queryExistingResponse.has(klink.id);
+                    if (!isShared) {
+                        klink.readKey = null;
+                        klink.writeKey = null;
+                    }
+                }
+            });
+        }
+
+        // TODO: Should be done in bulk
         for (const klink of state.klinks) {
             if (!klink.readKey) {
                 continue;
