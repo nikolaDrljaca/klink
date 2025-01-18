@@ -2,8 +2,10 @@ package com.example.data.notifier
 
 import kotlinx.coroutines.flow.Flow
 
-interface KlinkDatabaseNotifier {
+interface KlinkDatabaseNotifier : AutoCloseable {
 
-    fun klinkEntityNotifier(): Flow<List<NotifierData>>
+    fun klinkEntityNotifier(): Flow<KlinkNotifierData>
+
+    fun klinkEntryEntityNotifier(): Flow<KlinkEntryNotifierData>
 
 }

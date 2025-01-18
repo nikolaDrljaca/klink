@@ -1,8 +1,8 @@
 package com.example.framework.koin
 
 import com.example.KlinkDatabase
+import com.example.data.notifier.KlinkAsyncDatabaseNotifier
 import com.example.data.notifier.KlinkDatabaseNotifier
-import com.example.data.notifier.KlinkPollingDatabaseNotifier
 import com.example.data.provideHikariDataSource
 import com.example.data.provideKlinkDatabase
 import com.example.domain.KlinkSyncProcessor
@@ -36,10 +36,7 @@ fun dataModule() = module {
     single { get<KlinkDatabase>().klinkEntryQueries }
 
     single {
-        KlinkPollingDatabaseNotifier(
-            dispatcher = get(named(CoroutineModuleName.IO)),
-            dataSource = get()
-        )
+        KlinkAsyncDatabaseNotifier(get())
     } bind KlinkDatabaseNotifier::class
 }
 
@@ -54,13 +51,20 @@ fun domainModule() = module {
         )
     } bind KlinkRepository::class
 
-    factory { ObserveKlinkEntries(get()) }
+    factory {
+        ObserveKlinkEntries(
+            notifier = get(),
+            repository = get()
+        )
+    }
+
     factory {
         CheckKlinkAccess(
             dispatcher = get(named(CoroutineModuleName.Default)),
             repo = get()
         )
     }
+
     factory {
         KlinkSyncProcessor(
             scope = get(),

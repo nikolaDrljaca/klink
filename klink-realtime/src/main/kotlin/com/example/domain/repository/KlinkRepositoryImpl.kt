@@ -1,7 +1,5 @@
 package com.example.domain.repository
 
-import app.cash.sqldelight.coroutines.asFlow
-import app.cash.sqldelight.coroutines.mapToList
 import com.example.KlinkEntryQueries
 import com.example.KlinkKeyQueries
 import com.example.KlinkQueries
@@ -9,8 +7,6 @@ import com.example.domain.model.KlinkEntry
 import com.example.domain.model.KlinkKey
 import com.example.domain.model.KlinkKeys
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.withContext
 import java.util.*
 
@@ -52,20 +48,29 @@ class KlinkRepositoryImpl(
 
     override suspend fun replaceEntries(klinkId: UUID, entries: List<KlinkEntry>) = withContext(dispatcher) {
         klinkEntryDao.transaction {
-            // delete existing entries
-            klinkEntryDao.deleteByKlinkId(klinkId)
-            // insert new ones
-            entries.forEach { entry -> klinkEntryDao.insertKlinkEntry(klinkId, entry.url) }
+            // current entries
+            val current = retrieveEntriesByKlinkId(klinkId).toSet()
+            // entries not stored in current -> create them
+            entries
+                .asSequence()
+                .filter { !current.contains(it) }
+                .forEach { entry -> klinkEntryDao.insertKlinkEntry(klinkId, entry.url) }
+            // entries in current but not in `entries` -> delete them
+            current.asSequence()
+                .filter { !entries.contains(it) }
+                .forEach { entry -> klinkEntryDao.deleteKlinkEntryByValue(klinkId, entry.url) }
         }
     }
 
-    override fun findEntriesByKlinkId(klinkId: UUID): Flow<List<KlinkEntry>> {
+    override suspend fun findEntriesByKlinkId(klinkId: UUID): List<KlinkEntry> = withContext(dispatcher) {
+        retrieveEntriesByKlinkId(klinkId)
+    }
+
+    private fun retrieveEntriesByKlinkId(klinkId: UUID): List<KlinkEntry> {
         return klinkEntryDao.findByKlinkId(
             klinkId = klinkId,
             mapper = { _, _, url -> KlinkEntry.create(value = url) }
         )
-            .asFlow()
-            .mapToList(dispatcher)
-            .flowOn(dispatcher)
+            .executeAsList()
     }
 }
