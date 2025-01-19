@@ -46,7 +46,7 @@ export default function importKlinkStore() {
             writeKey: data.latest.writeKey
         }
         store.update(state => {
-            state.klinks.push(klink);
+            state.klinks.unshift(klink);
         });
     }
 
