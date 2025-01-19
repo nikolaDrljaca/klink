@@ -25,11 +25,11 @@ class KlinkWsSyncSessionManager : KoinComponent {
         // check if session exists
         if (sessions.containsKey(data)) {
             val existingSession = sessions[data]!!
-            LOG.info("Attaching existing session for ${data.klinkId}")
+            LOG.info("Attaching to existing session for ${data.klinkId}")
             return CreateSessionResult.Session(existingSession)
         }
         // create new session
-        LOG.info("Creating session for ${data.klinkId}")
+        LOG.info("Creating new session for ${data.klinkId}")
         val accessProbe = either {
             val id = catch({ UUID.fromString(data.klinkId) }) {
                 LOG.warn("Passed klink ID is not a valid UUID! - ${data.klinkId}")
@@ -64,5 +64,9 @@ class KlinkWsSyncSessionManager : KoinComponent {
         return CreateSessionResult.Session(session)
     }
 
-    fun remove(sessionData: KlinkWsSyncSessionData) = sessions.remove(sessionData)
+    fun remove(sessionData: KlinkWsSyncSessionData) = sessions[sessionData]?.let {
+        LOG.info("Removing session for ${sessionData.klinkId}")
+        sessions.remove(sessionData)
+        Unit
+    }
 }

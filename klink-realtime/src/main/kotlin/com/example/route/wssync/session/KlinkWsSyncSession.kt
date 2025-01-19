@@ -2,12 +2,11 @@ package com.example.route.wssync.session
 
 import com.example.LOG
 import com.example.data.notifier.KlinkDatabaseNotifier
-import com.example.data.notifier.NotifierData
+import com.example.data.notifier.Operation
 import com.example.domain.KlinkSyncProcessor
 import com.example.domain.model.KlinkEntry
 import com.example.domain.usecase.ObserveKlinkEntries
-import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.*
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import org.openapitools.client.models.KlinkEntryApiDto
@@ -48,16 +47,21 @@ class KlinkWsSyncSession(
         }
     }
 
-    private fun createNotifierFlow() = databaseNotifier.klinkEntityNotifier()
-        .map {
-            val notifierData = it.find { data -> data.row.id == klinkId }
-            notifierData?.let { data ->
-                when {
-                    data.operation == NotifierData.Operation.DELETED -> true
-                    else -> false
+    private fun createNotifierFlow() = flow {
+        // trigger combine with initial value
+        emit(false)
+        // emit all values from notifier
+        emitAll(
+            databaseNotifier.klinkEntityNotifier()
+                .filter { it.row.id == klinkId }
+                .map {
+                    when {
+                        it.operation == Operation.DELETED -> true
+                        else -> false
+                    }
                 }
-            } ?: false
-        }
+        )
+    }
 
     // TODO: Mapping to ApiDtos should be done in routing layer
     private fun createSessionPayloadFlow() = observeKlinkEntries.execute(klinkId)

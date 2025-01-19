@@ -2,7 +2,6 @@ package com.example.domain.repository
 
 import com.example.domain.model.KlinkEntry
 import com.example.domain.model.KlinkKeys
-import kotlinx.coroutines.flow.Flow
 import java.util.*
 
 interface KlinkRepository {
@@ -19,5 +18,5 @@ interface KlinkRepository {
 
     suspend fun replaceEntries(klinkId: UUID, entries: List<KlinkEntry>)
 
-    fun findEntriesByKlinkId(klinkId: UUID): Flow<List<KlinkEntry>>
+    suspend fun findEntriesByKlinkId(klinkId: UUID): List<KlinkEntry>
 }

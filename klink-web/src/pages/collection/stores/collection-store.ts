@@ -1,6 +1,7 @@
 import { createSignal } from "solid-js";
 import useKlinkIdParam from "~/hooks/use-klinkid-params";
 import makeKlinkApi from "~/lib/make-klink-api";
+import makePromise from "~/lib/make-promise";
 import { useAppStore } from "~/stores/app-store-context";
 import { Klink } from "~/types/domain";
 
@@ -19,7 +20,13 @@ export default function collectionStore() {
             .filter(it => !!it.readKey)
             .map(it => it.id);
         if (ids.length != 0) {
-            const queryExistingResponse = new Set(await api.queryExisting({ requestBody: ids }));
+            const queryExistingRequest = makePromise(api.queryExisting);
+            const [err, data] = await queryExistingRequest({ requestBody: ids });
+            if (err) {
+                setLoading(false);
+                return;
+            }
+            const queryExistingResponse = new Set(data);
             update(current => {
                 for (const klink of current.klinks) {
                     const isShared = queryExistingResponse.has(klink.id);
