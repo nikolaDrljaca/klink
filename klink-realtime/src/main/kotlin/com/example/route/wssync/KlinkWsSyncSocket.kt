@@ -8,7 +8,7 @@ import io.ktor.server.routing.*
 import io.ktor.server.util.*
 import io.ktor.server.websocket.*
 import io.ktor.websocket.*
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.*
 
 fun Routing.klinkWsSyncSocket() {
     val sessionManager = KlinkWsSyncSessionManager()
@@ -31,33 +31,33 @@ fun Routing.klinkWsSyncSocket() {
             is CreateSessionResult.Session -> result.session
         }
         // send changes down to the client
-        val valueFlowJob = launch {
-            session.eventFlow()
-                .collect {
-                    when (it) {
-                        SyncSessionEvent.KlinkDeleted -> close(
-                            CloseReason(
-                                CloseReason.Codes.CANNOT_ACCEPT,
-                                "Invalid request."
-                            )
+        val valueFlowJob = session.eventFlow()
+            .onEach {
+                when (it) {
+                    SyncSessionEvent.KlinkDeleted -> close(
+                        CloseReason(
+                            CloseReason.Codes.CANNOT_ACCEPT,
+                            "Invalid request."
                         )
+                    )
 
-                        is SyncSessionEvent.Payload -> sendSerialized(it.value)
-                    }
-                }
-        }
-        // process incoming frames -> pass to session
-        try {
-            for (frame in incoming) {
-                when (frame) {
-                    is Frame.Text -> session.process(frame.readText())
-                    else -> Unit
+                    is SyncSessionEvent.Payload -> sendSerialized(it.value)
                 }
             }
-        } finally {
-            valueFlowJob.cancel()
-            sessionManager.remove(sessionData)
-        }
+            // launches a new job, not blocking the session handler
+            .launchIn(this)
+
+        // process incoming frames -> pass to session
+        incoming.receiveAsFlow()
+            // runs if the flow is cancelled or completes normally
+            .onCompletion {
+                valueFlowJob.cancel()
+                sessionManager.remove(sessionData)
+            }
+            .filterIsInstance<Frame.Text>()
+            .map { it.readText() }
+            // calling collect blocks the socket handler, keeping it open
+            .collect { session.process(it) }
     }
 }
 
