@@ -21,7 +21,8 @@ const KlinkCollection: Component = () => {
 
   // reload data for shared collections
   onMount(() => {
-    store.reloadKlinkData();
+    store.reloadKlinkData()
+        .then();
   });
 
   const onSelectKlink = (id: string) => {

@@ -175,6 +175,7 @@ public class KlinkDomainServiceImpl implements KlinkDomainService {
         return KlinkEntryEntity.builder()
                 .klinkId(klinkId)
                 .value(entry.getValue())
+                .createdAt(now())
                 .build();
     }
 }

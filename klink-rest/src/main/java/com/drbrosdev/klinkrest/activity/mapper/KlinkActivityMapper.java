@@ -5,6 +5,8 @@ import com.drbrosdev.klinkrest.domain.dto.KlinkEntryDto;
 import com.drbrosdev.klinkrest.framework.OptionalMapperUtils;
 import jakarta.annotation.Nullable;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.ReportingPolicy;
 import org.openapitools.model.KlinkApiDto;
 import org.openapitools.model.KlinkEntryApiDto;
 
@@ -15,11 +17,14 @@ import java.util.UUID;
 
 @Mapper(
         componentModel = "spring",
+        unmappedTargetPolicy = ReportingPolicy.ERROR,
         uses = OptionalMapperUtils.class)
 public interface KlinkActivityMapper {
 
     KlinkApiDto mapTo(final KlinkDto klinkDto);
 
+    @Mapping(target = "updatedAt", ignore = true)
+    @Mapping(target = "entries", ignore = true)
     KlinkDto mapTo(
             final UUID id,
             final String readKey,
