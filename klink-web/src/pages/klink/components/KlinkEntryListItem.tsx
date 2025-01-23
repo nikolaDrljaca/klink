@@ -16,9 +16,11 @@ const [getDetails, invalidate] = makeCache(
   (url: string) => getUrlMetadata(url),
   {
     storage: localStorage,
-    expires: 5 * 60 * 60 * 1000
+    expires: 24 * 60 * 60 * 1000
   }
 );
+
+const faviconRequestUrl = (url: string) => `https://t2.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=${url}&size=32`;
 
 const KlinkEntryListItem: Component<KlinkEntryListItemProps> = (props) => {
   const [pageDetails, { }] = createResource(props.entry.value, getDetails);
@@ -41,7 +43,7 @@ const KlinkEntryListItem: Component<KlinkEntryListItemProps> = (props) => {
         {/* Image */}
         <div class="relative h-6 w-6 flex-shrink-0">
           <Image
-            src={`https://www.google.com/s2/favicons?domain=${props.entry.value}&sz=32`}
+            src={faviconRequestUrl(props.entry.value)}
             width={32}
             height={32}
             alt=""

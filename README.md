@@ -50,3 +50,8 @@ This way the application stack can be tested locally as if it were running in a 
 Stop the stack with `make stop-prodlike`.
 
 To view db contents, use the IntelliJ integrated DB tool.
+
+## Klink Extension
+
+To support the applications workflow, a chrome extension is maintained [here](https://github.com/nikolaDrljaca/klink-ext).
+

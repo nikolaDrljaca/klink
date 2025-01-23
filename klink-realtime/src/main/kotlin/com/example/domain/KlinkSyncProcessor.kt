@@ -1,6 +1,7 @@
 package com.example.domain
 
-import com.example.data.KlinkRepository
+import com.example.domain.model.KlinkEntry
+import com.example.domain.repository.KlinkRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -14,12 +15,12 @@ class KlinkSyncProcessor(
     private val repo: KlinkRepository,
     private val klinkId: String
 ) {
-    private val jobSink = MutableSharedFlow<Payload>(
+    private val jobSink = MutableSharedFlow<List<KlinkEntry>>(
         replay = 0,
         extraBufferCapacity = 0
     )
 
-    suspend fun push(payload: Payload) = coroutineScope {
+    suspend fun push(payload: List<KlinkEntry>) = coroutineScope {
         jobSink.emit(payload)
     }
 
@@ -27,13 +28,9 @@ class KlinkSyncProcessor(
         .flatMapConcat { handleJob(it) }
         .launchIn(scope)
 
-    private fun handleJob(payload: Payload) = flow {
+    private fun handleJob(payload: List<KlinkEntry>) = flow {
         val id = UUID.fromString(klinkId)
-        repo.replaceEntries(id, payload.entries)
+        repo.replaceEntries(id, payload)
         emit(Unit)
     }
-
-    data class Payload(
-        val entries: List<String>
-    )
 }

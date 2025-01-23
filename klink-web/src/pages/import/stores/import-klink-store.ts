@@ -7,8 +7,9 @@ import { useAppStore } from "~/stores/app-store-context";
 import { Klink } from "~/types/domain";
 
 export default function importKlinkStore() {
-    const { readKey, writeKey } = useKlinkKeyParams();
     const klinkId = useKlinkIdParam();
+    const { readKey, writeKey } = useKlinkKeyParams();
+
     const api = makeKlinkApi();
     const request = async () => {
         const curr = klinkId();
@@ -22,14 +23,15 @@ export default function importKlinkStore() {
         });
     }
     const [data, { refetch }] = createResource(request);
+
     const store = useAppStore();
-    const existingIds = store.state.klinks.map(it => it.id);
 
     const relativeTime = makeRelativeTime();
 
     const importKlink = () => {
+        const existingIds = new Set(store.state.klinks.map(it => it.id));
         // if the klink already exists, ignore
-        if (existingIds.includes(data.latest.id)) {
+        if (existingIds.has(data.latest.id)) {
             return;
         }
         if (!data.latest) {
@@ -44,7 +46,7 @@ export default function importKlinkStore() {
             writeKey: data.latest.writeKey
         }
         store.update(state => {
-            state.klinks.push(klink);
+            state.klinks.unshift(klink);
         });
     }
 

@@ -24,7 +24,13 @@ export default function shareKlinkStore(klinkId: string) {
         loading: false,
         readOnlyChecked: false,
         get isShared() {
-            return !!klink.readKey && !!klink.writeKey;
+            return !!klink.readKey;
+        },
+        get isReadOnly() {
+            if (!!klink.writeKey) {
+                return false;
+            }
+            return !!klink.readKey;
         },
         get shareLink() {
             if (klinkStore.readOnlyChecked) {

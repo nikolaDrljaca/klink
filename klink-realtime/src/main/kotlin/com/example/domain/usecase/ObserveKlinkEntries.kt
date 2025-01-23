@@ -1,25 +1,25 @@
 package com.example.domain.usecase
 
-import app.cash.sqldelight.coroutines.asFlow
-import app.cash.sqldelight.coroutines.mapToList
-import com.example.KlinkEntryQueries
-import com.example.Klink_entry
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.map
-import org.openapitools.client.models.KlinkEntryApiDto
+import com.example.data.notifier.KlinkAsyncDatabaseNotifier
+import com.example.domain.model.KlinkEntry
+import com.example.domain.repository.KlinkRepository
+import kotlinx.coroutines.flow.*
 import java.util.*
 
 class ObserveKlinkEntries(
-    private val dao: KlinkEntryQueries
+    private val notifier: KlinkAsyncDatabaseNotifier,
+    private val repository: KlinkRepository
 ) {
-
-    fun execute(klinkId: String): Flow<List<KlinkEntryApiDto>> {
-        return dao.findByKlinkId(UUID.fromString(klinkId))
-            .asFlow()
-            .mapToList(Dispatchers.IO)
-            .map { toApiDto(it) }
+    fun execute(klinkId: String): Flow<List<KlinkEntry>> = flow {
+        // trigger collectors with initial value
+        val id = UUID.fromString(klinkId)
+        emit(repository.findEntriesByKlinkId(id))
+        // collect each notification and fetch
+        emitAll(
+            notifier.klinkEntryEntityNotifier()
+                // take only entries for current klinkId
+                .filter { it.row.klinkId == klinkId }
+                .map { repository.findEntriesByKlinkId(id) }
+        )
     }
-
-    private fun toApiDto(values: List<Klink_entry>) = values.map { entry -> KlinkEntryApiDto(entry.value_) }
 }

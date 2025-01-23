@@ -11,8 +11,11 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Stream;
 
+import static java.util.Collections.emptyList;
 import static java.util.Objects.isNull;
+import static org.apache.commons.collections4.CollectionUtils.isEmpty;
 
 @Log4j2
 @Service
@@ -136,6 +139,35 @@ public class KlinkApplicationServiceImpl implements KlinkApplicationService {
         return klinkDomainService.updateKlink(
                 klink.getId(),
                 klink);
+    }
+
+    @Override
+    public Stream<KlinkEntryDto> createKlinkEntries(
+            UUID klinkId,
+            String readKey,
+            String writeKey,
+            List<KlinkEntryDto> entries) {
+        // fetch klink
+        var klink = klinkDomainService.getKlink(klinkId);
+        // check write access
+        if (Boolean.FALSE.equals(validateWriteAccess(
+                klink,
+                readKey,
+                writeKey))) {
+            throw new IllegalArgumentException("Access keys don't match!");
+        }
+        // create entries and return
+        return klinkDomainService.createKlinkEntries(
+                klinkId,
+                entries);
+    }
+
+    @Override
+    public List<UUID> queryExistingKlinks(List<UUID> klinkIds) {
+        if (isEmpty(klinkIds)) {
+            return emptyList();
+        }
+        return klinkDomainService.queryExistingKlinks(klinkIds);
     }
 
     private boolean validateReadAccess(

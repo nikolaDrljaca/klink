@@ -101,4 +101,7 @@ dependencies {
     val arrowVersion = "1.2.4"
     implementation("io.arrow-kt:arrow-core:$arrowVersion")
     implementation("io.arrow-kt:arrow-fx-coroutines:$arrowVersion")
+
+    // pgjdbc
+    implementation("com.impossibl.pgjdbc-ng:pgjdbc-ng:0.8.9")
 }
