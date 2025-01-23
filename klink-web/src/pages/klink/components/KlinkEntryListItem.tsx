@@ -16,7 +16,7 @@ const [getDetails, invalidate] = makeCache(
   (url: string) => getUrlMetadata(url),
   {
     storage: localStorage,
-    expires: 24 * 60 * 60 * 1000
+    expires: 5 * 24 * 60 * 60 * 1000 // 5 days
   }
 );
 

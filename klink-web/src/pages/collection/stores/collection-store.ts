@@ -1,7 +1,7 @@
 import { createSignal } from "solid-js";
 import useKlinkIdParam from "~/hooks/use-klinkid-params";
 import makeKlinkApi from "~/lib/make-klink-api";
-import makePromise from "~/lib/make-promise";
+import makeRequest from "~/lib/make-promise";
 import { useAppStore } from "~/stores/app-store-context";
 import { Klink } from "~/types/domain";
 
@@ -20,7 +20,7 @@ export default function collectionStore() {
             .filter(it => !!it.readKey)
             .map(it => it.id);
         if (ids.length != 0) {
-            const queryExistingRequest = makePromise(api.queryExisting);
+            const queryExistingRequest = makeRequest(api.queryExisting);
             const [err, data] = await queryExistingRequest({ requestBody: ids });
             if (err) {
                 setLoading(false);
@@ -52,6 +52,7 @@ export default function collectionStore() {
                     const found = current.klinks.find(it => it.id === klink.id)!;
                     found.name = updated.name;
                     found.description = updated.description;
+                    found.updatedAt = updated.updatedAt;
                 });
             } catch (e) {
                 // NOTE: Swallow error.
