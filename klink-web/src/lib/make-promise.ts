@@ -3,16 +3,15 @@
  *
  * Wrapping generated api calls with this should be fine since those calls will 
  * return non 200 results as errors.
+ *
+ * @example
+ * const [err, data] = await makeRequest(() => api.getFoo(args));
  */
-export default function makeRequest<T, Args extends any[]>(
-    fn: (...args: Args) => Promise<T>
-): (...args: Args) => Promise<[Error | null, T | null]> {
-    return async (...args: Args): Promise<[Error | null, T | null]> => {
-        try {
-            const result = await fn(...args);
-            return [null, result];
-        } catch (error) {
-            return [error instanceof Error ? error : new Error(String(error)), null];
-        }
-    };
+export default async function makeRequest<T>(fn: () => Promise<T>): Promise<[Error | null, T | null]> {
+    try {
+        const out = await fn();
+        return [null, out];
+    } catch (error) {
+        return [error instanceof Error ? error : new Error(String(error)), null];
+    }
 }
