@@ -26,14 +26,14 @@ const SocialsRow: Component<{
       color: "26A5E4"
     },
     {
-      name: FACEBOOK,
-      icon: "Facebook",
-      color: "0866FF"
-    },
-    {
       name: MESSANGER,
       icon: "Messenger",
       color: "00B2FF"
+    },
+    {
+      name: FACEBOOK,
+      icon: "Facebook",
+      color: "0866FF"
     },
   ]
 
@@ -44,18 +44,20 @@ const SocialsRow: Component<{
   }
 
   return (
-    <ul class="flex flex-nowrap items-center w-full">
-      <For each={socials}>
-        {item =>
-          <button
-            class="flex flex-col flex-1 items-center py-2 text-center rounded-md gap-y-2 hover:bg-base-300"
-            onClick={() => handleClick(item.name)}>
-            <Image src={`https://cdn.simpleicons.org/${item.icon}/${item.color}`} width={32} height={32} />
-            {item.icon}
-          </button>
-        }
-      </For>
-    </ul>
+    <div class="overflow-x-auto whitespace-nowrap">
+      <ul class="flex flex-row items-center gap-4">
+        <For each={socials}>
+          {item =>
+            <button
+              class="flex flex-col flex-1 items-center py-2 text-center rounded-md gap-y-2 hover:bg-base-300"
+              onClick={() => handleClick(item.name)}>
+              <Image src={`https://cdn.simpleicons.org/${item.icon}/${item.color}`} width={32} height={32} />
+              {item.icon}
+            </button>
+          }
+        </For>
+      </ul>
+    </div>
   );
 }
 
