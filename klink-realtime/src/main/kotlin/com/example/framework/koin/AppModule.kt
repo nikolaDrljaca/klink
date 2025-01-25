@@ -5,7 +5,6 @@ import com.example.data.notifier.KlinkAsyncDatabaseNotifier
 import com.example.data.notifier.KlinkDatabaseNotifier
 import com.example.data.provideHikariDataSource
 import com.example.data.provideKlinkDatabase
-import com.example.domain.KlinkSyncProcessor
 import com.example.domain.repository.KlinkRepository
 import com.example.domain.repository.KlinkRepositoryImpl
 import com.example.domain.usecase.CheckKlinkAccess
@@ -62,14 +61,6 @@ fun domainModule() = module {
         CheckKlinkAccess(
             dispatcher = get(named(CoroutineModuleName.Default)),
             repo = get()
-        )
-    }
-
-    factory {
-        KlinkSyncProcessor(
-            scope = get(),
-            repo = get(),
-            klinkId = it.get()
         )
     }
 }

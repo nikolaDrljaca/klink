@@ -12,22 +12,12 @@ import com.example.route.wssync.session.KlinkWsSyncSession
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.get
 import org.koin.core.component.inject
-import org.koin.core.parameter.parametersOf
 import java.util.*
-import java.util.concurrent.ConcurrentHashMap
 
-class KlinkWsSyncSessionManager : KoinComponent {
-    private val sessions = ConcurrentHashMap<KlinkWsSyncSessionData, KlinkWsSyncSession>()
-
+class KlinkWsSyncSessionFactory : KoinComponent {
     private val runAccessProbe: CheckKlinkAccess by inject()
 
     suspend fun create(data: KlinkWsSyncSessionData): CreateSessionResult {
-        // check if session exists
-        if (sessions.containsKey(data)) {
-            val existingSession = sessions[data]!!
-            LOG.info("Attaching to existing session for ${data.klinkId}")
-            return CreateSessionResult.Session(existingSession)
-        }
         // create new session
         LOG.info("Creating new session for ${data.klinkId}")
         val accessProbe = either {
@@ -54,19 +44,11 @@ class KlinkWsSyncSessionManager : KoinComponent {
         val session = KlinkWsSyncSession(
             klinkId = data.klinkId,
             isReadOnly = accessType == KlinkAccessType.READ_ACCESS,
-            syncProcessor = this.get { parametersOf(data.klinkId) },
+            klinkRepository = this.get(),
             observeKlinkEntries = this.get(),
             databaseNotifier = this.get()
         )
-        // assign
-        sessions[data] = session
         // return out
         return CreateSessionResult.Session(session)
-    }
-
-    fun remove(sessionData: KlinkWsSyncSessionData) = sessions[sessionData]?.let {
-        LOG.info("Removing session for ${sessionData.klinkId}")
-        sessions.remove(sessionData)
-        Unit
     }
 }

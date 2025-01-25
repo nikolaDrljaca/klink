@@ -1,21 +1,21 @@
 package com.example.route.wssync.session
 
-import com.example.LOG
 import com.example.data.notifier.KlinkDatabaseNotifier
 import com.example.data.notifier.Operation
-import com.example.domain.KlinkSyncProcessor
-import com.example.domain.model.KlinkEntry
+import com.example.domain.repository.KlinkRepository
 import com.example.domain.usecase.ObserveKlinkEntries
+import com.example.domain.writeKlinkWsSyncData
 import kotlinx.coroutines.flow.*
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import org.openapitools.client.models.KlinkEntryApiDto
 import org.openapitools.client.models.SyncPersistenceDataApiDto
+import java.util.*
 
 class KlinkWsSyncSession(
     private val klinkId: String,
     private val isReadOnly: Boolean,
-    private val syncProcessor: KlinkSyncProcessor,
+    private val klinkRepository: KlinkRepository,
     private val observeKlinkEntries: ObserveKlinkEntries,
     private val databaseNotifier: KlinkDatabaseNotifier
 ) {
@@ -23,18 +23,11 @@ class KlinkWsSyncSession(
         if (isReadOnly) {
             return
         }
-        val payload = Json.decodeFromString<SyncPersistenceDataApiDto>(data)
-        val entries = Json.decodeFromString<List<KlinkEntryApiDto>>(payload.newValue)
-        val klinkEntries = entries
-            .asSequence()
-            .map {
-                KlinkEntry(it.value)
-                    .onLeft { _ -> LOG.warn("Invalid KlinkEntry passed to sync processor: ${it.value}") }
-                    .getOrNull()
-            }
-            .filterNotNull()
-            .toList()
-        syncProcessor.push(klinkEntries)
+        writeKlinkWsSyncData(
+            klinkId = UUID.fromString(klinkId),
+            data = data,
+            processor = klinkRepository::replaceEntries
+        )
     }
 
     fun eventFlow() = combine(

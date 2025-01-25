@@ -2,7 +2,7 @@ package com.example.route.wssync
 
 import com.example.route.SocketParams
 import com.example.route.wssync.manager.CreateSessionResult
-import com.example.route.wssync.manager.KlinkWsSyncSessionManager
+import com.example.route.wssync.manager.KlinkWsSyncSessionFactory
 import com.example.route.wssync.session.SyncSessionEvent
 import io.ktor.server.routing.*
 import io.ktor.server.util.*
@@ -11,7 +11,7 @@ import io.ktor.websocket.*
 import kotlinx.coroutines.flow.*
 
 fun Routing.klinkWsSyncSocket() {
-    val sessionManager = KlinkWsSyncSessionManager()
+    val sessionManager = KlinkWsSyncSessionFactory()
 
     webSocket(SocketParams.WS_SYNC_PATH) {
         // parse session data
@@ -48,11 +48,11 @@ fun Routing.klinkWsSyncSocket() {
             .launchIn(this)
 
         // process incoming frames -> pass to session
+        // collect will block until channel is closed
         incoming.receiveAsFlow()
             // runs if the flow is cancelled or completes normally
             .onCompletion {
                 valueFlowJob.cancel()
-                sessionManager.remove(sessionData)
             }
             .filterIsInstance<Frame.Text>()
             .map { it.readText() }
