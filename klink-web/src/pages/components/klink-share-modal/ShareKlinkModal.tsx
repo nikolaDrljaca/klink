@@ -64,7 +64,9 @@ const ShareKlinkModal: Component<ShareKlinkModalProps> = (props) => {
           <div class="divider">Share</div>
 
           {/* Socials Row */}
-          <SocialsRow shareTarget={store.klinkStore.socialShareTarget} />
+          <div class="py-2">
+            <SocialsRow shareTarget={store.klinkStore.socialShareTarget} />
+          </div>
 
           {/* URL Copy Field */}
           <div class="join">

@@ -69,7 +69,8 @@ const KlinkEntries: Component<KlinkDetailsProps> = (props) => {
           <button class="lg:hidden btn btn-square btn-ghost" onClick={handleBack}>
             <ArrowLeft size={24} />
           </button>
-          <p class="text-2xl"># {props.klink().name}</p>
+          {/* Title - Only large screen */}
+          <p class="hidden lg:block text-2xl"># {props.klink().name}</p>
         </div>
         <div class="flex items-center gap-x-2">
           <Switch>
@@ -96,10 +97,12 @@ const KlinkEntries: Component<KlinkDetailsProps> = (props) => {
         </div>
       </div>
 
+      {/* Title - Only Small Screen */}
+      <p class="lg:hidden text-2xl px-5 py-2"># {props.klink().name}</p>
       {/* Description - Only Small Screen */}
       <Show when={props.klink().description}>
         {it =>
-          <p class="lg:hidden text-lg text-zinc-400 px-4 pb-2">{it()}</p>
+          <p class="lg:hidden text-lg text-zinc-400 px-5 pb-2">{it()}</p>
         }
       </Show>
 
