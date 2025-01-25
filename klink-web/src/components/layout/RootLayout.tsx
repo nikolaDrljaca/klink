@@ -1,6 +1,5 @@
 import { ParentComponent } from "solid-js";
-import { KlinkCollectionStoreProvider } from "~/lib/klinks/context";
-
+import { KlinkCollectionStoreProvider } from "~/stores/app-store-context";
 
 const RootLayout: ParentComponent = (props) => {
   return (

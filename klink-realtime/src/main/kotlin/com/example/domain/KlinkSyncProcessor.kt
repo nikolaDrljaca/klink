@@ -1,39 +1,30 @@
 package com.example.domain
 
-import com.example.data.KlinkRepository
-import kotlinx.coroutines.CoroutineScope
+import com.example.LOG
+import com.example.domain.model.KlinkEntry
 import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.flatMapConcat
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.launchIn
+import kotlinx.serialization.json.Json
+import org.openapitools.client.models.KlinkEntryApiDto
+import org.openapitools.client.models.SyncPersistenceDataApiDto
 import java.util.*
 
-class KlinkSyncProcessor(
-    private val scope: CoroutineScope,
-    private val repo: KlinkRepository,
-    private val klinkId: String
-) {
-    private val jobSink = MutableSharedFlow<Payload>(
-        replay = 0,
-        extraBufferCapacity = 0
-    )
+typealias KlinkWsSyncDataProcessor = suspend (klinkId: UUID, data: List<KlinkEntry>) -> Unit
 
-    suspend fun push(payload: Payload) = coroutineScope {
-        jobSink.emit(payload)
-    }
-
-    private val processorFlow = jobSink
-        .flatMapConcat { handleJob(it) }
-        .launchIn(scope)
-
-    private fun handleJob(payload: Payload) = flow {
-        val id = UUID.fromString(klinkId)
-        repo.replaceEntries(id, payload.entries)
-        emit(Unit)
-    }
-
-    data class Payload(
-        val entries: List<String>
-    )
+suspend fun writeKlinkWsSyncData(
+    klinkId: UUID,
+    data: String,
+    processor: KlinkWsSyncDataProcessor
+) = coroutineScope {
+    val payload = Json.decodeFromString<SyncPersistenceDataApiDto>(data)
+    val entries = Json.decodeFromString<List<KlinkEntryApiDto>>(payload.newValue)
+    val klinkEntries = entries
+        .asSequence()
+        .map {
+            KlinkEntry(it.value)
+                .onLeft { _ -> LOG.warn("Invalid KlinkEntry passed to sync processor: ${it.value}") }
+                .getOrNull()
+        }
+        .filterNotNull()
+        .toList()
+    processor(klinkId, klinkEntries)
 }

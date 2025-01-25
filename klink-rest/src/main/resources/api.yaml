@@ -30,6 +30,33 @@ paths:
                 $ref: "#/components/schemas/Klink"
         '502':
           description: "Error."
+  /klink/queryExisting:
+    post:
+      summary: "Query existing klinks by ID."
+      operationId: queryExisting
+      tags:
+        - klink
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                type: string
+                format: uuid
+      responses:
+        '200':
+          description: "Collection of klink IDs."
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+                  format: uuid
+        '502':
+          description: "Error."
   /klink/{klinkId}:
     get:
       summary: "Get a klink by id."
@@ -125,6 +152,42 @@ paths:
           description: 'Collection deleted'
         '502':
           description: 'Error'
+  /klink/{klinkId}/entries:
+    post:
+      summary: "Add a new entry to a Klink."
+      operationId: createKlinkEntry
+      tags:
+        - klink
+      parameters:
+        - in: path
+          name: klinkId
+          schema:
+            type: string
+            format: uuid
+          required: true
+        - in: query
+          name: readKey
+          schema:
+            type: string
+          required: true
+        - in: query
+          name: writeKey
+          schema:
+            type: string
+          required: true
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: "#/components/schemas/KlinkEntry"
+      responses:
+        '200':
+          description: "Klink entry created."
+        '502':
+          description: "Error."
   /klink/{klinkId}/sync:
     post:
       summary: "Synchronize a collection by ID."

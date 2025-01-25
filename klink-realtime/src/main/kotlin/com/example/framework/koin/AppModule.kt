@@ -1,13 +1,14 @@
 package com.example.framework.koin
 
 import com.example.KlinkDatabase
-import com.example.data.KlinkRepository
-import com.example.data.KlinkRepositoryImpl
+import com.example.data.notifier.KlinkAsyncDatabaseNotifier
+import com.example.data.notifier.KlinkDatabaseNotifier
+import com.example.data.provideHikariDataSource
 import com.example.data.provideKlinkDatabase
+import com.example.domain.repository.KlinkRepository
+import com.example.domain.repository.KlinkRepositoryImpl
 import com.example.domain.usecase.CheckKlinkAccess
-import com.example.domain.usecase.GetKlinkKeys
 import com.example.domain.usecase.ObserveKlinkEntries
-import com.example.domain.usecase.RunKlinkAccessProbe
 import io.ktor.server.application.*
 import org.koin.core.module.Module
 import org.koin.core.qualifier.named
@@ -16,7 +17,8 @@ import org.koin.dsl.module
 
 fun appModules(app: Application): List<Module> {
     val coreModule = module {
-        single { provideKlinkDatabase(app) }
+        single { provideHikariDataSource(app) }
+        single { provideKlinkDatabase(get()) }
         single { app.provideCoroutineScope() }
     }
     return listOf(
@@ -32,6 +34,12 @@ fun dataModule() = module {
     single { get<KlinkDatabase>().klinkKeyQueries }
     single { get<KlinkDatabase>().klinkEntryQueries }
 
+    single {
+        KlinkAsyncDatabaseNotifier(get())
+    } bind KlinkDatabaseNotifier::class
+}
+
+fun domainModule() = module {
     // repos
     single {
         KlinkRepositoryImpl(
@@ -41,19 +49,18 @@ fun dataModule() = module {
             keysDao = get()
         )
     } bind KlinkRepository::class
-}
 
-fun domainModule() = module {
     factory {
-        val dao: KlinkRepository = get()
-        GetKlinkKeys { id -> dao.findKeysByKlinkId(id) }
+        ObserveKlinkEntries(
+            notifier = get(),
+            repository = get()
+        )
     }
-    factory { CheckKlinkAccess(get()) }
-    factory { ObserveKlinkEntries(get()) }
+
     factory {
-        RunKlinkAccessProbe(
+        CheckKlinkAccess(
             dispatcher = get(named(CoroutineModuleName.Default)),
-            getKeys = get()
+            repo = get()
         )
     }
 }

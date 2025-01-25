@@ -21,7 +21,7 @@ val coroutineModule = module {
 /**
  * Creates a coroutine scope bound to the application lifecycle.
  *
- * Scope is intended to be used with [com.example.domain.KlinkSocketEventProcessor], and should not be
+ * Scope is intended to be used with [com.example.domain.KlinkSyncProcessor], and should not be
  * injected everywhere to avoid overuse and bottlenecks from scope doing too much.
  */
 fun Application.provideCoroutineScope(): CoroutineScope {

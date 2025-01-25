@@ -9,11 +9,13 @@ import org.apache.commons.lang3.NotImplementedException;
 import org.openapitools.api.KlinkApi;
 import org.openapitools.model.CreateKlinkPayloadApiDto;
 import org.openapitools.model.KlinkApiDto;
+import org.openapitools.model.KlinkEntryApiDto;
 import org.openapitools.model.KlinkSyncStatusApiDto;
 import org.openapitools.model.PatchKlinkPayloadApiDto;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
 import java.util.UUID;
 
 import static org.springframework.http.ResponseEntity.ok;
@@ -41,6 +43,26 @@ public class KlinkControllerActivity implements KlinkApi {
     }
 
     @Override
+    public ResponseEntity<Void> createKlinkEntry(
+            UUID klinkId,
+            String readKey,
+            String writeKey,
+            List<KlinkEntryApiDto> klinkEntryApiDto) {
+        log.info(
+                "createKlinkEntry called with klinkId: {}, readKey: {}, writeKey: {} and payload: {}",
+                klinkId,
+                readKey,
+                writeKey,
+                klinkEntryApiDto);
+        klinkApplicationService.createKlinkEntries(
+                klinkId,
+                readKey,
+                writeKey,
+                mapper.mapToEntries(klinkEntryApiDto));
+        return ok().build();
+    }
+
+    @Override
     public ResponseEntity<KlinkApiDto> getKlink(
             UUID klinkId,
             String readKey,
@@ -55,6 +77,14 @@ public class KlinkControllerActivity implements KlinkApi {
                 readKey,
                 writeKey);
         return ok(mapper.mapTo(klink));
+    }
+
+    @Override
+    public ResponseEntity<List<UUID>> queryExisting(List<UUID> klinkIds) {
+        log.info(
+                "queryExisting called with ids: {}",
+                klinkIds);
+        return ok(klinkApplicationService.queryExistingKlinks(klinkIds));
     }
 
     @Override

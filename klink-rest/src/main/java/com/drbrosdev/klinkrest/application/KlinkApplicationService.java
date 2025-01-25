@@ -6,6 +6,7 @@ import jakarta.annotation.Nullable;
 
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Stream;
 
 public interface KlinkApplicationService {
 
@@ -26,4 +27,12 @@ public interface KlinkApplicationService {
             String writeKey);
 
     KlinkDto updateKlink(KlinkDto klinkDto);
+
+    Stream<KlinkEntryDto> createKlinkEntries(
+            UUID klinkId,
+            String readKey,
+            String writeKey,
+            List<KlinkEntryDto> entries);
+
+    List<UUID> queryExistingKlinks(List<UUID> klinkIds);
 }

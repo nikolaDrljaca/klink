@@ -13,6 +13,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
@@ -32,4 +33,7 @@ public class KlinkEntryEntity {
     UUID klinkId;
 
     String value;
+
+    @Column(name = "created_at", nullable = false)
+    LocalDateTime createdAt;
 }

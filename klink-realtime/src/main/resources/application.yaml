@@ -6,4 +6,4 @@ ktor:
         port: 8081
 
 db:
-    url: "jdbc:postgresql://db:5432/klinkdb"
+    url: "jdbc:pgsql://db:5432/klinkdb"
