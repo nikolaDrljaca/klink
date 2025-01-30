@@ -23,7 +23,7 @@ export default function collectionStore() {
             .filter(it => !!it.readKey)
             .map(it => it.id);
         if (ids.length != 0) {
-            const [err, data] = await makeRequest(() => api.queryExisting({ requestBody: ids }));
+            const [err, data] = await makeRequest(api.queryExistingRaw({ requestBody: ids }));
             if (err) {
                 setLoading(false);
                 return;
@@ -100,6 +100,10 @@ export default function collectionStore() {
             writeKey: null
         }
         update(state => {
+            const names = new Set(state.klinks.map(it => it.name));
+            if (names.has(klink.name)) {
+                return;
+            }
             state.klinks.unshift(klink);
         });
     }
