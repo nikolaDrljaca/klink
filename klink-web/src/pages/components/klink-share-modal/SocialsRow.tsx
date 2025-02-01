@@ -49,7 +49,7 @@ const SocialsRow: Component<{
         <For each={socials}>
           {item =>
             <button
-              class="flex flex-col flex-1 items-center py-2 text-center rounded-md gap-y-2 hover:bg-base-300"
+              class="flex flex-col flex-1 items-center py-2 text-center rounded-md gap-y-2 hover:bg-base-300 px-1"
               onClick={() => handleClick(item.name)}>
               <Image src={`https://cdn.simpleicons.org/${item.icon}/${item.color}`} width={32} height={32} />
               {item.icon}
