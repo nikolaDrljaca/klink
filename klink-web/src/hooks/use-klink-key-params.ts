@@ -1,6 +1,9 @@
 import { useSearchParams } from "@solidjs/router";
 
-export default function useKlinkKeyParams(): { readKey: string | null, writeKey: string | null } {
+/**
+ * Extract the `q` query parameter for the import route.
+ */
+export default function useKlinkImportParams(): string | null {
     const [searchParams, _] = useSearchParams();
 
     const extract = (value: string | string[]): string | null => {
@@ -13,8 +16,5 @@ export default function useKlinkKeyParams(): { readKey: string | null, writeKey:
         return value as string;
     }
 
-    return {
-        readKey: extract(searchParams.read_key),
-        writeKey: extract(searchParams.write_key)
-    }
+    return extract(searchParams.q);
 }
