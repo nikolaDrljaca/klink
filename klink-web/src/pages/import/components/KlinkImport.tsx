@@ -2,7 +2,6 @@ import { CircleX } from "lucide-solid";
 import { Component, ErrorBoundary, Show, Suspense } from "solid-js";
 import { useNavigate } from "@solidjs/router";
 import importKlinkStore from "~/pages/import/stores/import-klink-store";
-import KlinkKeyField from "~/components/KlinkKeyField";
 
 const KlinkImport: Component = () => {
   const store = importKlinkStore();
@@ -31,12 +30,12 @@ const KlinkImport: Component = () => {
             <CircleX size={40} />
           </h2>
           <p class="font-medium text-xl">Something went wrong.</p>
-          <p>We could not find that collection.</p>
-          <p>Check that you have the correct access keys.</p>
-          <div class="flex flex-col xl:flex-row pt-4 space-y-4 xl:space-y-0">
-            <KlinkKeyField key={store.readKey} title={"Read Key"} />
-            <div class="divider divider-horizontal"></div>
-            <KlinkKeyField key={store.writeKey} title={"Write Key"} />
+          <div class="text-left">
+            <h2 class="text-lg">Either:</h2>
+            <ul class="list-disc pl-4">
+              <li>We could not find that collection.</li>
+              <li>The Klink service might be unavailable.</li>
+            </ul>
           </div>
           <button class="btn btn-sm btn-primary mt-4 w-1/2" onClick={store.refetch}>Retry</button>
         </div>

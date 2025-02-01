@@ -5,6 +5,8 @@ import { createEventBus } from "@solid-primitives/event-bus";
 import { useAppStore } from "~/stores/app-store-context";
 import makeKlinkApi from "~/lib/make-klink-api";
 import makeRelativeTime from "~/lib/relative-time";
+import { makeKeyEncoder } from "~/lib/make-key-encoder";
+import { makeEncoder } from "~/lib/make-encoder";
 
 type ShareKlinkEvent =
     | { type: "success" }
@@ -18,6 +20,7 @@ export default function shareKlinkStore(klinkId: string) {
     const relativeTime = makeRelativeTime();
 
     const { listen, emit, clear } = createEventBus<ShareKlinkEvent>();
+    const keyEncoder = makeKeyEncoder(makeEncoder());
 
     const [klinkStore, setStore] = createStore({
         klink: klink,
@@ -48,16 +51,13 @@ export default function shareKlinkStore(klinkId: string) {
     });
 
     const createShareLink = () => {
-        const url = [`${appBasePath}/c/${klinkStore.klink.id}/i?read_key=${klinkStore.klink.readKey}`];
-        if (klinkStore.klink.writeKey) {
-            url.push(`&write_key=${klinkStore.klink.writeKey}`);
-        }
-        return url.join("");
+        const encoded = keyEncoder.encode(klink);
+        return `${appBasePath}/c/${klinkStore.klink.id}/i?q=${encoded}`;
     }
 
     const createReadOnlyLink = () => {
-        const url = [`${appBasePath}/c/${klinkStore.klink.id}/i?read_key=${klinkStore.klink.readKey}`];
-        return url.join("");
+        const encoded = keyEncoder.encode({ readKey: klink.readKey });
+        return `${appBasePath}/c/${klinkStore.klink.id}/i?q=${encoded}`;
     }
 
     return {

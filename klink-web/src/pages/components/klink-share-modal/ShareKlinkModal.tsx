@@ -1,7 +1,6 @@
-import { Copy, GlobeLock } from "lucide-solid";
+import { GlobeLock } from "lucide-solid";
 import { Component, Match, onCleanup, Show, Switch } from "solid-js";
 import toast from "solid-toast";
-import KlinkKeyField from "~/components/KlinkKeyField";
 import { writeClipboard } from "@solid-primitives/clipboard";
 import shareKlinkStore from "~/pages/components/klink-share-modal/share-klink-store";
 import SocialsRow from "./SocialsRow";
@@ -39,15 +38,9 @@ const ShareKlinkModal: Component<ShareKlinkModalProps> = (props) => {
       <Switch>
         {/* Shared Component */}
         <Match when={store.klinkStore.isShared}>
-          <div class="flex flex-col lg:flex-row w-full space-y-4 lg:space-x-4 lg:space-y-0 py-6">
-            <KlinkKeyField key={store.klinkStore.klink.readKey} title={"Read Key"} />
-            <Show when={!store.klinkStore.isReadOnly}>
-              <div class="divider divider-horizontal"></div>
-              <KlinkKeyField key={store.klinkStore.klink.writeKey} title={"Write Key"} />
-            </Show>
-          </div>
           <Show when={!store.klinkStore.isReadOnly}>
-            <div class="tooltip" data-tip="Enable to prevent the editing of the Klink by those you share it with.">
+            <div class="flex flex-col space-x-1 pb-4">
+              {/* Toggle */}
               <div class="form-control">
                 <label class="label cursor-pointer">
                   <span class="">Share as Read Only</span>
@@ -58,26 +51,20 @@ const ShareKlinkModal: Component<ShareKlinkModalProps> = (props) => {
                     onChange={store.setReadOnlyChecked} />
                 </label>
               </div>
+              {/* Explainer */}
+              <p class="text-zinc-400 text-sm">When enabled, the collection will be shared in read only mode. Only you will be able to make changes to it.</p>
             </div>
           </Show>
 
-          <div class="divider">Share</div>
+          <button class="btn btn-primary w-full" onClick={onCopy}>Copy to Clipboard</button>
+
+          <div class="pt-2">
+            <div class="divider">Socials</div>
+          </div>
 
           {/* Socials Row */}
           <div class="py-2">
             <SocialsRow shareTarget={store.klinkStore.socialShareTarget} />
-          </div>
-
-          {/* URL Copy Field */}
-          <div class="join">
-            <input
-              type="text"
-              value={store.klinkStore.shareLink}
-              disabled={true}
-              class="input input-bordered w-full join-item" />
-            <button class="btn join-item" onClick={onCopy}>
-              <Copy size={14} />
-            </button>
           </div>
         </Match>
 
