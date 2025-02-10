@@ -41,10 +41,7 @@ paths:
         content:
           application/json:
             schema:
-              type: array
-              items:
-                type: string
-                format: uuid
+              $ref: "#/components/schemas/QueryExistingPayload"
       responses:
         '200':
           description: "Collection of klink IDs."
@@ -53,8 +50,7 @@ paths:
               schema:
                 type: array
                 items:
-                  type: string
-                  format: uuid
+                  $ref: '#/components/schemas/Klink'
         '502':
           description: "Error."
   /klink/{klinkId}:
@@ -328,3 +324,21 @@ components:
         - newValue
         - timeStamp
         - url
+    QueryExistingPayload:
+      type: object
+      properties:
+        klinks:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+                format: uuid
+              readKey:
+                type: string
+            required:
+              - id
+              - readKey
+      required:
+        - klinks

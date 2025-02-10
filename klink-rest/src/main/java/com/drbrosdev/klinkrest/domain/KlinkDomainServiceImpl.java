@@ -121,6 +121,22 @@ public class KlinkDomainServiceImpl implements KlinkDomainService {
                 .toList();
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    public List<KlinkDto> retrieveKlinksIn(List<UUID> klinkIds) {
+        return klinkRepository.findByIdIn(klinkIds)
+                .map(it -> {
+                    var entries = klinkEntryRepository.findByKlinkId(it.getId());
+                    var keys = klinkKeyRepository.findByKlinkId(it.getId())
+                            .orElseThrow();
+                    return mapper.mapTo(
+                            it,
+                            entries,
+                            keys);
+                })
+                .toList();
+    }
+
     private KlinkDto retrieveKlink(UUID klinkId) {
         var klink = klinkRepository.findById(klinkId)
                 .orElseThrow(() -> new EntityNotFoundException("Klink not found for ID: " + klinkId));
