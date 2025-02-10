@@ -1,4 +1,5 @@
 import { createSignal } from "solid-js";
+import { QueryExistingPayload, QueryExistingPayloadKlinksInner } from "~/generated";
 import useKlinkIdParam from "~/hooks/use-klinkid-params";
 import makeKlinkApi from "~/lib/make-klink-api";
 import makeRequest from "~/lib/make-promise";
@@ -17,49 +18,49 @@ export default function collectionStore() {
 
     const reloadKlinkData = async () => {
         setLoading(true);
-        // check existing first
-        const ids = state.klinks
-            // filter out local klinks
-            .filter(it => !!it.readKey)
-            .map(it => it.id);
-        if (ids.length != 0) {
-            const [err, data] = await makeRequest(api.queryExistingRaw({ requestBody: ids }));
-            if (err) {
-                setLoading(false);
-                return;
-            }
-            const queryExistingResponse = new Set(data);
-            update(current => {
-                for (const klink of current.klinks) {
-                    const isShared = queryExistingResponse.has(klink.id);
-                    if (!isShared) {
-                        klink.readKey = null;
-                        klink.writeKey = null;
-                    }
+        // local procedure to create request payload
+        const createPaylaod = (klinks: Klink[]): QueryExistingPayload => {
+            const out: QueryExistingPayloadKlinksInner[] = []
+            for (const item of klinks) {
+                // filter out local klinks
+                if (!item.readKey) {
+                    continue;
                 }
-            });
-        }
-
-        // TODO: Should be done in bulk
-        for (const klink of state.klinks) {
-            if (!klink.readKey) {
-                continue;
-            }
-            try {
-                const updated = await api.getKlink({
-                    klinkId: klink.id,
-                    readKey: klink.readKey
+                out.push({
+                    id: item.id,
+                    readKey: item.readKey
                 });
-                update(current => {
-                    const found = current.klinks.find(it => it.id === klink.id)!;
-                    found.name = updated.name;
-                    found.description = updated.description;
-                    found.updatedAt = time.unixFromResponse(updated.updatedAt);
-                });
-            } catch (e) {
-                // NOTE: Swallow error.
             }
+            return { klinks: out }
         }
+        const payload = createPaylaod(state.klinks);
+        // if there are no shared klinks -- skip request
+        if (payload.klinks.length === 0) {
+            setLoading(false);
+            return;
+        }
+        const [err, data] = await makeRequest(api.queryExistingRaw({ queryExistingPayload: createPaylaod(state.klinks) }));
+        if (err) {
+            setLoading(false);
+            return;
+        }
+        const sharedKlinks = new Map(data.map(it => [it.id, it]));
+        update(current => {
+            for (const item of current.klinks) {
+                const isShared = sharedKlinks.has(item.id);
+                if (isShared) {
+                    // local klink is still shared -- update its data
+                    const updated = sharedKlinks.get(item.id);
+                    item.name = updated.name;
+                    item.description = updated.description;
+                    item.updatedAt = time.unixFromResponse(updated.updatedAt);
+                } else {
+                    // local klink is no longer shared -- delete its keys
+                    item.readKey = null;
+                    item.writeKey = null;
+                }
+            }
+        });
         setLoading(false);
     }
 
@@ -72,7 +73,7 @@ export default function collectionStore() {
             const copy: Klink = {
                 id: crypto.randomUUID(),
                 name: `Copy of ${temp.name}`,
-                description: "",
+                description: temp.description ?? "",
                 updatedAt: Date.now(),
                 readKey: null,
                 writeKey: null

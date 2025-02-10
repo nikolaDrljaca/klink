@@ -20,6 +20,7 @@ import type {
   KlinkEntry,
   KlinkSyncStatus,
   PatchKlinkPayload,
+  QueryExistingPayload,
 } from '../models/index';
 import {
     CreateKlinkPayloadFromJSON,
@@ -32,6 +33,8 @@ import {
     KlinkSyncStatusToJSON,
     PatchKlinkPayloadFromJSON,
     PatchKlinkPayloadToJSON,
+    QueryExistingPayloadFromJSON,
+    QueryExistingPayloadToJSON,
 } from '../models/index';
 
 export interface CreateKlinkRequest {
@@ -58,7 +61,7 @@ export interface GetKlinkRequest {
 }
 
 export interface QueryExistingRequest {
-    requestBody: Array<string>;
+    queryExistingPayload: QueryExistingPayload;
 }
 
 export interface SyncKlinkRequest {
@@ -283,11 +286,11 @@ export class KlinkApi extends runtime.BaseAPI {
     /**
      * Query existing klinks by ID.
      */
-    async queryExistingRaw(requestParameters: QueryExistingRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Array<string>>> {
-        if (requestParameters['requestBody'] == null) {
+    async queryExistingRaw(requestParameters: QueryExistingRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Array<Klink>>> {
+        if (requestParameters['queryExistingPayload'] == null) {
             throw new runtime.RequiredError(
-                'requestBody',
-                'Required parameter "requestBody" was null or undefined when calling queryExisting().'
+                'queryExistingPayload',
+                'Required parameter "queryExistingPayload" was null or undefined when calling queryExisting().'
             );
         }
 
@@ -302,16 +305,16 @@ export class KlinkApi extends runtime.BaseAPI {
             method: 'POST',
             headers: headerParameters,
             query: queryParameters,
-            body: requestParameters['requestBody'],
+            body: QueryExistingPayloadToJSON(requestParameters['queryExistingPayload']),
         }, initOverrides);
 
-        return new runtime.JSONApiResponse<any>(response);
+        return new runtime.JSONApiResponse(response, (jsonValue) => jsonValue.map(KlinkFromJSON));
     }
 
     /**
      * Query existing klinks by ID.
      */
-    async queryExisting(requestParameters: QueryExistingRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Array<string>> {
+    async queryExisting(requestParameters: QueryExistingRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Array<Klink>> {
         const response = await this.queryExistingRaw(requestParameters, initOverrides);
         return await response.value();
     }

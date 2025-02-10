@@ -24,4 +24,6 @@ public interface KlinkDomainService {
             List<KlinkEntryDto> entries);
 
     List<UUID> queryExistingKlinks(List<UUID> klinkIds);
+
+    List<KlinkDto> retrieveKlinksIn(List<UUID> klinkIds);
 }

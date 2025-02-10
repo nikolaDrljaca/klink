@@ -1,5 +1,6 @@
 package com.drbrosdev.klinkrest.application;
 
+import com.drbrosdev.klinkrest.application.dto.QueryExistingKlinkDto;
 import com.drbrosdev.klinkrest.domain.dto.KlinkDto;
 import com.drbrosdev.klinkrest.domain.dto.KlinkEntryDto;
 import jakarta.annotation.Nullable;
@@ -34,5 +35,5 @@ public interface KlinkApplicationService {
             String writeKey,
             List<KlinkEntryDto> entries);
 
-    List<UUID> queryExistingKlinks(List<UUID> klinkIds);
+    List<KlinkDto> queryExistingKlinks(QueryExistingKlinkDto query);
 }

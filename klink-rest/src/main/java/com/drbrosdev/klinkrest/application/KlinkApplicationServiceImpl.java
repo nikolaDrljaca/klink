@@ -1,5 +1,7 @@
 package com.drbrosdev.klinkrest.application;
 
+import com.drbrosdev.klinkrest.application.dto.QueryExistingKlinkDto;
+import com.drbrosdev.klinkrest.application.dto.QueryExistingKlinkItemDto;
 import com.drbrosdev.klinkrest.domain.KlinkDomainService;
 import com.drbrosdev.klinkrest.domain.dto.KlinkDto;
 import com.drbrosdev.klinkrest.domain.dto.KlinkEntryDto;
@@ -15,6 +17,8 @@ import java.util.stream.Stream;
 
 import static java.util.Collections.emptyList;
 import static java.util.Objects.isNull;
+import static java.util.function.Function.identity;
+import static java.util.stream.Collectors.toMap;
 import static org.apache.commons.collections4.CollectionUtils.isEmpty;
 
 @Log4j2
@@ -23,6 +27,8 @@ import static org.apache.commons.collections4.CollectionUtils.isEmpty;
 public class KlinkApplicationServiceImpl implements KlinkApplicationService {
 
     private final KlinkDomainService klinkDomainService;
+
+    private final KlinkApplicationServiceMapper mapper;
 
     private static final Integer KEY_LENGTH = 8;
 
@@ -64,15 +70,7 @@ public class KlinkApplicationServiceImpl implements KlinkApplicationService {
             throw new IllegalArgumentException("Access keys are not matching");
         }
         if (isNull(writeKey)) {
-            return KlinkDto.builder()
-                    .id(klink.getId())
-                    .name(klink.getName())
-                    .description(klink.getDescription())
-                    .updatedAt(klink.getUpdatedAt())
-                    .readKey(klink.getReadKey())
-                    .writeKey(null) // Send writeKey only if provided
-                    .entries(klink.getEntries())
-                    .build();
+            return mapper.mapToReadOnly(klink);
         }
         var writeAccess = validateWriteAccess(
                 klink,
@@ -88,15 +86,7 @@ public class KlinkApplicationServiceImpl implements KlinkApplicationService {
                     writeKey);
             throw new IllegalArgumentException("Access keys are not matching");
         }
-        return KlinkDto.builder()
-                .id(klink.getId())
-                .name(klink.getName())
-                .description(klink.getDescription())
-                .updatedAt(klink.getUpdatedAt())
-                .readKey(klink.getReadKey())
-                .writeKey(klink.getWriteKey())
-                .entries(klink.getEntries())
-                .build();
+        return klink;
     }
 
     @Override
@@ -163,11 +153,30 @@ public class KlinkApplicationServiceImpl implements KlinkApplicationService {
     }
 
     @Override
-    public List<UUID> queryExistingKlinks(List<UUID> klinkIds) {
-        if (isEmpty(klinkIds)) {
+    public List<KlinkDto> queryExistingKlinks(QueryExistingKlinkDto query) {
+        if (isEmpty(query.getKlinks())) {
             return emptyList();
         }
-        return klinkDomainService.queryExistingKlinks(klinkIds);
+        var queryKlinks = query.getKlinks()
+                .stream()
+                .collect(toMap(
+                        QueryExistingKlinkItemDto::getId,
+                        identity()));
+        // retrieve all klinks by using uuid
+        var klinks = klinkDomainService.retrieveKlinksIn(queryKlinks.values()
+                .stream()
+                .map(QueryExistingKlinkItemDto::getId)
+                .toList());
+        // filter incoming list with read access
+        return klinks.stream()
+                .filter(it -> queryKlinks.containsKey(it.getId()))
+                // validate read access for each
+                .filter(it -> validateReadAccess(
+                        it,
+                        queryKlinks.get(it.getId()).getReadKey()))
+                // return as read-only -- do not expose write key
+                .map(mapper::mapToReadOnly)
+                .toList();
     }
 
     private boolean validateReadAccess(

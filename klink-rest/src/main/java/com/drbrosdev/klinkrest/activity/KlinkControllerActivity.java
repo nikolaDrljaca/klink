@@ -12,6 +12,7 @@ import org.openapitools.model.KlinkApiDto;
 import org.openapitools.model.KlinkEntryApiDto;
 import org.openapitools.model.KlinkSyncStatusApiDto;
 import org.openapitools.model.PatchKlinkPayloadApiDto;
+import org.openapitools.model.QueryExistingPayloadApiDto;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -80,11 +81,14 @@ public class KlinkControllerActivity implements KlinkApi {
     }
 
     @Override
-    public ResponseEntity<List<UUID>> queryExisting(List<UUID> klinkIds) {
+    public ResponseEntity<List<KlinkApiDto>> queryExisting(QueryExistingPayloadApiDto klinkIds) {
         log.info(
                 "queryExisting called with ids: {}",
                 klinkIds);
-        return ok(klinkApplicationService.queryExistingKlinks(klinkIds));
+        return ok(klinkApplicationService.queryExistingKlinks(mapper.mapTo(klinkIds))
+                .stream()
+                .map(mapper::mapTo)
+                .toList());
     }
 
     @Override

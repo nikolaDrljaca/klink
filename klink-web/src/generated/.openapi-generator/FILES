@@ -7,6 +7,8 @@ models/Klink.ts
 models/KlinkEntry.ts
 models/KlinkSyncStatus.ts
 models/PatchKlinkPayload.ts
+models/QueryExistingPayload.ts
+models/QueryExistingPayloadKlinksInner.ts
 models/SyncPersistenceData.ts
 models/SyncStatus.ts
 models/index.ts
