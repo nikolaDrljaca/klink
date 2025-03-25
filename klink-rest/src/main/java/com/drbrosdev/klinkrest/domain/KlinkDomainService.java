@@ -26,4 +26,8 @@ public interface KlinkDomainService {
     List<UUID> queryExistingKlinks(List<UUID> klinkIds);
 
     List<KlinkDto> retrieveKlinksIn(List<UUID> klinkIds);
+
+    List<KlinkDto> retrieveKlinksOlderThenDays(int days);
+
+    void deleteAllKlinksOlderThenDays(List<UUID> klinkIds);
 }

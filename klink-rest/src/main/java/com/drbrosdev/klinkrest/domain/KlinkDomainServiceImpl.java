@@ -15,6 +15,7 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Stream;
@@ -135,6 +136,29 @@ public class KlinkDomainServiceImpl implements KlinkDomainService {
                             keys);
                 })
                 .toList();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<KlinkDto> retrieveKlinksOlderThenDays(int days) {
+        LocalDateTime olderThan = now().minusDays(days);
+        return klinkRepository.findAllOlderThenPeriod(olderThan)
+                .map(it -> {
+                    var entries = klinkEntryRepository.findByKlinkId(it.getId());
+                    var keys = klinkKeyRepository.findByKlinkId(it.getId())
+                            .orElseThrow();
+                    return mapper.mapTo(
+                            it,
+                            entries,
+                            keys);
+                })
+                .toList();
+    }
+
+    @Override
+    @Transactional
+    public void deleteAllKlinksOlderThenDays(List<UUID> klinkIds) {
+        klinkRepository.deleteAllByIds(klinkIds);
     }
 
     private KlinkDto retrieveKlink(UUID klinkId) {
