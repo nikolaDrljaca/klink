@@ -31,17 +31,16 @@ public class ExpiredKlinkService {
         if(!isDeleteScheduleTaskActive) {
             return;
         }
-
         LOG.info( "Deleting expired klinks..." );
-
-        var klinkList = klinkDomainService.retrieveKlinksOlderThenDays(daysToKeepKlinks).stream()
+        var klinkList = klinkDomainService.retrieveKlinksOlderThenDays(daysToKeepKlinks)
+                .stream()
                 .map(KlinkDto::getId)
                 .toList();
         if(klinkList.isEmpty()) {
             return;
         }
-        LOG.info( "Found {} expired klinks", klinkList.size());
+        LOG.info("Found {} expired klinks", klinkList.size());
         klinkDomainService.deleteAllKlinksOlderThenDays(klinkList);
-        LOG.info( "Deleted {} expired klinks", klinkList.size());
+        LOG.info("Deleted {} expired klinks", klinkList.size());
     }
 }
