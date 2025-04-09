@@ -9,8 +9,11 @@ import jakarta.annotation.Nullable;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.RandomStringUtils;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Stream;
@@ -31,6 +34,9 @@ public class KlinkApplicationServiceImpl implements KlinkApplicationService {
     private final KlinkApplicationServiceMapper mapper;
 
     private static final Integer KEY_LENGTH = 8;
+
+    @Value("${klinkExiprationDuration}")
+    private int daysToKeepKlinks;
 
     @Override
     public KlinkDto createKlink(
@@ -177,6 +183,20 @@ public class KlinkApplicationServiceImpl implements KlinkApplicationService {
                 // return as read-only -- do not expose write key
                 .map(mapper::mapToReadOnly)
                 .toList();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public void deleteKlinksOlderThenDays() {
+        var date = LocalDateTime.now().minusDays(daysToKeepKlinks);
+        var klinks = klinkDomainService.retrieveKlinksOlderThenDays(date)
+                .stream()
+                .map(KlinkDto::getId)
+                .toList();
+
+        if(!klinks.isEmpty()) {
+            klinkDomainService.deleteAllKlinksOlderThenDays(klinks);
+        }
     }
 
     private boolean validateReadAccess(

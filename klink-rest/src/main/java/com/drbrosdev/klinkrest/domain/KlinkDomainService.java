@@ -3,6 +3,7 @@ package com.drbrosdev.klinkrest.domain;
 import com.drbrosdev.klinkrest.domain.dto.KlinkDto;
 import com.drbrosdev.klinkrest.domain.dto.KlinkEntryDto;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Stream;
@@ -27,7 +28,7 @@ public interface KlinkDomainService {
 
     List<KlinkDto> retrieveKlinksIn(List<UUID> klinkIds);
 
-    List<KlinkDto> retrieveKlinksOlderThenDays(int days);
+    List<KlinkDto> retrieveKlinksOlderThenDays(LocalDateTime date);
 
     void deleteAllKlinksOlderThenDays(List<UUID> klinkIds);
 }

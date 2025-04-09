@@ -140,9 +140,10 @@ public class KlinkDomainServiceImpl implements KlinkDomainService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<KlinkDto> retrieveKlinksOlderThenDays(int days) {
-        LocalDateTime olderThan = now().minusDays(days);
-        return klinkRepository.findAllOlderThenPeriod(olderThan)
+    public List<KlinkDto> retrieveKlinksOlderThenDays(LocalDateTime date) {
+        return klinkRepository.getAllKlinks()
+                .filter(it -> isOlderThan(it, date))
+                .filter(klinkEntity -> hasOldEntries(klinkEntity, date))
                 .map(it -> {
                     var entries = klinkEntryRepository.findByKlinkId(it.getId());
                     var keys = klinkKeyRepository.findByKlinkId(it.getId())
@@ -158,7 +159,7 @@ public class KlinkDomainServiceImpl implements KlinkDomainService {
     @Override
     @Transactional
     public void deleteAllKlinksOlderThenDays(List<UUID> klinkIds) {
-        klinkRepository.deleteAllByIds(klinkIds);
+        klinkRepository.deleteAllByIdIn(klinkIds);
     }
 
     private KlinkDto retrieveKlink(UUID klinkId) {
@@ -220,5 +221,14 @@ public class KlinkDomainServiceImpl implements KlinkDomainService {
                 .value(entry.getValue())
                 .createdAt(now())
                 .build();
+    }
+
+    private boolean isOlderThan(KlinkEntity klinkEntity, LocalDateTime date) {
+        return klinkEntity.getModifiedAt().isBefore(date);
+    }
+
+    private boolean hasOldEntries(KlinkEntity klink, LocalDateTime date) {
+        var entries = klinkEntryRepository.findByKlinkId(klink.getId());
+        return entries.stream().anyMatch(entry -> entry.getCreatedAt().isBefore(date));
     }
 }

@@ -5,6 +5,8 @@ import com.drbrosdev.klinkrest.domain.dto.KlinkDto;
 import com.drbrosdev.klinkrest.domain.dto.KlinkEntryDto;
 import jakarta.annotation.Nullable;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Stream;
@@ -36,4 +38,6 @@ public interface KlinkApplicationService {
             List<KlinkEntryDto> entries);
 
     List<KlinkDto> queryExistingKlinks(QueryExistingKlinkDto query);
+
+    void deleteKlinksOlderThenDays();
 }

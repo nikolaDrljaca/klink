@@ -2,9 +2,7 @@ package com.drbrosdev.klinkrest.persistence.repository;
 
 import com.drbrosdev.klinkrest.persistence.entity.KlinkEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
@@ -17,10 +15,8 @@ public interface KlinkRepository extends JpaRepository<KlinkEntity, UUID> {
 
     Stream<KlinkEntity> findByIdIn(List<UUID> ids);
 
-    @Query("SELECT k FROM KlinkEntity k WHERE k.createdAt < :period")
-    Stream<KlinkEntity> findAllOlderThenPeriod(LocalDateTime period);
+    @Query("SELECT k FROM KlinkEntity k")
+    Stream<KlinkEntity> getAllKlinks();
 
-    @Modifying
-    @Query("DELETE FROM KlinkEntity k WHERE k.id IN :ids")
-    void deleteAllByIds(@Param("ids") List<UUID> ids);
+    void deleteAllByIdIn(List<UUID> ids);
 }
