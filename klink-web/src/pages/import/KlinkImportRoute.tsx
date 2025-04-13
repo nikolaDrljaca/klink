@@ -3,7 +3,6 @@ import KlinkSidebar from "~/components/KlinkSidebar";
 import KlinkCollection from "~/pages/collection/components/KlinkCollection";
 import KlinkImport from "~/pages/import/components/KlinkImport";
 
-
 const KlinkImportRoute: Component = () => {
   return (
     <div class="flex flex-col lg:flex-row h-screen">
@@ -23,6 +22,6 @@ const KlinkImportRoute: Component = () => {
       </div>
     </div>
   );
-}
+};
 
 export default KlinkImportRoute;

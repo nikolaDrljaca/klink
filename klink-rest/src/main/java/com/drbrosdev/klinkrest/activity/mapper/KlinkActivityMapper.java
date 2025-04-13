@@ -36,6 +36,7 @@ public interface KlinkActivityMapper {
             final String name,
             final @Nullable String description);
 
+    @Mapping(target = "createdAt", ignore = true)
     KlinkEntryDto mapTo(KlinkEntryApiDto entry);
 
     List<KlinkEntryDto> mapToEntries(final List<KlinkEntryApiDto> entries);
