@@ -36,4 +36,6 @@ public interface KlinkApplicationService {
             List<KlinkEntryDto> entries);
 
     List<KlinkDto> queryExistingKlinks(QueryExistingKlinkDto query);
+
+    void executeKlinkCleanup();
 }

@@ -2,7 +2,6 @@ package com.drbrosdev.klinkrest.domain;
 
 import com.drbrosdev.klinkrest.domain.dto.KlinkDto;
 import com.drbrosdev.klinkrest.domain.dto.KlinkEntryDto;
-import com.drbrosdev.klinkrest.domain.mapper.KlinkDomainServiceMapper;
 import com.drbrosdev.klinkrest.persistence.entity.KlinkEntity;
 import com.drbrosdev.klinkrest.persistence.entity.KlinkEntryEntity;
 import com.drbrosdev.klinkrest.persistence.entity.KlinkKeyEntity;
@@ -24,9 +23,9 @@ import static java.util.function.Predicate.not;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
 
+@Log4j2
 @Service
 @RequiredArgsConstructor
-@Log4j2
 public class KlinkDomainServiceImpl implements KlinkDomainService {
 
     private final KlinkRepository klinkRepository;
@@ -137,13 +136,34 @@ public class KlinkDomainServiceImpl implements KlinkDomainService {
                 .toList();
     }
 
+    @Override
+    @Transactional
+    public void deleteKlinksIn(List<UUID> klinkIds) {
+        klinkRepository.deleteAllByIdIn(klinkIds);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Stream<KlinkDto> getKlinks() {
+        return klinkRepository.findAll()
+                .stream()
+                .map(it -> {
+                    var entries = klinkEntryRepository.findByKlinkId(it.getId());
+                    var keys = klinkKeyRepository.findByKlinkId(it.getId())
+                            .orElseThrow();
+                    return mapper.mapTo(
+                            it,
+                            entries,
+                            keys);
+                });
+    }
+
     private KlinkDto retrieveKlink(UUID klinkId) {
         var klink = klinkRepository.findById(klinkId)
                 .orElseThrow(() -> new EntityNotFoundException("Klink not found for ID: " + klinkId));
         var klinkEntries = klinkEntryRepository.findByKlinkId(klinkId);
         var klinkKeys = klinkKeyRepository.findByKlinkId(klinkId)
                 .orElseThrow(() -> new EntityNotFoundException("KlinkKeys not found for Klink ID: " + klinkId));
-        // map to domain model
         return mapper.mapTo(
                 klink,
                 klinkEntries,

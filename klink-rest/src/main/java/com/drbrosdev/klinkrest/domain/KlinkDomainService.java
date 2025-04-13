@@ -15,6 +15,8 @@ public interface KlinkDomainService {
 
     void deleteKlink(UUID klinkId);
 
+    void deleteKlinksIn(List<UUID> klinkIds);
+
     KlinkDto updateKlink(
             UUID klinkId,
             KlinkDto klink);
@@ -26,4 +28,6 @@ public interface KlinkDomainService {
     List<UUID> queryExistingKlinks(List<UUID> klinkIds);
 
     List<KlinkDto> retrieveKlinksIn(List<UUID> klinkIds);
+
+    Stream<KlinkDto> getKlinks();
 }

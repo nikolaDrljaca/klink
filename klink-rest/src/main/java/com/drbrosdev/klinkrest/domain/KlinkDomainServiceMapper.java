@@ -1,4 +1,4 @@
-package com.drbrosdev.klinkrest.domain.mapper;
+package com.drbrosdev.klinkrest.domain;
 
 import com.drbrosdev.klinkrest.domain.dto.KlinkDto;
 import com.drbrosdev.klinkrest.domain.dto.KlinkEntryDto;

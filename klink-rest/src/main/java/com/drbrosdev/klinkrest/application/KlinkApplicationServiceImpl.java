@@ -9,15 +9,19 @@ import jakarta.annotation.Nullable;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.RandomStringUtils;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Stream;
 
+import static java.time.LocalDateTime.now;
 import static java.util.Collections.emptyList;
 import static java.util.Objects.isNull;
 import static java.util.function.Function.identity;
+import static java.util.function.Predicate.not;
 import static java.util.stream.Collectors.toMap;
 import static org.apache.commons.collections4.CollectionUtils.isEmpty;
 
@@ -31,6 +35,9 @@ public class KlinkApplicationServiceImpl implements KlinkApplicationService {
     private final KlinkApplicationServiceMapper mapper;
 
     private static final Integer KEY_LENGTH = 8;
+
+    @Value("${klinkExpirationDuration}")
+    protected int daysToKeepKlinks;
 
     @Override
     public KlinkDto createKlink(
@@ -179,6 +186,28 @@ public class KlinkApplicationServiceImpl implements KlinkApplicationService {
                 .toList();
     }
 
+    @Override
+    public void executeKlinkCleanup() {
+        var date = now().minusDays(daysToKeepKlinks);
+        var klinks = klinkDomainService.getKlinks()
+                // find all klinks older than 30 days
+                .filter(it -> isOlderThan(it, date))
+                // filter out klinks where most recent entry is not older than 30 days
+                .filter(not(it -> containsRecentEntries(it, date)))
+                .map(KlinkDto::getId)
+                .toList();
+        // no eligible klinks found
+        if (klinks.isEmpty()) {
+            log.info("No eligible Klinks found for cleanup.");
+            return;
+        }
+        // delete eligible klinks
+        log.info(
+                "Cleaning up {} klinks.",
+                klinks.size());
+        klinkDomainService.deleteKlinksIn(klinks);
+    }
+
     private boolean validateReadAccess(
             KlinkDto klink,
             String readKey) {
@@ -200,5 +229,19 @@ public class KlinkApplicationServiceImpl implements KlinkApplicationService {
         return RandomStringUtils.secure()
                 .nextAlphanumeric(KEY_LENGTH)
                 .toUpperCase();
+    }
+
+    protected boolean isOlderThan(
+            KlinkDto klink,
+            LocalDateTime date) {
+        return klink.getUpdatedAt().isBefore(date);
+    }
+
+    protected boolean containsRecentEntries(
+            KlinkDto klink,
+            LocalDateTime date) {
+        return klink.getEntries()
+                .stream()
+                .anyMatch(it -> it.getCreatedAt().isAfter(date));
     }
 }
