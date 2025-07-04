@@ -1,4 +1,3 @@
-.openapi-generator-ignore
 apis/KlinkApi.ts
 apis/index.ts
 index.ts

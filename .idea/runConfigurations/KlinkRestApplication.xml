@@ -1,7 +1,7 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="KlinkRestApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" nameIsGenerated="true">
     <option name="ACTIVE_PROFILES" value="local" />
-    <module name="klinkrest" />
+    <module name="klink-rest" />
     <option name="SPRING_BOOT_MAIN_CLASS" value="com.drbrosdev.klinkrest.KlinkRestApplication" />
     <method v="2">
       <option name="Make" enabled="true" />
