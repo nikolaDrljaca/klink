@@ -69,7 +69,7 @@ public class KlinkApplicationServiceImpl implements KlinkApplicationService {
                 klink,
                 readKey);
         // no read access is granted
-        if (Boolean.FALSE.equals(readAccess)) {
+        if (!readAccess) {
             log.info(
                     "Access keys did not match for stored: {} and requested: {}",
                     klink.getReadKey(),
@@ -84,7 +84,7 @@ public class KlinkApplicationServiceImpl implements KlinkApplicationService {
                 readKey,
                 writeKey);
         // no write access is permitted
-        if (Boolean.FALSE.equals(writeAccess)) {
+        if (!writeAccess) {
             log.info(
                     "Access keys did not match for stored: ({} | {}) and requested: ({} | {})",
                     klink.getReadKey(),
@@ -109,7 +109,7 @@ public class KlinkApplicationServiceImpl implements KlinkApplicationService {
                 readKey,
                 writeKey);
         // no write access was granted
-        if (Boolean.FALSE.equals(writeAccess)) {
+        if (!writeAccess) {
             log.info(
                     "Access keys did not match for stored: ({} | {}) and requested: ({} | {})",
                     klink.getReadKey(),
@@ -126,10 +126,10 @@ public class KlinkApplicationServiceImpl implements KlinkApplicationService {
         // retrieve stored klink
         var stored = klinkDomainService.getKlink(klink.getId());
         // validate write access
-        if (Boolean.FALSE.equals(validateWriteAccess(
+        if (!validateWriteAccess(
                 klink,
                 stored.getReadKey(),
-                stored.getWriteKey()))) {
+                stored.getWriteKey())) {
             throw new IllegalArgumentException("Access keys don't match!");
         }
         // update klink and return
@@ -147,10 +147,10 @@ public class KlinkApplicationServiceImpl implements KlinkApplicationService {
         // fetch klink
         var klink = klinkDomainService.getKlink(klinkId);
         // check write access
-        if (Boolean.FALSE.equals(validateWriteAccess(
+        if (!validateWriteAccess(
                 klink,
                 readKey,
-                writeKey))) {
+                writeKey)) {
             throw new IllegalArgumentException("Access keys don't match!");
         }
         // create entries and return
