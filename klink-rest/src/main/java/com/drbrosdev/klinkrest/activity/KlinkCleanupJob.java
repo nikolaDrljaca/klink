@@ -1,6 +1,6 @@
 package com.drbrosdev.klinkrest.activity;
 
-import com.drbrosdev.klinkrest.application.KlinkApplicationService;
+import com.drbrosdev.klinkrest.domain.klink.usecase.KlinkCleanup;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Value;
@@ -13,10 +13,13 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class KlinkCleanupJob {
 
-    private final KlinkApplicationService klinkApplicationService;
+    private final KlinkCleanup cleanup;
 
-    @Value("${cleanupTaskActive}")
+    @Value("${cleanupTaskActive:false}")
     private boolean isDeleteScheduleTaskActive;
+
+    @Value("${klinkExpirationDuration}")
+    protected int daysToKeepKlinks;
 
     @Scheduled(cron = "${cleanupSchedule}")
     public void deleteExpiredKlinks() {
@@ -26,6 +29,6 @@ public class KlinkCleanupJob {
         }
 
         log.info("Executing expired klink cleanup job.");
-        klinkApplicationService.executeKlinkCleanup();
+        cleanup.executeKlinkCleanup(daysToKeepKlinks);
     }
 }

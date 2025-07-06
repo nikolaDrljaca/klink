@@ -1,4 +1,4 @@
-package com.drbrosdev.klinkrest.domain.dto;
+package com.drbrosdev.klinkrest.domain.klink.model;
 
 public enum SyncStatus {
 

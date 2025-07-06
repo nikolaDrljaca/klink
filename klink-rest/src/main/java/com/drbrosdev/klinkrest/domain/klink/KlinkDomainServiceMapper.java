@@ -1,7 +1,8 @@
-package com.drbrosdev.klinkrest.domain;
+package com.drbrosdev.klinkrest.domain.klink;
 
-import com.drbrosdev.klinkrest.domain.dto.KlinkDto;
-import com.drbrosdev.klinkrest.domain.dto.KlinkEntryDto;
+import com.drbrosdev.klinkrest.domain.klink.model.Klink;
+import com.drbrosdev.klinkrest.domain.klink.model.KlinkEntry;
+import com.drbrosdev.klinkrest.domain.klink.model.KlinkKey;
 import com.drbrosdev.klinkrest.persistence.entity.KlinkEntity;
 import com.drbrosdev.klinkrest.persistence.entity.KlinkEntryEntity;
 import com.drbrosdev.klinkrest.persistence.entity.KlinkKeyEntity;
@@ -19,22 +20,22 @@ import java.util.List;
         unmappedTargetPolicy = ReportingPolicy.ERROR)
 public interface KlinkDomainServiceMapper {
 
-    @Mapping(target = "readKey", source = "key.readKey")
-    @Mapping(target = "writeKey", source = "key.writeKey")
     @Mapping(target = "id", source = "entity.id")
     @Mapping(target = "updatedAt", ignore = true)
-    KlinkDto mapTo(
+    Klink mapTo(
             final KlinkEntity entity,
             final List<KlinkEntryEntity> entries,
             final KlinkKeyEntity key);
 
+    KlinkKey mapTo(final KlinkKeyEntity key);
+
     @Mapping(target = "value", source = "value")
-    KlinkEntryDto mapTo(final KlinkEntryEntity value);
+    KlinkEntry mapTo(final KlinkEntryEntity value);
 
 
     @AfterMapping
     default void extractLatestCreatedAt(
-            @MappingTarget KlinkDto.KlinkDtoBuilder builder,
+            @MappingTarget Klink.KlinkBuilder builder,
             final KlinkEntity klink,
             final List<KlinkEntryEntity> entries) {
         var updatedAt = entries.stream()

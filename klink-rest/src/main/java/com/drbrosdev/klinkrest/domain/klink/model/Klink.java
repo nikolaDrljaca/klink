@@ -1,4 +1,4 @@
-package com.drbrosdev.klinkrest.domain.dto;
+package com.drbrosdev.klinkrest.domain.klink.model;
 
 
 import jakarta.annotation.Nullable;
@@ -12,19 +12,18 @@ import java.util.List;
 import java.util.UUID;
 
 @Value
-@Builder
+@Builder(toBuilder = true)
 @AllArgsConstructor(access = AccessLevel.PRIVATE) //Hides the constructor to force usage of the Builder.
-public class KlinkDto {
+public class Klink {
 
     UUID id;
     String name;
-    String readKey;
-    String writeKey;
-
-    LocalDateTime updatedAt;
 
     @Nullable
     String description;
+    LocalDateTime updatedAt;
 
-    List<KlinkEntryDto> entries;
+    KlinkKey key;
+
+    List<KlinkEntry> entries;
 }
