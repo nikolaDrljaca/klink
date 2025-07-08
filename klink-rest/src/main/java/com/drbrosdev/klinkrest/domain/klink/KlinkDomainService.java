@@ -12,6 +12,8 @@ import java.util.stream.Stream;
 
 public interface KlinkDomainService {
 
+    KlinkKey getKeys(UUID klinkId);
+
     Klink createKlink(
             UUID klinkId,
             String name,
@@ -21,6 +23,8 @@ public interface KlinkDomainService {
     Klink getKlink(
             UUID klinkId,
             KlinkKey inputKeys);
+
+    Stream<KlinkEntry> getEntries(UUID klinkId);
 
     void deleteKlink(
             UUID klinkId,

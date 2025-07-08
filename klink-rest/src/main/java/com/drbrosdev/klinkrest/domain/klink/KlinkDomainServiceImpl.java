@@ -47,6 +47,14 @@ public class KlinkDomainServiceImpl implements KlinkDomainService {
     private final KlinkDomainServiceMapper mapper;
 
     @Override
+    @Transactional(readOnly = true)
+    public KlinkKey getKeys(UUID klinkId) {
+        return klinkKeyRepository.findByKlinkId(klinkId)
+                .map(mapper::mapTo)
+                .orElseThrow();
+    }
+
+    @Override
     @Transactional
     public Klink createKlink(
             UUID klinkId,
@@ -97,6 +105,14 @@ public class KlinkDomainServiceImpl implements KlinkDomainService {
 
             case READ_WRITE -> klink;
         };
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Stream<KlinkEntry> getEntries(UUID klinkId) {
+        return klinkEntryRepository.findByKlinkId(klinkId)
+                .stream()
+                .map(mapper::mapTo);
     }
 
     @Override

@@ -1,5 +1,6 @@
 package com.drbrosdev.klinkrest.domain.klink;
 
+import com.drbrosdev.klinkrest.framework.SseSessionManager;
 import com.zaxxer.hikari.util.DriverDataSource;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
@@ -8,6 +9,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 import java.util.Properties;
+import java.util.UUID;
 
 @Configuration
 public class NotifierConfiguration {
@@ -27,12 +29,21 @@ public class NotifierConfiguration {
     }
 
     @Bean
-    CommandLineRunner startNotifier(
-            NotifierService service,
-            NotificationHandler handler) {
+    CommandLineRunner scaffoldKlinkEntryChangeEventFlow(
+            NotifierService notifierService,
+            KlinkDomainService klinkDomainService,
+            SseSessionManager sessionManager) {
         return (args) -> {
-            var listener = service.createKlinkEntryChangeHandler(handler);
-            var thread = new Thread(listener, "entry-change-listener");
+            var listener = notifierService.createKlinkEntryChangeHandler(notification -> {
+                var klinkId = UUID.fromString(notification.getRow()
+                        .getKlinkId());
+                var entries = klinkDomainService.getEntries(klinkId)
+                        .toList();
+                sessionManager.sendEvent(
+                        klinkId,
+                        entries);
+            });
+            var thread = new Thread(listener, "klink-entry-change-listener");
             thread.start();
         };
     }
