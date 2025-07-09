@@ -1,5 +1,6 @@
-package com.drbrosdev.klinkrest.domain.klink;
+package com.drbrosdev.klinkrest.framework.notifier;
 
+import com.drbrosdev.klinkrest.domain.klink.KlinkNotifierService;
 import com.drbrosdev.klinkrest.domain.klink.model.KlinkEntryChangeNotification;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -18,7 +19,7 @@ import static java.util.Optional.empty;
 import static java.util.Optional.ofNullable;
 
 @Log4j2
-public class NotifierService {
+public class KlinkNotifierServiceImpl implements KlinkNotifierService {
 
     private static final String KLINK_ENTRY_CHANGE = "klink_entry_change";
 
@@ -26,12 +27,13 @@ public class NotifierService {
 
     private final ObjectMapper objectMapper;
 
-    public NotifierService(JdbcTemplate template) {
+    public KlinkNotifierServiceImpl(JdbcTemplate template) {
         this.template = template;
         this.objectMapper = new ObjectMapper()
                 .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
     }
 
+    @Override
     public Runnable createKlinkEntryChangeHandler(Consumer<KlinkEntryChangeNotification> consumer) {
         return () -> template.execute((Connection c) -> {
             c.createStatement().execute("LISTEN " + KLINK_ENTRY_CHANGE);

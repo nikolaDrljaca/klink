@@ -50,7 +50,7 @@ public class SseSessionManager {
             remove.accept(klinkId, emitter);
         });
 
-        log.info("Connected new session for klinkId: {}", klinkId);
+        log.info("Created new session for klinkId: {}", klinkId);
 
         return emitter;
     }

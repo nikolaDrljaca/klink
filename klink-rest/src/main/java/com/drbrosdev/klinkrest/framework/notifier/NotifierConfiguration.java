@@ -1,5 +1,7 @@
-package com.drbrosdev.klinkrest.domain.klink;
+package com.drbrosdev.klinkrest.framework.notifier;
 
+import com.drbrosdev.klinkrest.domain.klink.KlinkDomainService;
+import com.drbrosdev.klinkrest.domain.klink.KlinkNotifierService;
 import com.drbrosdev.klinkrest.framework.SseSessionManager;
 import com.zaxxer.hikari.util.DriverDataSource;
 import org.springframework.boot.CommandLineRunner;
@@ -18,19 +20,19 @@ public class NotifierConfiguration {
     Notifier should use a separate database connection from the hikari pool.
      */
     @Bean
-    NotifierService notifierService(DataSourceProperties props) {
+    KlinkNotifierService notifierService(DataSourceProperties props) {
         var dataSource = new DriverDataSource(
                 props.determineUrl(),
                 props.determineDriverClassName(),
                 new Properties(),
                 props.determineUsername(),
                 props.determinePassword());
-        return new NotifierService(new JdbcTemplate(dataSource));
+        return new KlinkNotifierServiceImpl(new JdbcTemplate(dataSource));
     }
 
     @Bean
     CommandLineRunner scaffoldKlinkEntryChangeEventFlow(
-            NotifierService notifierService,
+            KlinkNotifierService notifierService,
             KlinkDomainService klinkDomainService,
             SseSessionManager sessionManager) {
         return (args) -> {
