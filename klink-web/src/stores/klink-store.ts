@@ -3,6 +3,7 @@ import localforage from "localforage";
 import { Accessor, createMemo } from "solid-js";
 import { createStore } from "solid-js/store";
 import { CreateKlinkPayload, UpdateKlinkRequest } from "~/generated";
+import { isSharedEditable, klinkEntryForageKey } from "~/lib/klink-utils";
 import makeKlinkApi from "~/lib/make-klink-api";
 import makeRelativeTime from "~/lib/relative-time";
 import { Klink, KlinkEntry } from "~/types/domain";
@@ -50,13 +51,6 @@ function createNewKlink(data: { name: string; description?: string }) {
   };
   setKlinks(klink.id, klink);
 }
-
-// TODO: move this utility to lib
-const klinkEntryForageKey = (id: string) => `klink-items-${id}`;
-
-// TODO: what to do with this?
-const isSharedEditable = (klink: Klink) => !!klink.readKey && !!klink.writeKey;
-const isShared = (klink: Klink) => !!klink.readKey;
 
 async function deleteKlink(id: string, shouldDeleteShared: boolean) {
   const klink = klinks[id];
@@ -163,11 +157,19 @@ function useKlinks(): Accessor<Klink[]> {
   return createMemo(() => Object.values(klinks));
 }
 
+function useKlink(id: string): Accessor<Klink> {
+  if (!klinks[id]) {
+    throw new Error("Attempting to access non-existing collection.");
+  }
+  return createMemo(() => klinks[id]);
+}
+
 export {
   copyExistingKlink,
   createNewKlink,
   deleteKlink,
   editKlink,
   shareKlink,
+  useKlink,
   useKlinks,
 };
