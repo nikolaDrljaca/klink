@@ -12,8 +12,6 @@ import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.util.UUID;
 
-import static com.drbrosdev.klinkrest.domain.klink.model.KlinkKey.readOnly;
-
 @RestController
 @RequiredArgsConstructor
 public class KlinkSseController {
@@ -31,9 +29,9 @@ public class KlinkSseController {
             @RequestParam(name = "readKey") String readKey) {
         var klinkId = UUID.fromString(uuid);
         // validate access
-        validateKlinkAccess.execute(
-                domainService.getKeys(klinkId),
-                readOnly(readKey));
+//        validateKlinkAccess.execute(
+//                domainService.getKeys(klinkId),
+//                readOnly(readKey));
         // create session
         return sessionManager.createSession(klinkId);
     }

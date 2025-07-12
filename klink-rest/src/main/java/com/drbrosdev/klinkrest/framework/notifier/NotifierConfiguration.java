@@ -3,14 +3,15 @@ package com.drbrosdev.klinkrest.framework.notifier;
 import com.drbrosdev.klinkrest.domain.klink.KlinkDomainService;
 import com.drbrosdev.klinkrest.domain.klink.KlinkNotifierService;
 import com.drbrosdev.klinkrest.framework.SseSessionManager;
-import com.zaxxer.hikari.util.DriverDataSource;
+import org.postgresql.Driver;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.datasource.SimpleDriverDataSource;
 
-import java.util.Properties;
+import java.util.Collections;
 import java.util.UUID;
 
 @Configuration
@@ -21,10 +22,9 @@ public class NotifierConfiguration {
      */
     @Bean
     KlinkNotifierService notifierService(DataSourceProperties props) {
-        var dataSource = new DriverDataSource(
+        var dataSource = new SimpleDriverDataSource(
+                new Driver(),
                 props.determineUrl(),
-                props.determineDriverClassName(),
-                new Properties(),
                 props.determineUsername(),
                 props.determinePassword());
         return new KlinkNotifierServiceImpl(new JdbcTemplate(dataSource));
@@ -39,13 +39,14 @@ public class NotifierConfiguration {
             var listener = notifierService.createKlinkEntryChangeHandler(notification -> {
                 var klinkId = UUID.fromString(notification.getRow()
                         .getKlinkId());
-                var entries = klinkDomainService.getEntries(klinkId)
-                        .toList();
+//                var entries = klinkDomainService.getEntries(klinkId)
+//                        .toList();
                 sessionManager.sendEvent(
                         klinkId,
-                        entries);
+                        Collections.emptyList());
             });
             var thread = new Thread(listener, "klink-entry-change-listener");
+            thread.setDaemon(true);
             thread.start();
         };
     }

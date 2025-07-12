@@ -14,9 +14,7 @@ import makeKlinkApi from "~/lib/make-klink-api";
 import makeRelativeTime from "~/lib/relative-time";
 import { Klink, KlinkEntry } from "~/types/domain";
 
-type KlinkStore = Klink /*& { entries: Array<KlinkEntry> }*/;
-
-const store = createStore<Record<string, KlinkStore>>({});
+const store = createStore<Record<string, Klink>>({});
 const [klinks, setKlinks] = makePersisted(
   store,
   {
@@ -33,28 +31,34 @@ function copyExistingKlink(id: string) {
   if (!temp) {
     return;
   }
-  const copy: KlinkStore = {
+  const copy: Klink = {
     id: crypto.randomUUID(),
     name: `Copy of ${temp.name}`,
     description: temp.description ?? "",
     updatedAt: Date.now(),
     readKey: null,
     writeKey: null,
-    // entries: [...temp.entries],
   };
   setKlinks(copy.id, copy);
 }
 
 function createNewKlink(data: { name: string; description?: string }) {
-  const klink: KlinkStore = {
+  const klink: Klink = {
     id: crypto.randomUUID(),
     name: data.name,
     description: data.description,
     updatedAt: Date.now(),
     readKey: null,
     writeKey: null,
-    // entries: [],
   };
+  setKlinks(klink.id, klink);
+}
+
+function importKlink(klink: Klink) {
+  const existing = new Set(Object.values(klinks).map((it) => it.id));
+  if (existing.has(klink.id)) {
+    return;
+  }
   setKlinks(klink.id, klink);
 }
 
@@ -99,10 +103,13 @@ async function editKlink(
   const updateKlink = (
     value: { name: string; description?: string; updatedAt: number },
   ) => {
-    klink.name = value.name;
-    klink.description = value.description;
-    klink.updatedAt = value.updatedAt;
-    setKlinks(klink.id, { ...klink });
+    const updated: Klink = {
+      ...klink,
+      name: value.name,
+      description: value.description,
+      updatedAt: value.updatedAt,
+    };
+    setKlinks(klink.id, updated);
   };
 
   const shared = isSharedEditable(klink);
@@ -152,11 +159,13 @@ async function shareKlink(id: string) {
   };
   // store on server
   const response = await api.createKlink({ createKlinkPayload: payload });
-  // update local copy with keys
-  klink.readKey = response.readKey;
-  klink.writeKey = response.writeKey;
-  klink.updatedAt = relativeTime.unixFromResponse(response.updatedAt);
-  setKlinks(klink.id, { ...klink });
+  const updated: Klink = {
+    ...klink,
+    readKey: response.readKey,
+    writeKey: response.writeKey,
+    updatedAt: relativeTime.unixFromResponse(response.updatedAt),
+  };
+  setKlinks(klink.id, updated);
 }
 
 async function syncKlinks() {
@@ -186,7 +195,8 @@ async function syncKlinks() {
   });
   const sharedKlinks = new Map(data.map((it) => [it.id, it]));
   // compute local change
-  for (const item of allKlinks) {
+  for (const curr of allKlinks) {
+    const item = { ...curr };
     const isShared = sharedKlinks.has(item.id);
     if (isShared) {
       // local klink is still shared -- update its data
@@ -224,6 +234,7 @@ export {
   createNewKlink,
   deleteKlink,
   editKlink,
+  importKlink,
   shareKlink,
   syncKlinks,
   useKlink,

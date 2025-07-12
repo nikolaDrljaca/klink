@@ -36,7 +36,7 @@ public class KlinkNotifierServiceImpl implements KlinkNotifierService {
     @Override
     public Runnable createKlinkEntryChangeHandler(Consumer<KlinkEntryChangeNotification> consumer) {
         return () -> template.execute((Connection c) -> {
-            c.createStatement().execute("LISTEN " + KLINK_ENTRY_CHANGE);
+            c.createStatement().execute("LISTEN " + KLINK_ENTRY_CHANGE  + ";");
             PGConnection conn = c.unwrap(PGConnection.class);
             while (!Thread.currentThread().isInterrupted()) {
                 var notifications = conn.getNotifications(10_000);

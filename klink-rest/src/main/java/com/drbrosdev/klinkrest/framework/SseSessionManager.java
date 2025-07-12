@@ -4,10 +4,10 @@ import com.drbrosdev.klinkrest.domain.klink.model.KlinkEntry;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -15,6 +15,8 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.BiConsumer;
+
+import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
 
 @Service
 @Log4j2
@@ -35,12 +37,15 @@ public class SseSessionManager {
         };
 
         // create new emitter
-        var emitter = new SseEmitter(0L);
+        var emitter = new SseEmitter(0L); // no timeout - sendEvent will remove dead emitters
         // add to existing session or create new
         sessions.computeIfAbsent(klinkId, (id) -> new CopyOnWriteArrayList<>())
                 .add(emitter);
 
-        emitter.onCompletion(() -> remove.accept(klinkId, emitter));
+        emitter.onCompletion(() -> {
+            log.info("SSE emitter for {} completed.", klinkId);
+            remove.accept(klinkId, emitter);
+        });
         emitter.onTimeout(() -> {
             log.warn("SSE emitter closed due to timeout.");
             remove.accept(klinkId, emitter);
@@ -51,6 +56,7 @@ public class SseSessionManager {
         });
 
         log.info("Created new session for klinkId: {}", klinkId);
+        log.info("Session count for {} is {}", klinkId, sessions.get(klinkId).size());
 
         return emitter;
     }
@@ -67,14 +73,17 @@ public class SseSessionManager {
         var deadEmitters = new ArrayList<SseEmitter>();
         for (var curr : current) {
             try {
-                curr.send(SseEmitter.event()
-                        .name("klink-entry-change")
-                        .data(mapper.writeValueAsString(entries))
-                        .build());
-            } catch (IOException e) {
+                curr.send(
+                        mapper.writeValueAsString(entries),
+                        MediaType.APPLICATION_JSON);
+            } catch (Exception e) {
+                curr.completeWithError(e);
                 deadEmitters.add(curr);
             }
         }
-        current.removeAll(deadEmitters);
+        if (isNotEmpty(deadEmitters)) {
+            log.info("Cleaning up {} dead emitters for {}", deadEmitters.size(), klinkId);
+            current.removeAll(deadEmitters);
+        }
     }
 }
