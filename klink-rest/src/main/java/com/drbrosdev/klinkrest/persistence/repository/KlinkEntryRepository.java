@@ -12,5 +12,4 @@ public interface KlinkEntryRepository extends JpaRepository<KlinkEntryEntity, UU
 
     List<KlinkEntryEntity> findByKlinkId(UUID klinkId);
 
-    void deleteAll(List<KlinkEntryEntity> values);
 }

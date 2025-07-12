@@ -217,7 +217,7 @@ public class KlinkDomainServiceImpl implements KlinkDomainService {
                 .stream()
                 .filter(it -> toDelete.contains(it.getValue()))
                 .toList();
-        klinkEntryRepository.deleteAll(existingKlinks);
+        klinkEntryRepository.deleteAllInBatch(existingKlinks);
     }
 
     @Override

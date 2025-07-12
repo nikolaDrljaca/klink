@@ -1,8 +1,14 @@
 import { makePersisted } from "@solid-primitives/storage";
 import localforage from "localforage";
 import { Accessor, createMemo } from "solid-js";
-import { createStore } from "solid-js/store";
-import { CreateKlinkPayload, UpdateKlinkRequest } from "~/generated";
+import { createStore, unwrap } from "solid-js/store";
+import {
+  CreateKlinkPayload,
+  QueryExistingPayload,
+  QueryExistingPayloadKlinksInner,
+  UpdateKlinkRequest,
+} from "~/generated";
+import useKlinkIdParam from "~/hooks/use-klinkid-params";
 import { isSharedEditable, klinkEntryForageKey } from "~/lib/klink-utils";
 import makeKlinkApi from "~/lib/make-klink-api";
 import makeRelativeTime from "~/lib/relative-time";
@@ -153,6 +159,50 @@ async function shareKlink(id: string) {
   setKlinks(klink.id, { ...klink });
 }
 
+async function syncKlinks() {
+  // local procedure to create request payload
+  const allKlinks = Object.values(unwrap(klinks));
+  const createPaylaod = (klinks: Klink[]): QueryExistingPayload => {
+    const out: QueryExistingPayloadKlinksInner[] = [];
+    for (const item of klinks) {
+      // filter out local klinks
+      if (!item.readKey) {
+        continue;
+      }
+      out.push({
+        id: item.id,
+        readKey: item.readKey,
+      });
+    }
+    return { klinks: out };
+  };
+  const payload = createPaylaod(allKlinks);
+  // if there are no shared klinks -- skip request
+  if (payload.klinks.length === 0) {
+    return;
+  }
+  const data = await api.queryExisting({
+    queryExistingPayload: createPaylaod(allKlinks),
+  });
+  const sharedKlinks = new Map(data.map((it) => [it.id, it]));
+  // compute local change
+  for (const item of allKlinks) {
+    const isShared = sharedKlinks.has(item.id);
+    if (isShared) {
+      // local klink is still shared -- update its data
+      const updated = sharedKlinks.get(item.id);
+      item.name = updated.name;
+      item.description = updated.description;
+      item.updatedAt = relativeTime.unixFromResponse(updated.updatedAt);
+    } else {
+      // local klink is no longer shared -- delete its keys
+      item.readKey = null;
+      item.writeKey = null;
+    }
+    setKlinks(item.id, item);
+  }
+}
+
 function useKlinks(): Accessor<Klink[]> {
   return createMemo(() => Object.values(klinks));
 }
@@ -164,12 +214,19 @@ function useKlink(id: string): Accessor<Klink> {
   return createMemo(() => klinks[id]);
 }
 
+function useSelectedKlink(): Accessor<Klink> {
+  const klinkId = useKlinkIdParam();
+  return () => klinks[klinkId()];
+}
+
 export {
   copyExistingKlink,
   createNewKlink,
   deleteKlink,
   editKlink,
   shareKlink,
+  syncKlinks,
   useKlink,
   useKlinks,
+  useSelectedKlink,
 };

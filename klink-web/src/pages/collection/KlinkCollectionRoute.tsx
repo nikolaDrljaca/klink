@@ -2,12 +2,13 @@ import { FolderOpen } from "lucide-solid";
 import { Component, Show } from "solid-js";
 import KlinkSidebar from "~/components/KlinkSidebar";
 import KlinkCollection from "./components/KlinkCollection";
-import useSelector from "~/hooks/use-selector";
+import { useKlinks } from "~/stores/klink-store";
+import useKlinkIdParam from "~/hooks/use-klinkid-params";
 
 const KlinkCollectionRoute: Component = () => {
-  const shouldShowPlaceholder = useSelector(store =>
-    store.klinks.length > 0 && !!store.selectedKlinkId
-  );
+  const klinks = useKlinks();
+  const klinkId = useKlinkIdParam();
+  const shouldShowPlaceholder = () => klinks().length > 0 && !!klinkId();
 
   return (
     <div class="flex flex-col lg:flex-row h-screen">
@@ -30,6 +31,6 @@ const KlinkCollectionRoute: Component = () => {
       </Show>
     </div>
   );
-}
+};
 
 export default KlinkCollectionRoute;
