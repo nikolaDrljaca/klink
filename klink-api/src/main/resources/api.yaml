@@ -184,6 +184,41 @@ paths:
           description: "Klink entry created."
         '502':
           description: "Error."
+    delete:
+      summary: "Delete entries from a Klink."
+      operationId: deleteKlinkEntries
+      tags:
+        - klink
+      parameters:
+        - in: path
+          name: klinkId
+          schema:
+            type: string
+            format: uuid
+          required: true
+        - in: query
+          name: readKey
+          schema:
+            type: string
+          required: true
+        - in: query
+          name: writeKey
+          schema:
+            type: string
+          required: true
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: "#/components/schemas/KlinkEntry"
+      responses:
+        '204':
+          description: "Klink entries deleted."
+        '502':
+          description: "Error."
   /klink/{klinkId}/sync:
     post:
       summary: "Synchronize a collection by ID."

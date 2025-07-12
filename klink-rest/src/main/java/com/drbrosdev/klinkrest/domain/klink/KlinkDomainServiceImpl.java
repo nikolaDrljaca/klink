@@ -176,7 +176,7 @@ public class KlinkDomainServiceImpl implements KlinkDomainService {
                 storedKey,
                 key);
         if (access != KlinkAccessLevel.READ_WRITE) {
-            throw new IllegalArgumentException("Write access is needed to delete klink!");
+            throw new IllegalArgumentException("Write access is needed to create klink entries!");
         }
         // fetch existing klinks
         var existingKlinks = klinkEntryRepository.findByKlinkId(klinkId)
@@ -195,6 +195,29 @@ public class KlinkDomainServiceImpl implements KlinkDomainService {
         return klinkEntryRepository.saveAll(entities)
                 .stream()
                 .map(mapper::mapTo);
+    }
+
+    @Override
+    @Transactional
+    public void deleteKlinkEntries(
+            UUID klinkId,
+            KlinkKey key,
+            List<KlinkEntry> entries) {
+        var storedKey = retrieveKey(klinkId);
+        var access = validateKlinkAccess.execute(
+                storedKey,
+                key);
+        if (access != KlinkAccessLevel.READ_WRITE) {
+            throw new IllegalArgumentException("Write access is needed to delete klinks!");
+        }
+        var toDelete = entries.stream()
+                .map(KlinkEntry::getValue)
+                .collect(toSet());
+        var existingKlinks = klinkEntryRepository.findByKlinkId(klinkId)
+                .stream()
+                .filter(it -> toDelete.contains(it.getValue()))
+                .toList();
+        klinkEntryRepository.deleteAll(existingKlinks);
     }
 
     @Override

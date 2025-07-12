@@ -39,6 +39,11 @@ public interface KlinkDomainService {
             KlinkKey key,
             List<KlinkEntry> entries);
 
+    void deleteKlinkEntries(
+            UUID klinkId,
+            KlinkKey key,
+            List<KlinkEntry> entries);
+
     List<Klink> queryExistingKlinks(List<QueryExistingKlinkItemDto> query);
 
     Stream<Klink> getKlinks();

@@ -107,6 +107,24 @@ public class KlinkControllerActivity implements KlinkApi {
     }
 
     @Override
+    public ResponseEntity<Void> deleteKlinkEntries(
+            UUID klinkId,
+            String readKey,
+            String writeKey,
+            List<KlinkEntryApiDto> klinkEntryApiDto) {
+        log.info(
+                "deleteKlinkEntries called with klinkId: {}, readKey: {}, writeKey: {}",
+                klinkId,
+                readKey,
+                writeKey);
+        klinkDomainService.deleteKlinkEntries(
+                klinkId,
+                mapper.mapTo(readKey, writeKey),
+                mapper.mapToEntries(klinkEntryApiDto));
+        return ok().build();
+    }
+
+    @Override
     public ResponseEntity<KlinkSyncStatusApiDto> syncKlink(
             UUID klinkId,
             KlinkApiDto klinkApiDto) {
