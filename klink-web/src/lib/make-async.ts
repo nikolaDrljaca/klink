@@ -7,12 +7,13 @@ export type AsyncResult<T> = [Error | null, T | null];
  * const [err, data] = await makeRequest(api.getFoo(args));
  */
 export default async function makeAsync<T>(
-  call: Promise<T>,
+  call: () => Promise<T>,
 ): Promise<AsyncResult<T>> {
   try {
-    const response = await call;
+    const response = await call();
     return [null, response];
   } catch (e) {
+    console.error(e);
     if (e instanceof ResponseError) {
       return [e, null];
     }

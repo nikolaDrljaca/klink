@@ -10,7 +10,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
-import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
+
+import static com.drbrosdev.klinkrest.domain.klink.model.KlinkKey.readOnly;
+import static java.util.UUID.fromString;
+import static java.util.concurrent.CompletableFuture.completedFuture;
 
 @RestController
 @RequiredArgsConstructor
@@ -24,15 +28,16 @@ public class KlinkSseController {
 
     // /api/klink/.../events?readKey=QWERASDF
     @GetMapping("/klink/{uuid}/events")
-    public SseEmitter streamKlinkEntryChangeEvents(
+    public CompletableFuture<SseEmitter> streamKlinkEntryChangeEvents(
             @PathVariable(name = "uuid") String uuid,
             @RequestParam(name = "readKey") String readKey) {
-        var klinkId = UUID.fromString(uuid);
-        // validate access
-//        validateKlinkAccess.execute(
-//                domainService.getKeys(klinkId),
-//                readOnly(readKey));
-        // create session
-        return sessionManager.createSession(klinkId);
+        var klinkId = fromString(uuid);
+        return completedFuture(klinkId)
+                // make sure a separate thread executes this fetch - allows spring to close db connection
+                .thenApplyAsync(domainService::getKeys)
+                .thenApply(keys -> validateKlinkAccess.execute(
+                        keys,
+                        readOnly(readKey)))
+                .thenApply((it) -> sessionManager.createSession(klinkId));
     }
 }

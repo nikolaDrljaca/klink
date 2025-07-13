@@ -47,10 +47,10 @@ const KlinkCollection: Component = () => {
         <For each={store.klinks()} fallback={<KlinkListEmpty />}>
           {(item) => (
             <KlinkCollectionItem
-              item={item}
+              item={item.model()}
               pathKlinkId={store.pathKlinkId()}
-              onSelect={() => onSelectKlink(item.id)}
-              onCopyClick={() => onCopyKlink(item.id)}
+              onSelect={() => onSelectKlink(item.model().id)}
+              onCopyClick={() => onCopyKlink(item.model().id)}
             />
           )}
         </For>

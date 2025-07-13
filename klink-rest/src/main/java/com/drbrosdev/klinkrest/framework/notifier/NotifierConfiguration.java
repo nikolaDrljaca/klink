@@ -11,7 +11,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.SimpleDriverDataSource;
 
-import java.util.Collections;
 import java.util.UUID;
 
 @Configuration
@@ -39,11 +38,11 @@ public class NotifierConfiguration {
             var listener = notifierService.createKlinkEntryChangeHandler(notification -> {
                 var klinkId = UUID.fromString(notification.getRow()
                         .getKlinkId());
-//                var entries = klinkDomainService.getEntries(klinkId)
-//                        .toList();
+                var entries = klinkDomainService.getEntries(klinkId)
+                        .toList();
                 sessionManager.sendEvent(
                         klinkId,
-                        Collections.emptyList());
+                        entries);
             });
             var thread = new Thread(listener, "klink-entry-change-listener");
             thread.setDaemon(true);

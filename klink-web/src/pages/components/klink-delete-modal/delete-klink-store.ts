@@ -1,74 +1,34 @@
-import { createEventBus } from "@solid-primitives/event-bus";
-import { createStore } from "solid-js/store";
-import localforage from "localforage";
-import { useAppStore } from "~/stores/app-store-context";
-import makeKlinkApi from "~/lib/make-klink-api";
-
-type DeleteKlinkEvent =
-    | { type: "success" }
-    | { type: "failure" }
+import { createSignal } from "solid-js";
+import { deleteKlink, useKlink } from "~/stores/klink-store";
+import makeAsync from "~/lib/make-async";
 
 export default function deleteKlinkStore(klinkId: string) {
-    const store = useAppStore();
-    const klink = store.state.klinks.find(it => it.id === klinkId);
-    const api = makeKlinkApi();
+  const klink = useKlink(klinkId);
 
-    const { listen, emit, clear } = createEventBus<DeleteKlinkEvent>();
+  const [loading, setLoading] = createSignal(false);
+  const [shouldDeleteShared, setShouldDeleteShared] = createSignal(false);
 
-    const [klinkStore, setStore] = createStore({
-        klink: klink,
-        loading: false,
-        shouldDeleteShared: false,
-        get isShared() {
-            return !!klink.readKey && !!klink.writeKey;
-        }
-    });
-
-    return {
-        state: klinkStore,
-        listen,
-
-        async deleteKlink() {
-            if (klinkStore.loading) {
-                return;
-            }
-            const forageKey = `klink-items-${klinkId}`;
-            // delete local entries
-            await localforage.removeItem(forageKey);
-            if (!klinkStore.shouldDeleteShared) {
-                // only local delete
-                emit({ type: 'success' });
-                store.update(state => {
-                    state.klinks = state.klinks.filter(it => it.id !== klinkId);
-                    state.selectedKlinkId = null;
-                });
-                return;
-            }
-            // remote and local delete
-            try {
-                setStore('loading', true);
-                // call remote delete
-                await api.deleteKlink({
-                    klinkId: klink.id,
-                    readKey: klink.readKey,
-                    writeKey: klink.writeKey
-                });
-                // on success local delete
-                emit({ type: 'success' });
-                setStore('loading', false);
-                store.update(state => {
-                    state.klinks = state.klinks.filter(it => it.id !== klinkId);
-                    state.selectedKlinkId = null;
-                });
-            } catch (e) {
-                console.error(e);
-                setStore('loading', false);
-                emit({ type: 'failure' });
-            }
-        },
-
-        setShouldDeleteShared(value: boolean) {
-            setStore('shouldDeleteShared', value);
-        }
+  const handleDelete = async () => {
+    if (loading()) {
+      return;
     }
+    setLoading(true);
+    const [err, data] = await makeAsync(
+      () => deleteKlink(klinkId, shouldDeleteShared()),
+    );
+    setLoading(false);
+    return err;
+  };
+
+  return {
+    loading,
+    shouldDeleteShared,
+    klink,
+
+    handleDelete,
+
+    setShouldDeleteShared(value: boolean) {
+      setShouldDeleteShared(value);
+    },
+  };
 }

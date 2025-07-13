@@ -43,15 +43,15 @@ public class SseSessionManager {
                 .add(emitter);
 
         emitter.onCompletion(() -> {
-            log.info("SSE emitter for {} completed.", klinkId);
+            log.info("SSE emitter {} completed.", klinkId);
             remove.accept(klinkId, emitter);
         });
         emitter.onTimeout(() -> {
-            log.warn("SSE emitter closed due to timeout.");
+            log.warn("SSE emitter {} closed due to timeout.", klinkId);
             remove.accept(klinkId, emitter);
         });
         emitter.onError((e) -> {
-            log.error("SSE emitter closed due to error", e);
+            log.error("SSE emitter {} closed due to error", klinkId, e);
             remove.accept(klinkId, emitter);
         });
 

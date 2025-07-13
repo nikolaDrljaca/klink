@@ -1,4 +1,4 @@
-import { createSignal } from "solid-js";
+import { createSignal, untrack } from "solid-js";
 import useKlinkIdParam from "~/hooks/use-klinkid-params";
 import makeAsync from "~/lib/make-async";
 import {
@@ -16,7 +16,7 @@ export default function collectionStore() {
 
   const reloadKlinkData = async () => {
     setLoading(true);
-    const [err, value] = await makeAsync(syncKlinks());
+    const [err, value] = await makeAsync(() => syncKlinks());
     setLoading(false);
   };
 

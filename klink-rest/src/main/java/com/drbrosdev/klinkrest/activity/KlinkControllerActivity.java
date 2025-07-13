@@ -137,6 +137,7 @@ public class KlinkControllerActivity implements KlinkApi {
             String readKey,
             String writeKey,
             PatchKlinkPayloadApiDto patchKlinkPayloadApiDto) {
+        log.info("updateKlink called with {} and {}", klinkId, patchKlinkPayloadApiDto);
         return ok(mapper.mapTo(klinkDomainService.updateKlink(
                 mapper.mapTo(
                         klinkId,

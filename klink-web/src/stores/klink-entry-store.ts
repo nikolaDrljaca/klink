@@ -1,13 +1,9 @@
 import { makePersisted } from "@solid-primitives/storage";
 import localforage from "localforage";
 import { createStore } from "solid-js/store";
-import {
-  isShared,
-  isSharedEditable,
-  klinkEntryForageKey,
-} from "~/lib/klink-utils";
+import { klinkEntryForageKey } from "~/lib/klink-utils";
 import makeKlinkApi from "~/lib/make-klink-api";
-import { Klink, KlinkEntry } from "~/types/domain";
+import { KlinkEntry, KlinkModel } from "~/types/domain";
 import { useSelectedKlink } from "./klink-store";
 import { createEffect, createMemo, onCleanup } from "solid-js";
 import makeAsync from "~/lib/make-async";
@@ -18,11 +14,10 @@ function buildSsePath(data: { id: string; readKey: string }): string {
 }
 
 function changesEventSource(
-  klink: Klink,
+  klink: KlinkModel,
   onMessage: (raw: any) => void,
 ): EventSource | void {
-  const editable = isShared(klink);
-  if (!editable) {
+  if (!klink.isShared) {
     return undefined;
   }
   const source = new EventSource(buildSsePath(klink));
@@ -30,7 +25,7 @@ function changesEventSource(
   return source;
 }
 
-function createKlinkEntryStore(klink: Klink) {
+function createKlinkEntryStore(klink: KlinkModel) {
   const id = klink.id;
   const store = createStore<Array<KlinkEntry>>([]);
   const [entries, setEntries] = makePersisted(
@@ -40,9 +35,6 @@ function createKlinkEntryStore(klink: Klink) {
       storage: localforage,
     },
   );
-
-  const editable = isSharedEditable(klink);
-  const shared = isShared(klink);
 
   const api = makeKlinkApi();
 
@@ -56,20 +48,14 @@ function createKlinkEntryStore(klink: Klink) {
     );
     onCleanup(() => {
       if (eventSource) {
-        console.log("closing event source");
         eventSource.close();
       }
     });
   });
-  const cleanup = () => {
-    // if (eventSource) {
-    //   eventSource.close();
-    // }
-  };
 
   const addEntry = async (url: string) => {
     const entry: KlinkEntry = { value: url };
-    if (editable) {
+    if (klink.isEditable) {
       await api.createKlinkEntry({
         klinkId: klink.id,
         readKey: klink.readKey,
@@ -88,7 +74,7 @@ function createKlinkEntryStore(klink: Klink) {
   };
 
   const removeEntry = async (url: string) => {
-    if (editable) {
+    if (klink.isEditable) {
       await api.deleteKlinkEntries({
         klinkId: klink.id,
         readKey: klink.readKey,
@@ -101,14 +87,16 @@ function createKlinkEntryStore(klink: Klink) {
   };
 
   const fetchEntries = async () => {
-    if (!shared) {
+    if (!klink.isShared) {
       return;
     }
-    const [err, data] = await makeAsync(api.getKlink({
-      klinkId: klink.id,
-      readKey: klink.readKey,
-      writeKey: klink.writeKey,
-    }));
+    const [err, data] = await makeAsync(() =>
+      api.getKlink({
+        klinkId: klink.id,
+        readKey: klink.readKey,
+        writeKey: klink.writeKey,
+      })
+    );
     if (!data) {
       return;
     }
@@ -121,7 +109,6 @@ function createKlinkEntryStore(klink: Klink) {
     addEntry,
     removeEntry,
     fetchEntries,
-    cleanup,
   };
 }
 

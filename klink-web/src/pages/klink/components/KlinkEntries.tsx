@@ -61,10 +61,6 @@ const KlinkEntries: Component = () => {
     store().fetchEntries();
   });
 
-  onCleanup(() => {
-    store().cleanup();
-  });
-
   return (
     <div class="flex flex-col w-full h-full grow overflow-y-scroll scrollbar-hidden">
       {/* Share Modal - Shown only on Small Screen */}

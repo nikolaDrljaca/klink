@@ -1,7 +1,7 @@
 import { makePersisted } from "@solid-primitives/storage";
 import localforage from "localforage";
 import { Accessor, createMemo } from "solid-js";
-import { createStore, unwrap } from "solid-js/store";
+import { createStore, produce, unwrap } from "solid-js/store";
 import {
   CreateKlinkPayload,
   QueryExistingPayload,
@@ -9,10 +9,16 @@ import {
   UpdateKlinkRequest,
 } from "~/generated";
 import useKlinkIdParam from "~/hooks/use-klinkid-params";
-import { isSharedEditable, klinkEntryForageKey } from "~/lib/klink-utils";
+import { klinkEntryForageKey } from "~/lib/klink-utils";
 import makeKlinkApi from "~/lib/make-klink-api";
 import makeRelativeTime from "~/lib/relative-time";
-import { Klink, KlinkEntry } from "~/types/domain";
+import {
+  Klink,
+  KlinkEntry,
+  klinkMetadata,
+  KlinkModel,
+  klinkModel,
+} from "~/types/domain";
 
 const store = createStore<Record<string, Klink>>({});
 const [klinks, setKlinks] = makePersisted(
@@ -72,11 +78,8 @@ async function deleteKlink(id: string, shouldDeleteShared: boolean) {
   await localforage.removeItem(forageKey);
 
   const removeLocal = () => {
-    setKlinks((klinks) => {
-      const temp = { ...klinks };
-      delete temp[id];
-      return temp;
-    });
+    setKlinks(produce((k) => delete k[id]));
+    // setKlinks(id, undefined);
   };
   if (!shouldDeleteShared) {
     // remove only local klink
@@ -99,6 +102,7 @@ async function editKlink(
   if (!klink) {
     return;
   }
+  const metadata = klinkMetadata(klink);
   // declare function for local update
   const updateKlink = (
     value: { name: string; description?: string; updatedAt: number },
@@ -112,9 +116,8 @@ async function editKlink(
     setKlinks(klink.id, updated);
   };
 
-  const shared = isSharedEditable(klink);
   // handle update for shared klinks
-  if (shared) {
+  if (metadata.isEditable) {
     const payload: UpdateKlinkRequest = {
       klinkId: klink.id,
       readKey: klink.readKey,
@@ -213,20 +216,31 @@ async function syncKlinks() {
   }
 }
 
-function useKlinks(): Accessor<Klink[]> {
-  return createMemo(() => Object.values(klinks));
+function useKlinks(): Accessor<{ key: string; model: Accessor<KlinkModel> }[]> {
+  return createMemo(() => {
+    return Object.keys(klinks).map((it) => {
+      const get = () => klinkModel(klinks[it]);
+      return { key: it, model: get };
+    });
+  });
 }
 
-function useKlink(id: string): Accessor<Klink> {
+function useKlink(id: string): Accessor<KlinkModel> {
   if (!klinks[id]) {
     throw new Error("Attempting to access non-existing collection.");
   }
-  return createMemo(() => klinks[id]);
+  return createMemo(() => klinkModel(klinks[id]));
 }
 
-function useSelectedKlink(): Accessor<Klink> {
-  const klinkId = useKlinkIdParam();
-  return () => klinks[klinkId()];
+function useSelectedKlink(): Accessor<KlinkModel> {
+  return createMemo(() => {
+    const klinkId = useKlinkIdParam();
+    const klink = klinks[klinkId()];
+    if (!klink) {
+      return null;
+    }
+    return klinkModel(klink);
+  });
 }
 
 export {
