@@ -1,6 +1,7 @@
 import { createSignal } from "solid-js";
-import { deleteKlink, useKlink } from "~/stores/klink-store";
+import { KlinkService as service } from "~/stores/klink-store";
 import makeAsync from "~/lib/make-async";
+import { useKlink } from "~/stores/klink-hooks";
 
 export default function deleteKlinkStore(klinkId: string) {
   const klink = useKlink(klinkId);
@@ -14,7 +15,7 @@ export default function deleteKlinkStore(klinkId: string) {
     }
     setLoading(true);
     const [err, data] = await makeAsync(
-      () => deleteKlink(klinkId, shouldDeleteShared()),
+      () => service.deleteKlink(klinkId, shouldDeleteShared()),
     );
     setLoading(false);
     return err;

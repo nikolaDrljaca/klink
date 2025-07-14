@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @Builder(toBuilder = true)
 @AllArgsConstructor
 @NoArgsConstructor
-public class KlinkEntryChangeNotification {
+public class KlinkEntryChangeEvent {
 
     Operation operation;
     Row row;

@@ -1,7 +1,7 @@
 package com.drbrosdev.klinkrest.framework.notifier;
 
 import com.drbrosdev.klinkrest.domain.klink.KlinkNotifierService;
-import com.drbrosdev.klinkrest.domain.klink.model.KlinkEntryChangeNotification;
+import com.drbrosdev.klinkrest.domain.klink.model.KlinkEntryChangeEvent;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -34,7 +34,7 @@ public class KlinkNotifierServiceImpl implements KlinkNotifierService {
     }
 
     @Override
-    public Runnable createKlinkEntryChangeHandler(Consumer<KlinkEntryChangeNotification> consumer) {
+    public Runnable createKlinkEntryChangeHandler(Consumer<KlinkEntryChangeEvent> consumer) {
         return () -> template.execute((Connection c) -> {
             c.createStatement().execute("LISTEN " + KLINK_ENTRY_CHANGE  + ";");
             PGConnection conn = c.unwrap(PGConnection.class);
@@ -52,7 +52,7 @@ public class KlinkNotifierServiceImpl implements KlinkNotifierService {
         });
     }
 
-    private Optional<KlinkEntryChangeNotification> createEntryChangeNotification(PGNotification notification) {
+    private Optional<KlinkEntryChangeEvent> createEntryChangeNotification(PGNotification notification) {
         var data = notification.getParameter();
         try {
             return ofNullable(objectMapper.readValue(

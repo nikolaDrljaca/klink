@@ -1,14 +1,5 @@
 import { ArrowLeft, Globe, GlobeLock, Share2 } from "lucide-solid";
-import {
-  Component,
-  createSignal,
-  For,
-  Match,
-  onCleanup,
-  onMount,
-  Show,
-  Switch,
-} from "solid-js";
+import { Component, createSignal, For, Match, Show, Switch } from "solid-js";
 import KlinkEntryListItem from "~/pages/klink/components/KlinkEntryListItem";
 import { useNavigate } from "@solidjs/router";
 import makeModal from "~/components/modal/Modal";
@@ -56,10 +47,6 @@ const KlinkEntries: Component = () => {
       navigate(-1);
     }
   };
-
-  onMount(() => {
-    store().fetchEntries();
-  });
 
   return (
     <div class="flex flex-col w-full h-full grow overflow-y-scroll scrollbar-hidden">

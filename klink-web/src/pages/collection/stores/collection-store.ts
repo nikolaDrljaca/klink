@@ -1,12 +1,8 @@
 import { createSignal, untrack } from "solid-js";
 import useKlinkIdParam from "~/hooks/use-klinkid-params";
 import makeAsync from "~/lib/make-async";
-import {
-  copyExistingKlink,
-  createNewKlink,
-  syncKlinks,
-  useKlinks,
-} from "~/stores/klink-store";
+import { useKlinks } from "~/stores/klink-hooks";
+import { KlinkService as service } from "~/stores/klink-store";
 
 export default function collectionStore() {
   const pathKlinkId = useKlinkIdParam();
@@ -16,19 +12,19 @@ export default function collectionStore() {
 
   const reloadKlinkData = async () => {
     setLoading(true);
-    const [err, value] = await makeAsync(() => syncKlinks());
+    const [err, value] = await makeAsync(() => service.syncKlinks());
     setLoading(false);
   };
 
   const copyKlink = (id: string) => {
-    copyExistingKlink(id);
+    service.copyExistingKlink(id);
   };
 
   const createKlink = (data: {
     name: string;
     description?: string;
   }) => {
-    createNewKlink(data);
+    service.createNewKlink(data);
   };
 
   return {

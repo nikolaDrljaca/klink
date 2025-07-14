@@ -3,8 +3,10 @@ package com.drbrosdev.klinkrest.domain.klink;
 import com.drbrosdev.klinkrest.domain.klink.dto.QueryExistingKlinkItemDto;
 import com.drbrosdev.klinkrest.domain.klink.model.Klink;
 import com.drbrosdev.klinkrest.domain.klink.model.KlinkAccessLevel;
+import com.drbrosdev.klinkrest.domain.klink.model.KlinkChangeEvent;
 import com.drbrosdev.klinkrest.domain.klink.model.KlinkEntry;
 import com.drbrosdev.klinkrest.domain.klink.model.KlinkKey;
+import com.drbrosdev.klinkrest.domain.klink.model.Operation;
 import com.drbrosdev.klinkrest.domain.klink.usecase.GenerateKlinkKey;
 import com.drbrosdev.klinkrest.domain.klink.usecase.ValidateKlinkAccess;
 import com.drbrosdev.klinkrest.persistence.entity.KlinkEntity;
@@ -26,11 +28,13 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static java.time.LocalDateTime.now;
+import static java.util.Collections.emptyList;
 import static java.util.Optional.ofNullable;
 import static java.util.function.Function.identity;
 import static java.util.function.Predicate.not;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
+import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
 
 @Log4j2
 @Service
@@ -113,6 +117,36 @@ public class KlinkDomainServiceImpl implements KlinkDomainService {
         return klinkEntryRepository.findByKlinkId(klinkId)
                 .stream()
                 .map(mapper::mapTo);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public KlinkChangeEvent createKlinkChangeEvent(UUID klinkId) {
+        var out = klinkEntryRepository.findByKlinkId(klinkId)
+                .stream()
+                .map(mapper::mapTo)
+                .toList();
+        // there are current entries - return out
+        if (isNotEmpty(out)) {
+            return KlinkChangeEvent.builder()
+                    .operation(Operation.UPDATED)
+                    .entries(out)
+                    .build();
+        }
+        // check if the klink is deleted
+        var klink = klinkRepository.findById(klinkId);
+        if (klink.isPresent()) {
+            // klink is still present but entries are empty
+            return KlinkChangeEvent.builder()
+                    .operation(Operation.UPDATED)
+                    .entries(out) // will be empty
+                    .build();
+        }
+        // default case - no klink and no entries
+        return KlinkChangeEvent.builder()
+                .operation(Operation.DELETED)
+                .entries(emptyList())
+                .build();
     }
 
     @Override

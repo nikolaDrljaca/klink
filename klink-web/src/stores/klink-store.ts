@@ -1,6 +1,5 @@
 import { makePersisted } from "@solid-primitives/storage";
 import localforage from "localforage";
-import { Accessor, createMemo } from "solid-js";
 import { createStore, produce, unwrap } from "solid-js/store";
 import {
   CreateKlinkPayload,
@@ -8,17 +7,12 @@ import {
   QueryExistingPayloadKlinksInner,
   UpdateKlinkRequest,
 } from "~/generated";
-import useKlinkIdParam from "~/hooks/use-klinkid-params";
 import { klinkEntryForageKey } from "~/lib/klink-utils";
+import { makeEncoder } from "~/lib/make-encoder";
+import { makeKeyEncoder } from "~/lib/make-key-encoder";
 import makeKlinkApi from "~/lib/make-klink-api";
 import makeRelativeTime from "~/lib/relative-time";
-import {
-  Klink,
-  KlinkEntry,
-  klinkMetadata,
-  KlinkModel,
-  klinkModel,
-} from "~/types/domain";
+import { Klink, KlinkEntry, klinkMetadata } from "~/types/domain";
 
 const store = createStore<Record<string, Klink>>({});
 const [klinks, setKlinks] = makePersisted(
@@ -31,6 +25,8 @@ const [klinks, setKlinks] = makePersisted(
 
 const api = makeKlinkApi();
 const relativeTime = makeRelativeTime();
+
+// service functions
 
 function copyExistingKlink(id: string) {
   const temp = klinks[id];
@@ -60,12 +56,34 @@ function createNewKlink(data: { name: string; description?: string }) {
   setKlinks(klink.id, klink);
 }
 
-function importKlink(klink: Klink) {
+function createKlink(klink: Klink, entries: { value: string }[]) {
   const existing = new Set(Object.values(klinks).map((it) => it.id));
   if (existing.has(klink.id)) {
     return;
   }
+  const entryKey = klinkEntryForageKey(klink.id);
+  localforage.setItem(entryKey, JSON.stringify(entries));
   setKlinks(klink.id, klink);
+}
+
+async function importKlink(
+  klinkId: string,
+  encodedKey?: string,
+) {
+  if (!encodedKey) {
+    return Promise.reject();
+  }
+  if (!klinkId) {
+    return Promise.reject();
+  }
+  const encoder = makeKeyEncoder(makeEncoder());
+  const { readKey, writeKey } = encoder.decode(encodedKey);
+
+  return api.getKlink({
+    klinkId: klinkId,
+    readKey: readKey,
+    writeKey: writeKey,
+  });
 }
 
 async function deleteKlink(id: string, shouldDeleteShared: boolean) {
@@ -216,42 +234,33 @@ async function syncKlinks() {
   }
 }
 
-function useKlinks(): Accessor<{ key: string; model: Accessor<KlinkModel> }[]> {
-  return createMemo(() => {
-    return Object.keys(klinks).map((it) => {
-      const get = () => klinkModel(klinks[it]);
-      return { key: it, model: get };
-    });
-  });
-}
-
-function useKlink(id: string): Accessor<KlinkModel> {
-  if (!klinks[id]) {
-    throw new Error("Attempting to access non-existing collection.");
+function makeLocal(klinkId: string) {
+  const current = klinks[klinkId];
+  if (!current) {
+    return;
   }
-  return createMemo(() => klinkModel(klinks[id]));
+  const updated: Klink = {
+    ...current,
+    readKey: null,
+    writeKey: null,
+    updatedAt: Date.now(),
+  };
+  setKlinks(klinkId, updated);
 }
 
-function useSelectedKlink(): Accessor<KlinkModel> {
-  return createMemo(() => {
-    const klinkId = useKlinkIdParam();
-    const klink = klinks[klinkId()];
-    if (!klink) {
-      return null;
-    }
-    return klinkModel(klink);
-  });
+function getKlinkStore(): Record<string, Klink> {
+  return klinks;
 }
 
-export {
+export const KlinkService = {
   copyExistingKlink,
+  createKlink,
   createNewKlink,
   deleteKlink,
   editKlink,
   importKlink,
+  getKlinkStore,
+  makeLocal,
   shareKlink,
   syncKlinks,
-  useKlink,
-  useKlinks,
-  useSelectedKlink,
 };

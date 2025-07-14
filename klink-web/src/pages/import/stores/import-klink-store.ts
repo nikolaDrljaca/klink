@@ -1,34 +1,16 @@
 import { createResource } from "solid-js";
 import useKlinkImportParams from "~/hooks/use-klink-key-params";
 import useKlinkIdParam from "~/hooks/use-klinkid-params";
-import { makeEncoder } from "~/lib/make-encoder";
-import { makeKeyEncoder } from "~/lib/make-key-encoder";
-import makeKlinkApi from "~/lib/make-klink-api";
 import makeRelativeTime from "~/lib/relative-time";
-import { importKlink } from "~/stores/klink-store";
+import { KlinkService } from "~/stores/klink-store";
 import { Klink } from "~/types/domain";
 
 export default function importKlinkStore() {
-  const keyEncoder = makeKeyEncoder(makeEncoder());
-
   const klinkId = useKlinkIdParam();
   const encodedKey = useKlinkImportParams();
 
-  const api = makeKlinkApi();
   const request = async () => {
-    if (!encodedKey) {
-      return Promise.reject();
-    }
-    const curr = klinkId();
-    const { readKey, writeKey } = keyEncoder.decode(encodedKey);
-    if (!curr) {
-      return Promise.reject();
-    }
-    return api.getKlink({
-      klinkId: curr,
-      readKey: readKey,
-      writeKey: writeKey,
-    });
+    return KlinkService.importKlink(klinkId(), encodedKey);
   };
   const [data, { refetch }] = createResource(request);
 
@@ -38,7 +20,7 @@ export default function importKlinkStore() {
     if (!data.latest) {
       return;
     }
-    importKlink(data.latest as Klink);
+    KlinkService.createKlink(data.latest as Klink, data.latest.entries);
   };
 
   const updatedAt = () =>

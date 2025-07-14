@@ -38,8 +38,7 @@ public class NotifierConfiguration {
             var listener = notifierService.createKlinkEntryChangeHandler(notification -> {
                 var klinkId = UUID.fromString(notification.getRow()
                         .getKlinkId());
-                var entries = klinkDomainService.getEntries(klinkId)
-                        .toList();
+                var entries = klinkDomainService.createKlinkChangeEvent(klinkId);
                 sessionManager.sendEvent(
                         klinkId,
                         entries);

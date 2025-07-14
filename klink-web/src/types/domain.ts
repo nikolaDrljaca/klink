@@ -19,6 +19,11 @@ export type KlinkMetadata = {
 
 export type KlinkModel = Klink & KlinkMetadata;
 
+export type KlinkChangeEvent = {
+  operation: "updated" | "inserted" | "deleted";
+  entries: { value: string; createdAt: any }[];
+};
+
 export function klinkMetadata(klink: Klink): KlinkMetadata {
   return {
     isShared: !!klink.readKey,

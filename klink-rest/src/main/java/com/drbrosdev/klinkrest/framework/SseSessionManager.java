@@ -1,6 +1,6 @@
 package com.drbrosdev.klinkrest.framework;
 
-import com.drbrosdev.klinkrest.domain.klink.model.KlinkEntry;
+import com.drbrosdev.klinkrest.domain.klink.model.KlinkChangeEvent;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import lombok.extern.log4j.Log4j2;
@@ -63,7 +63,7 @@ public class SseSessionManager {
 
     public void sendEvent(
             UUID klinkId,
-            List<KlinkEntry> entries) {
+            KlinkChangeEvent event) {
         // extract emitters for klinkId session
         var current = sessions.get(klinkId);
         if (current == null) {
@@ -74,7 +74,7 @@ public class SseSessionManager {
         for (var curr : current) {
             try {
                 curr.send(
-                        mapper.writeValueAsString(entries),
+                        mapper.writeValueAsString(event),
                         MediaType.APPLICATION_JSON);
             } catch (Exception e) {
                 curr.completeWithError(e);

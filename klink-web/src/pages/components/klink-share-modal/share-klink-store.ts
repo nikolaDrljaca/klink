@@ -1,8 +1,9 @@
 import { makeKeyEncoder } from "~/lib/make-key-encoder";
 import { makeEncoder } from "~/lib/make-encoder";
-import { shareKlink, useKlink } from "~/stores/klink-store";
+import { KlinkService as service } from "~/stores/klink-store";
 import makeAsync from "~/lib/make-async";
 import { createSignal } from "solid-js";
+import { useKlink } from "~/stores/klink-hooks";
 
 export default function shareKlinkStore(klinkId: string) {
   const appBasePath = import.meta.env.VITE_APP_BASE;
@@ -56,7 +57,9 @@ export default function shareKlinkStore(klinkId: string) {
         return;
       }
       setLoading(true);
-      const [err, response] = await makeAsync(() => shareKlink(klink().id));
+      const [err, response] = await makeAsync(() =>
+        service.shareKlink(klink().id)
+      );
       if (err) {
         setLoading(false);
         return err;

@@ -1,6 +1,7 @@
 import { createSignal } from "solid-js";
 import makeAsync from "~/lib/make-async";
-import { editKlink, useKlink } from "~/stores/klink-store";
+import { useKlink } from "~/stores/klink-hooks";
+import { KlinkService as service } from "~/stores/klink-store";
 
 type EditKlinkModalEvent =
   | { type: "success" }
@@ -31,7 +32,7 @@ export default function editKlinkStore(klinkId: string) {
     }
     setLoading(true);
     const [err, data] = await makeAsync(() =>
-      editKlink({
+      service.editKlink({
         id: klinkId,
         name: name(),
         description: description(),

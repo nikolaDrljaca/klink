@@ -2,6 +2,7 @@ package com.drbrosdev.klinkrest.domain.klink;
 
 import com.drbrosdev.klinkrest.domain.klink.dto.QueryExistingKlinkItemDto;
 import com.drbrosdev.klinkrest.domain.klink.model.Klink;
+import com.drbrosdev.klinkrest.domain.klink.model.KlinkChangeEvent;
 import com.drbrosdev.klinkrest.domain.klink.model.KlinkEntry;
 import com.drbrosdev.klinkrest.domain.klink.model.KlinkKey;
 import jakarta.annotation.Nullable;
@@ -25,6 +26,8 @@ public interface KlinkDomainService {
             KlinkKey inputKeys);
 
     Stream<KlinkEntry> getEntries(UUID klinkId);
+
+    KlinkChangeEvent createKlinkChangeEvent(UUID klinkId);
 
     void deleteKlink(
             UUID klinkId,

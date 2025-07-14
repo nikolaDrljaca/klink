@@ -3,7 +3,7 @@ import KlinkSidebar from "~/components/KlinkSidebar";
 import KlinkCollection from "~/pages/collection/components/KlinkCollection";
 import KlinkEntries from "~/pages/klink/components/KlinkEntries";
 import KlinkNotFound from "./components/KlinkNotFound";
-import { useSelectedKlink } from "~/stores/klink-store";
+import { useSelectedKlink } from "~/stores/klink-hooks";
 
 const KlinkRoute: Component = () => {
   const klink = useSelectedKlink();
