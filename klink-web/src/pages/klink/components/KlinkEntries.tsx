@@ -20,11 +20,11 @@ const KlinkEntries: Component = () => {
 
   const shareModal = makeModal();
 
-  const handlePaste = (e: ClipboardEvent) => {
+  const handlePaste = async (e: ClipboardEvent) => {
     e.preventDefault();
     e.stopPropagation();
     const pastedValue = e.clipboardData.getData("text/plain");
-    store().addEntry(pastedValue);
+    await store().addEntry(pastedValue);
   };
 
   const handleEnter = async (event: Event) => {

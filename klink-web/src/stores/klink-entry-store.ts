@@ -7,6 +7,8 @@ import { KlinkChangeEvent, KlinkEntry, KlinkModel } from "~/types/domain";
 import { KlinkService as service } from "./klink-store";
 import { createEffect, createMemo, onCleanup } from "solid-js";
 import { useSelectedKlink } from "./klink-hooks";
+import makeAsync from "~/lib/make-async";
+import toast from "solid-toast";
 
 function buildSsePath(data: { id: string; readKey: string }): string {
   const API_PATH = import.meta.env.VITE_API_PATH;
@@ -50,36 +52,56 @@ function createKlinkEntryStore(klink: KlinkModel) {
     });
   });
 
+  const createEntry = (entry: KlinkEntry) => {
+    setEntries((val: KlinkEntry[]) => {
+      const exists = val.find((it) => it.value === entry.value);
+      if (exists) {
+        return;
+      }
+      return [...val, entry];
+    });
+  };
+
+  const deleteEntry = (entry: KlinkEntry) => {
+    setEntries((val) => {
+      return val.filter((it) => it.value !== entry.value);
+    });
+  };
+
   const addEntry = async (url: string) => {
     const entry: KlinkEntry = { value: url };
+    createEntry(entry);
     if (klink.isEditable) {
-      await api.createKlinkEntry({
-        klinkId: klink.id,
-        readKey: klink.readKey,
-        writeKey: klink.writeKey,
-        klinkEntry: [entry],
-      });
-    } else {
-      setEntries((val: KlinkEntry[]) => {
-        const exists = val.find((it) => it.value === url);
-        if (exists) {
-          return;
-        }
-        return [...val, entry];
-      });
+      const [err, data] = await makeAsync(() =>
+        api.createKlinkEntry({
+          klinkId: klink.id,
+          readKey: klink.readKey,
+          writeKey: klink.writeKey,
+          klinkEntry: [entry],
+        })
+      );
+      if (err) {
+        deleteEntry(entry);
+        toast.error("Couldn't create entry. Try again later.");
+      }
     }
   };
 
   const removeEntry = async (url: string) => {
+    deleteEntry({ value: url });
     if (klink.isEditable) {
-      await api.deleteKlinkEntries({
-        klinkId: klink.id,
-        readKey: klink.readKey,
-        writeKey: klink.writeKey,
-        klinkEntry: [{ value: url }],
-      });
-    } else {
-      setEntries((val) => val.filter((it) => it.value !== url));
+      const [err, data] = await makeAsync(() =>
+        api.deleteKlinkEntries({
+          klinkId: klink.id,
+          readKey: klink.readKey,
+          writeKey: klink.writeKey,
+          klinkEntry: [{ value: url }],
+        })
+      );
+      if (err) {
+        createEntry({ value: url });
+        toast.error("Couldn't delete entry. Try again later.");
+      }
     }
   };
 
