@@ -8,6 +8,7 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -51,7 +52,11 @@ public class SseSessionManager {
             remove.accept(klinkId, emitter);
         });
         emitter.onError((e) -> {
-            log.error("SSE emitter {} closed due to error", klinkId, e);
+            if (e instanceof IOException && e.getCause().getMessage().toLowerCase().contains("broken pipe")) {
+                log.info("SSE emitter {} closed - client disconnected.", klinkId);
+            } else {
+                log.error("SSE emitter {} closed due to error.", klinkId, e);
+            }
             remove.accept(klinkId, emitter);
         });
 

@@ -26,8 +26,8 @@ public class KlinkSseController {
 
     private final KlinkDomainService domainService;
 
-    // /api/klink/.../events?readKey=QWERASDF
-    @GetMapping("/klink/{uuid}/events")
+    // /api/events/klink/{id}?readKey=QWERASDF
+    @GetMapping("/events/klink/{uuid}")
     public CompletableFuture<SseEmitter> streamKlinkEntryChangeEvents(
             @PathVariable(name = "uuid") String uuid,
             @RequestParam(name = "readKey") String readKey) {

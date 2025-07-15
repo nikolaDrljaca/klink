@@ -12,7 +12,7 @@ import toast from "solid-toast";
 
 function buildSsePath(data: { id: string; readKey: string }): string {
   const API_PATH = import.meta.env.VITE_API_PATH;
-  return `${API_PATH}/klink/${data.id}/events?readKey=${data.readKey}`;
+  return `${API_PATH}/events/klink/${data.id}?readKey=${data.readKey}`;
 }
 
 function createKlinkEntryStore(klink: KlinkModel) {

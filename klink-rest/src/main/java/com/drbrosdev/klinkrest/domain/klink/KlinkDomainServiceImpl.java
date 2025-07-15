@@ -55,7 +55,7 @@ public class KlinkDomainServiceImpl implements KlinkDomainService {
     public KlinkKey getKeys(UUID klinkId) {
         return klinkKeyRepository.findByKlinkId(klinkId)
                 .map(mapper::mapTo)
-                .orElseThrow();
+                .orElseThrow(() -> new EntityNotFoundException("KlinkKeys not found for Klink id: " + klinkId));
     }
 
     @Override
@@ -299,7 +299,7 @@ public class KlinkDomainServiceImpl implements KlinkDomainService {
                 .map(it -> {
                     var entries = klinkEntryRepository.findByKlinkId(it.getId());
                     var keys = klinkKeyRepository.findByKlinkId(it.getId())
-                            .orElseThrow();
+                            .orElseThrow(() -> new EntityNotFoundException("KlinkKeys not found for Klink id: " + it.getId()));
                     return mapper.mapTo(
                             it,
                             entries,
