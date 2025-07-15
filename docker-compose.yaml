@@ -13,21 +13,11 @@ services:
     depends_on:
       rest: 
         condition: service_started
-      realtime:
-        condition: service_started
 
   rest:
     build:
-      context: ./klink-rest
-      dockerfile: ./Dockerfile
-    depends_on:
-      db:
-        condition: service_healthy
-
-  realtime:
-    build:
-      context: ./klink-realtime
-      dockerfile: ./Dockerfile
+      context: .
+      dockerfile: klink-rest/Dockerfile
     depends_on:
       db:
         condition: service_healthy
