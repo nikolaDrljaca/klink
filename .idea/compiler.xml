@@ -23,6 +23,11 @@
         <module name="klink-rest" />
       </profile>
     </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="com.drbrosdev.klinkrealtime" target="18" />
+      <module name="com.drbrosdev.klinkrealtime.main" target="18" />
+      <module name="com.drbrosdev.klinkrealtime.test" target="18" />
+    </bytecodeTargetLevel>
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">

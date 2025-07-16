@@ -17,7 +17,18 @@ export default defineConfig({
     proxy: {
       // Requests from the LOCAL vite server to localhost:3000/api will be proxied to localhost:8080
       // avoiding a CORS issue
-      "/api": "http://localhost:8080",
+      // "/api": "http://localhost:8080",
+      "/api": {
+        target: "http://localhost:8080",
+        configure: (proxy, options) => {
+          proxy.on("proxyReq", (proxyReq, req, res) => {
+            proxyReq.setHeader(
+              "X-Api-Key",
+              "f6add007-0f29-4a8e-ba15-320545b7a6c3",
+            );
+          });
+        },
+      },
     },
   },
   build: {

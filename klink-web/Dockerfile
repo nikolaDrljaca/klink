@@ -15,8 +15,8 @@ RUN npm run build -- --mode=$VITE_BUILD_MODE
 
 # Stage 2: Serve with Nginx
 FROM nginx:latest
-# Copy custom Nginx configuration file
-COPY ./nginx.conf /etc/nginx/conf.d/default.conf
+# Copy to templates so env variables can be injected
+COPY ./nginx.conf /etc/nginx/templates/nginx.conf.template
 # Copy the built files from the previous stage
 COPY --from=builder /app/dist /usr/share/nginx/html
 # Expose port 3000
