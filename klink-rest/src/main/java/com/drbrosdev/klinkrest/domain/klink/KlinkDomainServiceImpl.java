@@ -23,6 +23,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -277,10 +278,11 @@ public class KlinkDomainServiceImpl implements KlinkDomainService {
                 .filter(it -> ofNullable(queryLookup.get(it.getId()))
                         .map(QueryExistingKlinkItemDto::getReadKey)
                         .map(KlinkKey::readOnly)
-                        .map(readKey -> validateKlinkAccess.execute(
+                        .map(readKey -> validateKlinkAccess.validate(
                                 it.getKey(),
                                 readKey))
-                        .map(access -> access == KlinkAccessLevel.READ_ONLY)
+                        // nulls are no permission
+                        .map(access -> Objects.equals(access, KlinkAccessLevel.READ_ONLY))
                         .orElse(false))
                 .toList();
     }
