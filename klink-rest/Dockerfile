@@ -1,14 +1,15 @@
-# Use maven image to build JAR
+# builder stage
 FROM maven:3.9.9-eclipse-temurin-17-alpine AS builder
 WORKDIR /app
-COPY pom.xml .
-COPY src ./src
-RUN mvn clean install -DskipTests
+# copy all files from root to preserve structure
+COPY . .
+# Build only the klink-rest module
+RUN mvn -pl klink-rest -am clean package -DskipTests
 
 # Use slim JDK image to run built JAR
 FROM openjdk:17-jdk-slim
 WORKDIR /app
-COPY --from=builder /app/target/*.jar app.jar
+COPY --from=builder /app/klink-rest/target/klink-rest-*.jar app.jar
 EXPOSE 8080
 ENTRYPOINT ["java", "-jar", "app.jar"]
 

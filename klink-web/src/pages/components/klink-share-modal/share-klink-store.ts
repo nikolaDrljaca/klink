@@ -1,102 +1,71 @@
-import { createStore } from "solid-js/store";
-import { CreateKlinkPayload, KlinkEntry } from "~/generated";
-import localforage from "localforage";
-import { createEventBus } from "@solid-primitives/event-bus";
-import { useAppStore } from "~/stores/app-store-context";
-import makeKlinkApi from "~/lib/make-klink-api";
-import makeRelativeTime from "~/lib/relative-time";
 import { makeKeyEncoder } from "~/lib/make-key-encoder";
 import { makeEncoder } from "~/lib/make-encoder";
-
-type ShareKlinkEvent =
-    | { type: "success" }
-    | { type: "failure" }
+import { KlinkService as service } from "~/stores/klink-store";
+import makeAsync from "~/lib/make-async";
+import { createSignal } from "solid-js";
+import { useKlink } from "~/stores/klink-hooks";
 
 export default function shareKlinkStore(klinkId: string) {
-    const appBasePath = import.meta.env.VITE_APP_BASE;
-    const store = useAppStore();
-    const klink = store.state.klinks.find(it => it.id === klinkId)!;
-    const api = makeKlinkApi();
-    const relativeTime = makeRelativeTime();
+  const appBasePath = import.meta.env.VITE_APP_BASE;
+  const klink = useKlink(klinkId);
 
-    const { listen, emit, clear } = createEventBus<ShareKlinkEvent>();
-    const keyEncoder = makeKeyEncoder(makeEncoder());
+  const keyEncoder = makeKeyEncoder(makeEncoder());
 
-    const [klinkStore, setStore] = createStore({
-        klink: klink,
-        loading: false,
-        readOnlyChecked: false,
-        get isShared() {
-            return !!klink.readKey;
-        },
-        get isReadOnly() {
-            if (!!klink.writeKey) {
-                return false;
-            }
-            return !!klink.readKey;
-        },
-        get shareLink() {
-            if (klinkStore.readOnlyChecked) {
-                return createReadOnlyLink();
-            }
-            return createShareLink();
-        },
-        get socialShareTarget() {
-            return {
-                title: klinkStore.klink.name,
-                description: klinkStore.klink.description ?? "",
-                url: klinkStore.shareLink
-            }
-        }
-    });
+  const [readOnlyChecked, setReadOnlyChecked] = createSignal(false);
+  const [loading, setLoading] = createSignal(false);
 
-    const createShareLink = () => {
-        const encoded = keyEncoder.encode(klink);
-        return `${appBasePath}/c/${klinkStore.klink.id}/i?q=${encoded}`;
+  const shareLink = () => {
+    if (readOnlyChecked()) {
+      return createReadOnlyLink();
     }
+    return createShareLink();
+  };
 
-    const createReadOnlyLink = () => {
-        const encoded = keyEncoder.encode({ readKey: klink.readKey });
-        return `${appBasePath}/c/${klinkStore.klink.id}/i?q=${encoded}`;
-    }
-
+  const socialTarget = () => {
     return {
-        klinkStore,
-        listen,
+      title: klink().name,
+      description: klink().description ?? "",
+      url: shareLink(),
+    };
+  };
 
-        setReadOnlyChecked() {
-            setStore('readOnlyChecked', !klinkStore.readOnlyChecked)
-        },
+  const createShareLink = () => {
+    const encoded = keyEncoder.encode(klink());
+    return `${appBasePath}/c/${klink().id}/i?q=${encoded}`;
+  };
 
-        async shareKlink() {
-            if (klinkStore.loading) {
-                return;
-            }
-            const entriesRaw: string = await localforage.getItem(`klink-items-${klinkStore.klink.id}`);
-            const entries: KlinkEntry[] = JSON.parse(entriesRaw ?? "[]");
-            const payload: CreateKlinkPayload = {
-                name: klinkStore.klink.name,
-                id: klinkStore.klink.id,
-                entries: entries,
-                description: klinkStore.klink.description
-            }
-            try {
-                setStore('loading', true);
-                const response = await api.createKlink({ createKlinkPayload: payload });
-                store.update(state => {
-                    const curr = state.klinks.find(it => it.id === response.id);
-                    if (curr) {
-                        curr.readKey = response.readKey;
-                        curr.writeKey = response.writeKey;
-                        curr.updatedAt = relativeTime.unixFromResponse(response.updatedAt)
-                    }
-                });
-                setStore('loading', false);
-                emit({ type: "success" });
-            } catch (e) {
-                emit({ type: "failure" });
-                setStore('loading', false);
-            }
-        },
-    }
+  const createReadOnlyLink = () => {
+    const encoded = keyEncoder.encode({ readKey: klink().readKey });
+    return `${appBasePath}/c/${klink().id}/i?q=${encoded}`;
+  };
+
+  return {
+    klink: klink,
+    loading: loading,
+    readOnlyChecked: readOnlyChecked,
+    isShared: () => klink().isShared,
+    isReadOnly: () => klink().isReadOnly,
+    shareLink: () => shareLink(),
+    socialShareTarget: () => socialTarget(),
+
+    setReadOnlyChecked() {
+      setReadOnlyChecked((curr) => !curr);
+    },
+
+    async shareKlink() {
+      if (loading()) {
+        return;
+      }
+      setLoading(true);
+      const [err, response] = await makeAsync(() =>
+        service.shareKlink(klink().id)
+      );
+      if (err) {
+        setLoading(false);
+        return err;
+      }
+      setLoading(false);
+      return;
+    },
+  };
 }

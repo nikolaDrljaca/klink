@@ -11,11 +11,18 @@ const uuidRouteFilter: MatchFilters = {
   klinkId: (v: string) => v.length === 36,
 };
 
+const RedirectToRoot: Component = () => {
+  return <Navigate href="/c" />;
+};
+
 const KlinkRouter: Component = () => {
   return (
-    <Router root={RootLayout}>
-      <Route path="/" component={() => <Navigate href="/c" />} />
-      <Route path="/c" component={KlinkCollectionRoute} />
+    <Router root={RootLayout} preload>
+      <Route path="/" component={RedirectToRoot} />
+      <Route
+        path="/c"
+        component={KlinkCollectionRoute}
+      />
       <Route
         path="/c/:klinkId/i"
         component={KlinkImportRoute}
