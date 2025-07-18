@@ -1,9 +1,10 @@
 package com.drbrosdev.klinkrest.activity.mapper;
 
-import com.drbrosdev.klinkrest.application.dto.QueryExistingKlinkDto;
-import com.drbrosdev.klinkrest.application.dto.QueryExistingKlinkItemDto;
-import com.drbrosdev.klinkrest.domain.dto.KlinkDto;
-import com.drbrosdev.klinkrest.domain.dto.KlinkEntryDto;
+import com.drbrosdev.klinkrest.domain.klink.dto.QueryExistingKlinkDto;
+import com.drbrosdev.klinkrest.domain.klink.dto.QueryExistingKlinkItemDto;
+import com.drbrosdev.klinkrest.domain.klink.model.Klink;
+import com.drbrosdev.klinkrest.domain.klink.model.KlinkEntry;
+import com.drbrosdev.klinkrest.domain.klink.model.KlinkKey;
 import com.drbrosdev.klinkrest.framework.OptionalMapperUtils;
 import jakarta.annotation.Nullable;
 import org.mapstruct.Mapper;
@@ -25,20 +26,26 @@ import java.util.UUID;
         uses = OptionalMapperUtils.class)
 public interface KlinkActivityMapper {
 
-    KlinkApiDto mapTo(final KlinkDto klinkDto);
+    @Mapping(target = "readKey", source = "key.readKey")
+    @Mapping(target = "writeKey", source = "key.writeKey")
+    KlinkApiDto mapTo(final Klink klink);
 
     @Mapping(target = "updatedAt", ignore = true)
     @Mapping(target = "entries", ignore = true)
-    KlinkDto mapTo(
+    Klink mapTo(
             final UUID id,
-            final String readKey,
-            final @Nullable String writeKey,
+            final KlinkKey key,
             final String name,
             final @Nullable String description);
 
-    KlinkEntryDto mapTo(KlinkEntryApiDto entry);
+    @Mapping(target = "createdAt", ignore = true)
+    KlinkEntry mapTo(KlinkEntryApiDto entry);
 
-    List<KlinkEntryDto> mapToEntries(final List<KlinkEntryApiDto> entries);
+    KlinkKey mapTo(
+            final String readKey,
+            @Nullable final String writeKey);
+
+    List<KlinkEntry> mapToEntries(final List<KlinkEntryApiDto> entries);
 
     QueryExistingKlinkItemDto mapTo(final QueryExistingPayloadKlinksInnerApiDto inner);
 

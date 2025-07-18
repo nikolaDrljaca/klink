@@ -1,39 +1,22 @@
 package com.drbrosdev.klinkrest.activity.exception;
 
-import com.drbrosdev.klinkrest.activity.exception.model.Error;
-import jakarta.annotation.Nullable;
-import lombok.extern.slf4j.Slf4j;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
-import static java.time.OffsetDateTime.now;
-import static java.util.Collections.emptyList;
-import static java.util.UUID.randomUUID;
-
-@Slf4j
+@Log4j2
 @ControllerAdvice
 public class ExceptionHandlerControllerActivity {
 
     @ExceptionHandler(value = {Exception.class})
-    public ResponseEntity<Error> handleNullPointerException(Exception ex) {
-        log.error("Error: {}", ex.getMessage());
+    public ResponseEntity<Void> handleExceptions(Exception ex) {
+        log.error(
+                "Error: {}",
+                ex.getLocalizedMessage());
         return ResponseEntity
                 .status(HttpStatus.BAD_GATEWAY)
-                .body(createErrorResponse(
-                        HttpStatus.BAD_GATEWAY.toString(),
-                        null));
-    }
-
-    private Error createErrorResponse(
-            String code,
-            @Nullable String message) {
-        return new Error()
-                .id(randomUUID().toString())
-                .code(code)
-                .message(message)
-                .details(emptyList())
-                .timestamp(now());
+                .build();
     }
 }

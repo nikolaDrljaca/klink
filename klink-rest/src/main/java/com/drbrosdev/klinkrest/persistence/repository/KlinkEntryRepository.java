@@ -11,4 +11,5 @@ import java.util.UUID;
 public interface KlinkEntryRepository extends JpaRepository<KlinkEntryEntity, UUID> {
 
     List<KlinkEntryEntity> findByKlinkId(UUID klinkId);
+
 }

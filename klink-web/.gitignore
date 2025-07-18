@@ -1,2 +1,5 @@
 node_modules
 dist
+node
+/src/generated
+/target

@@ -1,86 +1,56 @@
-import { createStore } from "solid-js/store";
-import { UpdateKlinkRequest } from "~/generated";
-import useKlink from "~/hooks/use-klink";
-import makeKlinkApi from "~/lib/make-klink-api";
-import makeRelativeTime from "~/lib/relative-time";
+import { createSignal } from "solid-js";
+import makeAsync from "~/lib/make-async";
+import { useKlink } from "~/stores/klink-hooks";
+import { KlinkService as service } from "~/stores/klink-store";
 
 type EditKlinkModalEvent =
-    | { type: 'success' }
-    | { type: 'failure' }
+  | { type: "success" }
+  | { type: "failure" };
 
 export default function editKlinkStore(klinkId: string) {
-    const { klink, update } = useKlink(klinkId);
-    const api = makeKlinkApi();
-    const relativeTime = makeRelativeTime();
+  const klink = useKlink(klinkId);
 
-    const [store, setStore] = createStore({
-        name: klink.name,
-        description: klink.description ?? "",
-        loading: false,
-        get isReadOnly() {
-            return klink.readKey && !klink.writeKey
-        },
-        get isEditDisabled() {
-            const nameInvalid = store.name.length < 3;
-            return store.isReadOnly || nameInvalid;
-        }
-    });
-    const isShared = !!klink.readKey && !!klink.writeKey;
+  // form
+  const [name, setName] = createSignal(klink().name);
+  const [description, setDescription] = createSignal(klink().description ?? "");
+  const [loading, setLoading] = createSignal(false);
+  const isEditDisabled = () => {
+    const nameInvalid = store.name().length < 3;
+    return klink().isReadOnly || nameInvalid;
+  };
 
-    const setName = (value: string) => setStore('name', value);
-    const setDescription = (value: string) => setStore('description', value);
+  const store = {
+    name: name,
+    description: description,
+    loading: loading,
+    isEditDisabled: isEditDisabled,
+  };
 
-    const updateKlink = (value: { name: string, description?: string, updatedAt: number }) => {
-        update(current => {
-            current.name = value.name;
-            current.description = value.description;
-            current.updatedAt = value.updatedAt;
-        });
+  const submit = async (): Promise<EditKlinkModalEvent> => {
+    if (store.isEditDisabled() || loading()) {
+      return;
     }
-
-    const submit = async (): Promise<EditKlinkModalEvent> => {
-        if (store.isEditDisabled || store.loading) {
-            return;
-        }
-        if (isShared) {
-            const payload: UpdateKlinkRequest = {
-                klinkId: klinkId,
-                readKey: klink.readKey,
-                writeKey: klink.writeKey,
-                patchKlinkPayload: {
-                    name: store.name,
-                    description: store.description
-                }
-            }
-            try {
-                setStore('loading', true);
-                const updated = await api.updateKlink(payload);
-                updateKlink({
-                    name: updated.name,
-                    description: updated.description,
-                    updatedAt: relativeTime.unixFromResponse(updated.updatedAt)
-                });
-                setStore('loading', false);
-                return { type: 'success' }
-            } catch (e) {
-                setStore('loading', false);
-                return { type: 'failure' }
-            }
-        }
-        // not shared - update local klink only
-        updateKlink({
-            name: store.name,
-            description: store.description,
-            updatedAt: Date.now()
-        });
-        return { type: 'success' }
+    setLoading(true);
+    const [err, data] = await makeAsync(() =>
+      service.editKlink({
+        id: klinkId,
+        name: name(),
+        description: description(),
+      })
+    );
+    if (err) {
+      setLoading(false);
+      return { type: "failure" };
     }
+    setLoading(false);
+    return { type: "success" };
+  };
 
-    return {
-        state: store,
-        setName,
-        setDescription,
-        submit,
-        klink
-    }
+  return {
+    state: store,
+    setName,
+    setDescription,
+    submit,
+    klink,
+  };
 }

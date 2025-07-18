@@ -12,4 +12,6 @@ import java.util.stream.Stream;
 public interface KlinkRepository extends JpaRepository<KlinkEntity, UUID> {
 
     Stream<KlinkEntity> findByIdIn(List<UUID> ids);
+
+    void deleteAllByIdIn(List<UUID> ids);
 }

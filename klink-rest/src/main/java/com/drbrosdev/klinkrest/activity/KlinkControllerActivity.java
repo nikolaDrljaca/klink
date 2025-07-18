@@ -1,7 +1,7 @@
 package com.drbrosdev.klinkrest.activity;
 
 import com.drbrosdev.klinkrest.activity.mapper.KlinkActivityMapper;
-import com.drbrosdev.klinkrest.application.KlinkApplicationService;
+import com.drbrosdev.klinkrest.domain.klink.KlinkDomainService;
 import jakarta.annotation.Nullable;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -26,7 +26,7 @@ import static org.springframework.http.ResponseEntity.ok;
 @RequiredArgsConstructor
 public class KlinkControllerActivity implements KlinkApi {
 
-    private final KlinkApplicationService klinkApplicationService;
+    private final KlinkDomainService klinkDomainService;
 
     private final KlinkActivityMapper mapper;
 
@@ -36,7 +36,7 @@ public class KlinkControllerActivity implements KlinkApi {
                 "createKlink called with payload: {}",
                 createKlinkPayloadApiDto);
         return ok(mapper.mapTo(
-                klinkApplicationService.createKlink(
+                klinkDomainService.createKlink(
                         createKlinkPayloadApiDto.getId(),
                         createKlinkPayloadApiDto.getName(),
                         createKlinkPayloadApiDto.getDescription(),
@@ -55,10 +55,9 @@ public class KlinkControllerActivity implements KlinkApi {
                 readKey,
                 writeKey,
                 klinkEntryApiDto);
-        klinkApplicationService.createKlinkEntries(
+        klinkDomainService.createKlinkEntries(
                 klinkId,
-                readKey,
-                writeKey,
+                mapper.mapTo(readKey, writeKey),
                 mapper.mapToEntries(klinkEntryApiDto));
         return ok().build();
     }
@@ -73,10 +72,9 @@ public class KlinkControllerActivity implements KlinkApi {
                 klinkId,
                 readKey,
                 writeKey);
-        var klink = klinkApplicationService.getKlinkById(
+        var klink = klinkDomainService.getKlink(
                 klinkId,
-                readKey,
-                writeKey);
+                mapper.mapTo(readKey, writeKey));
         return ok(mapper.mapTo(klink));
     }
 
@@ -85,7 +83,8 @@ public class KlinkControllerActivity implements KlinkApi {
         log.info(
                 "queryExisting called with ids: {}",
                 klinkIds);
-        return ok(klinkApplicationService.queryExistingKlinks(mapper.mapTo(klinkIds))
+        var input = mapper.mapTo(klinkIds);
+        return ok(klinkDomainService.queryExistingKlinks(input.getKlinks())
                 .stream()
                 .map(mapper::mapTo)
                 .toList());
@@ -101,10 +100,27 @@ public class KlinkControllerActivity implements KlinkApi {
                 klinkId,
                 readKey,
                 writeKey);
-        klinkApplicationService.deleteKlinkById(
+        klinkDomainService.deleteKlink(
+                klinkId,
+                mapper.mapTo(readKey, writeKey));
+        return ok().build();
+    }
+
+    @Override
+    public ResponseEntity<Void> deleteKlinkEntries(
+            UUID klinkId,
+            String readKey,
+            String writeKey,
+            List<KlinkEntryApiDto> klinkEntryApiDto) {
+        log.info(
+                "deleteKlinkEntries called with klinkId: {}, readKey: {}, writeKey: {}",
                 klinkId,
                 readKey,
                 writeKey);
+        klinkDomainService.deleteKlinkEntries(
+                klinkId,
+                mapper.mapTo(readKey, writeKey),
+                mapper.mapToEntries(klinkEntryApiDto));
         return ok().build();
     }
 
@@ -121,13 +137,12 @@ public class KlinkControllerActivity implements KlinkApi {
             String readKey,
             String writeKey,
             PatchKlinkPayloadApiDto patchKlinkPayloadApiDto) {
-        return ok(mapper.mapTo(klinkApplicationService.updateKlink(
+        log.info("updateKlink called with {} and {}", klinkId, patchKlinkPayloadApiDto);
+        return ok(mapper.mapTo(klinkDomainService.updateKlink(
                 mapper.mapTo(
                         klinkId,
-                        readKey,
-                        writeKey,
+                        mapper.mapTo(readKey, writeKey),
                         patchKlinkPayloadApiDto.getName(),
                         patchKlinkPayloadApiDto.getDescription()))));
     }
-
 }

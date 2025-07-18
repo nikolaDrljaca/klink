@@ -4,24 +4,25 @@ import { Component, createSignal, Show } from "solid-js";
 import logo from "/images/logo.png";
 import { makePersisted } from "@solid-primitives/storage";
 
-const extensionUrl = 'https://chromewebstore.google.com/detail/klink-extension/hiamgjmbmkjfbcmopcfbodpdgbjlmjko';
+const extensionUrl =
+  "https://chromewebstore.google.com/detail/klink-extension/hiamgjmbmkjfbcmopcfbodpdgbjlmjko";
 
 const KlinkSidebar: Component = () => {
   const [extensionSeen, setExtensionSeen] = makePersisted(
     createSignal(false),
     {
       name: "ext",
-      storage: localStorage
-    }
+      storage: localStorage,
+    },
   );
 
   const onGoToExtension = () => {
     setExtensionSeen(true);
-  }
+  };
 
   return (
     <div class="flex flex-row lg:flex-col lg:h-full w-full items-start justify-between lg:justify-start p-4">
-      <A href="/c" class="btn btn-ghost font-semibold text-2xl">
+      <A href="/" class="btn btn-ghost font-semibold text-2xl">
         <Image src={logo} width={32} height={32} />
         Klink
       </A>
@@ -33,8 +34,14 @@ const KlinkSidebar: Component = () => {
           <A
             onClick={onGoToExtension}
             href={extensionUrl}
-            class="btn btn-ghost btn-md font-semibold justify-start lg:w-full" target="_">
-            <Image src={`https://cdn.simpleicons.org/chromewebstore/A6ADBB`} width={24} height={24} />
+            class="btn btn-ghost btn-md font-semibold justify-start lg:w-full"
+            target="_"
+          >
+            <Image
+              src={`https://cdn.simpleicons.org/chromewebstore/A6ADBB`}
+              width={24}
+              height={24}
+            />
             Get the Extension
           </A>
         </Show>
@@ -51,6 +58,6 @@ const KlinkSidebar: Component = () => {
       </div>
     </div>
   );
-}
+};
 
 export default KlinkSidebar;
