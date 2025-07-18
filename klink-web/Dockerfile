@@ -1,7 +1,7 @@
 # Stage 0: Copy and generate open-api stubs
 FROM openapitools/openapi-generator-cli:v7.8.0 as api
 WORKDIR /app
-COPY klink-api/src/main/resources/api.yaml ./
+COPY klink-web/api.yaml ./
 RUN bash /usr/local/bin/docker-entrypoint.sh generate -i api.yaml -o src/generated -g typescript-fetch
 
 # Stage 1: Build the Vite application
