@@ -26,13 +26,13 @@ public class SecurityFilter extends OncePerRequestFilter {
             HttpServletRequest request,
             HttpServletResponse response,
             FilterChain filterChain) throws ServletException, IOException {
-        // ignore requests that are not hitting /api
-        if (!request.getRequestURI().startsWith("/api")) {
+        // allow requests to health
+        if (request.getRequestURI().startsWith("/api/health")) {
             filterChain.doFilter(request, response);
             return;
         }
-        // allow requests to health
-        if (request.getRequestURI().startsWith("/api/health")) {
+        // ignore requests that are not hitting /api
+        if (!request.getRequestURI().startsWith("/api")) {
             filterChain.doFilter(request, response);
             return;
         }
