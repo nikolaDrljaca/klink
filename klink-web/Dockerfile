@@ -1,19 +1,19 @@
 # Stage 0: Copy and generate open-api stubs
 FROM openapitools/openapi-generator-cli:v7.8.0 as api
 WORKDIR /app
-COPY klink-web/api.yaml ./
+COPY api.yaml ./
 RUN bash /usr/local/bin/docker-entrypoint.sh generate -i api.yaml -o src/generated -g typescript-fetch
 
 # Stage 1: Build the Vite application
 FROM node:18 as builder
 # Set the working directory inside the container
-WORKDIR /app/klink-web
+WORKDIR /app
 # Copy package.json and package-lock.json to install dependencies
-COPY klink-web/package.json klink-web/package-lock.json ./
+COPY package.json package-lock.json ./
 # Install dependencies - clean install
 RUN npm ci 
 # Copy all other application files into the working directory
-COPY klink-web ./
+COPY . .
 ## run open-api generator
 #RUN npm run openapi-gen
 COPY --from=api /app/src/generated ./src/generated
@@ -25,9 +25,9 @@ RUN npm run build -- --mode=$VITE_BUILD_MODE
 # Stage 2: Serve with Nginx
 FROM nginx:latest
 # Copy to templates so env variables can be injected
-COPY klink-web/nginx.conf /etc/nginx/templates/nginx.conf.template
+COPY nginx.conf /etc/nginx/templates/nginx.conf.template
 # Copy the built files from the previous stage
-COPY --from=builder /app/klink-web/dist /usr/share/nginx/html
+COPY --from=builder /app/dist /usr/share/nginx/html
 # Expose port 3000
 EXPOSE 3000
 # Start Nginx when the container runs
