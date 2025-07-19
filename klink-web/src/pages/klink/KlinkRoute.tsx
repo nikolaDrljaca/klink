@@ -27,6 +27,20 @@ const KlinkRoute: Component = () => {
           <KlinkEntries />
         </Show>
       </div>
+
+      <div class="hidden xl:block px-4 pt-4">
+        <div class="card bg-neutral text-neutral-content w-60">
+          <div class="p-4 flex flex-col gap-y-2">
+            <h2 class="text-lg">Tips:</h2>
+            <div class="flex flex-row items-center gap-x-2">
+              <kbd class="kbd kbd-sm">ctrl</kbd>
+              +
+              <kbd class="kbd kbd-sm">v</kbd>
+              <p class="text-md">Paste to Klink</p>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   );
 };

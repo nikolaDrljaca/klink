@@ -45,3 +45,12 @@ export function klinkModel(klink: Klink): KlinkModel {
     isEditable: !!klink.readKey && !!klink.writeKey,
   };
 }
+
+export function isUrl(value: string): boolean {
+  try {
+    const url = new URL(value);
+    return ["http:", "https:"].includes(url.protocol);
+  } catch (_) {
+    return false;
+  }
+}

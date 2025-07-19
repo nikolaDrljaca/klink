@@ -1,51 +1,22 @@
 import { ArrowLeft, Globe, GlobeLock, Share2 } from "lucide-solid";
 import { Component, createSignal, For, Match, Show, Switch } from "solid-js";
 import KlinkEntryListItem from "~/pages/klink/components/KlinkEntryListItem";
-import { useNavigate } from "@solidjs/router";
 import makeModal from "~/components/modal/Modal";
 import ShareKlinkModal from "~/pages/components/klink-share-modal/ShareKlinkModal";
-import useKlinkEntries from "~/stores/klink-entry-store";
+import createEntriesStore from "../create-entries-store";
 
 const KlinkEntries: Component = () => {
-  const store = useKlinkEntries();
+  const store = createEntriesStore();
 
   const [inputUrl, setInputUrl] = createSignal("");
   const inputPlaceholder = () =>
-    isReadOnly() ? "You don't have access" : "Paste or Type here";
-
-  const isShared = () => store().klink.readKey;
-  const isReadOnly = () => store().klink.readKey && !store().klink.writeKey;
-
-  const navigate = useNavigate();
+    store().klink.isReadOnly ? "You don't have access" : "Paste or Type here";
 
   const shareModal = makeModal();
 
-  const handlePaste = async (e: ClipboardEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    const pastedValue = e.clipboardData.getData("text/plain");
-    await store().addEntry(pastedValue);
-  };
-
-  const handleEnter = async (event: Event) => {
-    event.preventDefault();
-    event.stopPropagation();
-    await store().addEntry(inputUrl());
+  const handleEnter = (event: Event) => {
+    store().handleEnter(event, inputUrl());
     setInputUrl("");
-  };
-
-  const handleDelete = async (value: string) => {
-    await store().removeEntry(value);
-  };
-
-  const handleBack = () => {
-    if (history.length <= 2) {
-      navigate("/c", {
-        replace: true,
-      });
-    } else {
-      navigate(-1);
-    }
   };
 
   return (
@@ -60,7 +31,7 @@ const KlinkEntries: Component = () => {
         <div class="flex items-center gap-x-2">
           <button
             class="lg:hidden btn btn-square btn-ghost"
-            onClick={handleBack}
+            onClick={store().handleBack}
           >
             <ArrowLeft size={24} />
           </button>
@@ -69,7 +40,7 @@ const KlinkEntries: Component = () => {
         </div>
         <div class="flex items-center gap-x-2">
           <Switch>
-            <Match when={isShared()}>
+            <Match when={store().klink.isShared}>
               <div
                 class="tooltip tooltip-left"
                 data-tip="This collection is shared."
@@ -79,7 +50,7 @@ const KlinkEntries: Component = () => {
                 </button>
               </div>
             </Match>
-            <Match when={!isShared()}>
+            <Match when={!store().klink.isShared}>
               <div
                 class="tooltip tooltip-left"
                 data-tip="This collection is local."
@@ -114,8 +85,8 @@ const KlinkEntries: Component = () => {
               placeholder={inputPlaceholder()}
               value={inputUrl()}
               onInput={(event) => setInputUrl(event.target.value)}
-              onPaste={handlePaste}
-              disabled={isReadOnly()}
+              onPaste={store().handlePaste}
+              disabled={store().klink.isReadOnly}
               class="input input-bordered w-full"
             />
             <div class="label">
@@ -132,8 +103,8 @@ const KlinkEntries: Component = () => {
           {(item) => (
             <KlinkEntryListItem
               entry={item}
-              isReadOnly={isReadOnly()}
-              onDeleteClick={() => handleDelete(item.value)}
+              isReadOnly={store().klink.isReadOnly}
+              onDeleteClick={() => store().handleDelete(item.value)}
             />
           )}
         </For>
