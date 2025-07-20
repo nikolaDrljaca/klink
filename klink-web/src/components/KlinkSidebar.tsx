@@ -3,6 +3,7 @@ import { Image } from "@unpic/solid";
 import { Component, createSignal, Show } from "solid-js";
 import logo from "/images/logo.png";
 import { makePersisted } from "@solid-primitives/storage";
+import { Settings } from "lucide-solid";
 
 const extensionUrl =
   "https://chromewebstore.google.com/detail/klink-extension/hiamgjmbmkjfbcmopcfbodpdgbjlmjko";
@@ -47,10 +48,13 @@ const KlinkSidebar: Component = () => {
         </Show>
 
         {/* TODO: Enable when in place */}
-        {/* <A href="/settings" class="btn btn-ghost btn-md font-semibold justify-start lg:w-full"> */}
-        {/*   <Settings size={20} /> */}
-        {/*   Settings */}
-        {/* </A> */}
+        <A
+          href="/settings"
+          class="btn btn-ghost btn-md font-semibold justify-start lg:w-full"
+        >
+          <Settings size={20} />
+          Settings
+        </A>
         {/* <A href="/about" class="btn btn-ghost btn-md font-semibold justify-start lg:w-full"> */}
         {/*   <Info size={20} /> */}
         {/*   About */}
