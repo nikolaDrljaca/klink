@@ -1,5 +1,4 @@
 import { Component, For } from "solid-js";
-import { useNavigate } from "@solidjs/router";
 import collectionStore from "~/pages/collection/stores/collection-store";
 import CreateKlinkView from "~/pages/collection/components/CreateKlinkView";
 import KlinkCollectionItem from "~/pages/collection/components/KlinkCollectionItem";
@@ -14,11 +13,6 @@ const KlinkListEmpty: Component = () => {
 
 const KlinkCollection: Component = () => {
   const store = collectionStore();
-  const navigate = useNavigate();
-
-  const onSelectKlink = (id: string) => {
-    navigate(`/c/${id}`);
-  };
 
   const onCopyKlink = (id: string) => {
     store.copyKlink(id);
@@ -40,7 +34,6 @@ const KlinkCollection: Component = () => {
             <KlinkCollectionItem
               item={item.model()}
               pathKlinkId={store.pathKlinkId()}
-              onSelect={() => onSelectKlink(item.model().id)}
               onCopyClick={() => onCopyKlink(item.model().id)}
             />
           )}

@@ -56,6 +56,14 @@ function createNewKlink(data: { name: string; description?: string }) {
   setKlinks(klink.id, klink);
 }
 
+function createKlinkRaw(klink: Klink) {
+  const existing = new Set(Object.values(klinks).map((it) => it.id));
+  if (existing.has(klink.id)) {
+    return;
+  }
+  setKlinks(klink.id, klink);
+}
+
 function createKlink(klink: Klink, entries: { value: string }[]) {
   const existing = new Set(Object.values(klinks).map((it) => it.id));
   if (existing.has(klink.id)) {
@@ -256,6 +264,7 @@ export const KlinkService = {
   copyExistingKlink,
   createKlink,
   createNewKlink,
+  createKlinkRaw,
   deleteKlink,
   editKlink,
   importKlink,
