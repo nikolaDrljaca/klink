@@ -10,7 +10,6 @@ services:
         VITE_BUILD_MODE: prodlike
     environment:
       NODE_ENV: production
-      API_KEY: f6add007-0f29-4a8e-ba15-320545b7a6c3
     ports:
       - '3000:3000'
     depends_on:
@@ -21,8 +20,6 @@ services:
     build:
       context: .
       dockerfile: klink-rest/Dockerfile
-    environment:
-      API_KEY: f6add007-0f29-4a8e-ba15-320545b7a6c3
     depends_on:
       db:
         condition: service_healthy

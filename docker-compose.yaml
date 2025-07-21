@@ -8,7 +8,6 @@ services:
       dockerfile: ./Dockerfile
     environment:
       NODE_ENV: production
-      API_KEY: ${API_KEY}
     ports:
       - '3000:3000'
     depends_on:
@@ -19,8 +18,6 @@ services:
     build:
       context: .
       dockerfile: klink-rest/Dockerfile
-    environment:
-      API_KEY: ${API_KEY}
     depends_on:
       db:
         condition: service_healthy
