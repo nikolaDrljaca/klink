@@ -23,7 +23,7 @@ const KlinkSidebar: Component = () => {
 
   return (
     <div class="flex flex-row lg:flex-col lg:h-full w-full items-start justify-between lg:justify-start p-4">
-      <A href="/" class="btn btn-ghost font-semibold text-2xl">
+      <A href="/c" class="btn btn-ghost font-semibold text-2xl">
         <Image src={logo} width={32} height={32} />
         Klink
       </A>
@@ -49,7 +49,7 @@ const KlinkSidebar: Component = () => {
 
         {/* TODO: Enable when in place */}
         <A
-          href="/settings"
+          href="/c/settings"
           class="btn btn-ghost btn-md font-semibold justify-start lg:w-full"
         >
           <Settings size={20} />
