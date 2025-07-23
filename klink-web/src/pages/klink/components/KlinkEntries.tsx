@@ -15,7 +15,9 @@ const KlinkEntries: Component = () => {
   const shareModal = makeModal();
 
   const handleEnter = (event: Event) => {
-    store().handleEnter(event, inputUrl());
+    event.preventDefault();
+    event.stopPropagation();
+    store().handleEnter(inputUrl());
     setInputUrl("");
   };
 

@@ -33,9 +33,7 @@ export default function createEntriesStore() {
     await store().addEntry(pastedValue);
   };
 
-  const handleEnter = async (event: Event, value: string) => {
-    event.preventDefault();
-    event.stopPropagation();
+  const handleEnter = async (value: string) => {
     await store().addEntry(value);
   };
 
