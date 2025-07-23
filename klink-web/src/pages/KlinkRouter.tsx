@@ -1,13 +1,16 @@
 import { MatchFilters, Navigate, Route, Router } from "@solidjs/router";
 import { Component, ParentComponent } from "solid-js";
 import RootLayout from "~/components/layout/RootLayout";
-import KlinkCollectionRoute from "~/pages/collection/KlinkCollectionRoute";
 import KlinkImportRoute from "~/pages/import/KlinkImportRoute";
 import KlinkRoute from "~/pages/klink/KlinkRoute";
 import ComingSoonRoute from "~/pages/status/ComingSoonRoute";
 import NotFoundRoute from "~/pages/status/404Route";
 import KlinkSettingsRoute from "./settings/KlinkSettingsRoute";
 import KlinkSidebar from "~/components/KlinkSidebar";
+import {
+  KlinkCollectionRoute,
+  KlinkCollectionRouteParent,
+} from "./collection/KlinkCollectionRoute";
 
 const uuidRouteFilter: MatchFilters = {
   klinkId: (v: string) => v.length === 36,
@@ -38,8 +41,8 @@ const KlinkRouter: Component = () => {
         component={SidebarWrapper}
       >
         {/* Klink Collection nested routes */}
-        <Route path="/" component={KlinkCollectionRoute}>
-          <Route path="/" component={() => <></>} />
+        <Route path="/" component={KlinkCollectionRouteParent}>
+          <Route path="/" component={KlinkCollectionRoute} />
           <Route
             path="/:klinkId"
             component={KlinkRoute}

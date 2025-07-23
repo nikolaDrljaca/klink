@@ -24,7 +24,7 @@
   "dependencies": {
     "@openapitools/openapi-generator-cli": "^2.15.0",
     "@solid-primitives/clipboard": "^1.5.10",
-    "@solid-primitives/event-bus": "^1.0.11",
+    "@solid-primitives/media": "^2.3.3",
     "@solid-primitives/resource": "^0.3.1",
     "@solid-primitives/share": "^2.0.6",
     "@solid-primitives/storage": "^4.2.1",
