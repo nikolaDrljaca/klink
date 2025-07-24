@@ -1,6 +1,6 @@
 import { makePersisted } from "@solid-primitives/storage";
 import localforage from "localforage";
-import { createStore } from "solid-js/store";
+import { createStore, produce } from "solid-js/store";
 import { klinkEntryForageKey } from "~/lib/klink-utils";
 import makeKlinkApi from "~/lib/make-klink-api";
 import { KlinkChangeEvent, KlinkEntry, KlinkModel } from "~/types/domain";
@@ -53,13 +53,13 @@ function createKlinkEntryStore(klink: KlinkModel) {
   });
 
   const createEntry = (entry: KlinkEntry) => {
-    setEntries((val: KlinkEntry[]) => {
+    setEntries(produce((val: KlinkEntry[]) => {
       const exists = val.find((it) => it.value === entry.value);
       if (exists) {
         return;
       }
       return [...val, entry];
-    });
+    }));
   };
 
   const deleteEntry = (entry: KlinkEntry) => {
