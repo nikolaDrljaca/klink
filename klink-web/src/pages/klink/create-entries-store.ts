@@ -3,7 +3,7 @@ import { createEffect } from "solid-js";
 import toast from "solid-toast";
 import createPasteKeyEvent from "~/lib/create-paste-key-event";
 import { readLastClipboardEntry } from "~/lib/read-clipboard";
-import useKlinkEntries from "~/stores/klink-entry-store";
+import { useKlinkEntries } from "~/stores/klink-entry-store";
 import { isUrl } from "~/types/domain";
 
 export default function createEntriesStore() {
@@ -26,14 +26,7 @@ export default function createEntriesStore() {
     }
   });
 
-  const handlePaste = async (e: ClipboardEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    const pastedValue = e.clipboardData.getData("text/plain");
-    await store().addEntry(pastedValue);
-  };
-
-  const handleEnter = async (value: string) => {
+  const createEntry = async (value: string) => {
     await store().addEntry(value);
   };
 
@@ -54,8 +47,7 @@ export default function createEntriesStore() {
   return () => ({
     entries: store().entries,
     klink: store().klink,
-    handlePaste,
-    handleEnter,
+    createEntry,
     handleDelete,
     handleBack,
   });
