@@ -5,7 +5,13 @@ import { klinkEntryForageKey } from "~/lib/klink-utils";
 import makeKlinkApi from "~/lib/make-klink-api";
 import { KlinkChangeEvent, KlinkEntry, KlinkModel } from "~/types/domain";
 import { KlinkService as service } from "./klink-store";
-import { createEffect, createMemo, onCleanup } from "solid-js";
+import {
+  Accessor,
+  createEffect,
+  createMemo,
+  onCleanup,
+  untrack,
+} from "solid-js";
 import { useSelectedKlink } from "./klink-hooks";
 import makeAsync from "~/lib/make-async";
 import toast from "solid-toast";
@@ -15,7 +21,14 @@ function buildSsePath(data: { id: string; readKey: string }): string {
   return `${API_PATH}/events/klink/${data.id}?readKey=${data.readKey}`;
 }
 
-function createKlinkEntryStore(klink: KlinkModel) {
+type KlinkEntriesStore = {
+  klink: KlinkModel;
+  entries: KlinkEntry[];
+  addEntry: (url: string) => Promise<void>;
+  removeEntry: (url: string) => Promise<void>;
+};
+
+function createKlinkEntryStore(klink: KlinkModel): KlinkEntriesStore {
   const id = klink.id;
   const store = createStore<Array<KlinkEntry>>([]);
   const [entries, setEntries] = makePersisted(
@@ -53,13 +66,11 @@ function createKlinkEntryStore(klink: KlinkModel) {
   });
 
   const createEntry = (entry: KlinkEntry) => {
-    setEntries(produce((val: KlinkEntry[]) => {
-      const exists = val.find((it) => it.value === entry.value);
-      if (exists) {
-        return;
-      }
-      return [...val, entry];
-    }));
+    const exists = entries.find((it) => it.value === entry.value);
+    if (exists) {
+      return;
+    }
+    setEntries(entries.length, entry);
   };
 
   const deleteEntry = (entry: KlinkEntry) => {
@@ -113,7 +124,7 @@ function createKlinkEntryStore(klink: KlinkModel) {
   };
 }
 
-export default function useKlinkEntries() {
+export function useKlinkEntries(): Accessor<KlinkEntriesStore> {
   const klink = useSelectedKlink();
   return createMemo(() => createKlinkEntryStore(klink()));
 }

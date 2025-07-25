@@ -17,8 +17,14 @@ const KlinkEntries: Component = () => {
   const handleEnter = (event: Event) => {
     event.preventDefault();
     event.stopPropagation();
-    store().handleEnter(inputUrl());
+    store().createEntry(inputUrl());
     setInputUrl("");
+  };
+  const handlePaste = (event: ClipboardEvent) => {
+    event.preventDefault();
+    event.stopPropagation();
+    const pastedValue = event.clipboardData.getData("text/plain");
+    store().createEntry(pastedValue);
   };
 
   return (
@@ -87,7 +93,7 @@ const KlinkEntries: Component = () => {
               placeholder={inputPlaceholder()}
               value={inputUrl()}
               onInput={(event) => setInputUrl(event.target.value)}
-              onPaste={store().handlePaste}
+              onPaste={handlePaste}
               disabled={store().klink.isReadOnly}
               class="input input-bordered w-full"
             />
