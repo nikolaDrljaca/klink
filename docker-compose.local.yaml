@@ -1,5 +1,4 @@
 # LOCAL docker compose script
-version: '3.4'
 
 services:
   db:

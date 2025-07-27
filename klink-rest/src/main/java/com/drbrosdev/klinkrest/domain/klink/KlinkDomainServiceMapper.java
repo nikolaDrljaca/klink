@@ -1,5 +1,6 @@
 package com.drbrosdev.klinkrest.domain.klink;
 
+import com.drbrosdev.klinkrest.domain.klink.model.EnrichLinkJob;
 import com.drbrosdev.klinkrest.domain.klink.model.Klink;
 import com.drbrosdev.klinkrest.domain.klink.model.KlinkEntry;
 import com.drbrosdev.klinkrest.domain.klink.model.KlinkKey;
@@ -32,6 +33,11 @@ public interface KlinkDomainServiceMapper {
     @Mapping(target = "value", source = "value")
     KlinkEntry mapTo(final KlinkEntryEntity value);
 
+    @Mapping(target = "value", source = "value")
+    EnrichLinkJob enrichJob(final KlinkEntry entry);
+
+    @Mapping(target = "value", source = "value")
+    EnrichLinkJob enrichJob(final KlinkEntryEntity entry);
 
     @AfterMapping
     default void extractLatestCreatedAt(

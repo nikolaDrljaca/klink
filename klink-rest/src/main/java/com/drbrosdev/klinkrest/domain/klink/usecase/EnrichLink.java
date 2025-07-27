@@ -14,10 +14,10 @@ public class EnrichLink {
     // notify triggers
     public void execute(EnrichLinkJob job) {
         try {
-            // TODO
-            log.info("Completed job {}", job.getValue());
+            // TODO impl
+            Thread.sleep(3_000);
         } catch (Exception e) {
-            log.error("Job for {} failed.", job.getValue());
+            log.error("Failed to enrich {}.", job.getValue());
         }
     }
 }

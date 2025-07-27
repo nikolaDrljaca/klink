@@ -1,16 +1,12 @@
 package com.drbrosdev.klinkrest.activity;
 
-import com.drbrosdev.klinkrest.domain.klink.EnrichLinkJobExecutor;
 import com.drbrosdev.klinkrest.domain.klink.KlinkDomainService;
-import com.drbrosdev.klinkrest.domain.klink.model.EnrichLinkJob;
 import com.drbrosdev.klinkrest.domain.klink.usecase.ValidateKlinkAccess;
 import com.drbrosdev.klinkrest.framework.SseSessionManager;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
@@ -45,17 +41,5 @@ public class KlinkSseController {
                         keys,
                         readOnly(readKey)))
                 .thenApply((it) -> sessionManager.createSession(klinkId));
-    }
-
-    // TODO: For testing purposes - remove later
-    private final EnrichLinkJobExecutor orchestrator;
-
-    @PostMapping("/job")
-    public void submitJob() {
-        var job = EnrichLinkJob.builder()
-                .value(RandomStringUtils.secure().nextAlphanumeric(8))
-                .build();
-        orchestrator.submit(job);
-        log.info("Post mapping finished.");
     }
 }

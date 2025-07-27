@@ -45,6 +45,7 @@ public class KlinkDomainServiceImpl implements KlinkDomainService {
 
     private final GenerateKlinkKey generateKlinkKey;
     private final ValidateKlinkAccess validateKlinkAccess;
+    private final EnrichLinkGateway enrichLinkGateway;
 
     private final KlinkRepository klinkRepository;
     private final KlinkEntryRepository klinkEntryRepository;
@@ -80,6 +81,8 @@ public class KlinkDomainServiceImpl implements KlinkDomainService {
         var klinkEntity = klinkRepository.save(createKlinkEntity(klink));
         // create and persist entries
         var storedEntries = klinkEntryRepository.saveAll(createKlinkEntryEntity(klink));
+        // hand off entries for enrichment
+        storedEntries.forEach(it -> enrichLinkGateway.submit(mapper.enrichJob(it)));
         // create and persist keys
         var keys = klinkKeyRepository.save(createKeyEntity(klink));
         // map to domain model and return
@@ -231,6 +234,8 @@ public class KlinkDomainServiceImpl implements KlinkDomainService {
         return klinkEntryRepository.saveAll(entities)
                 .stream()
                 .map(mapper::mapTo)
+                // hand off entry for enrichment
+                .peek(it -> enrichLinkGateway.submit(mapper.enrichJob(it)))
                 .sorted(comparing(KlinkEntry::getCreatedAt));
     }
 
