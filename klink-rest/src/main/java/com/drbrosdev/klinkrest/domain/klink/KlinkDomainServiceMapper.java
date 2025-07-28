@@ -34,9 +34,7 @@ public interface KlinkDomainServiceMapper {
     KlinkEntry mapTo(final KlinkEntryEntity value);
 
     @Mapping(target = "value", source = "value")
-    EnrichLinkJob enrichJob(final KlinkEntry entry);
-
-    @Mapping(target = "value", source = "value")
+    @Mapping(target = "klinkEntryId", source = "id")
     EnrichLinkJob enrichJob(final KlinkEntryEntity entry);
 
     @AfterMapping

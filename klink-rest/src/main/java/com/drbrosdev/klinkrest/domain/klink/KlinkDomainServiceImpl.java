@@ -30,7 +30,6 @@ import java.util.stream.Stream;
 
 import static java.time.LocalDateTime.now;
 import static java.util.Collections.emptyList;
-import static java.util.Comparator.comparing;
 import static java.util.Optional.ofNullable;
 import static java.util.function.Function.identity;
 import static java.util.function.Predicate.not;
@@ -230,13 +229,14 @@ public class KlinkDomainServiceImpl implements KlinkDomainService {
                         klinkId,
                         it))
                 .collect(toList());
-        // map and return
-        return klinkEntryRepository.saveAll(entities)
+        var created = klinkEntryRepository.saveAll(entities)
                 .stream()
-                .map(mapper::mapTo)
-                // hand off entry for enrichment
+                // hand off for enrichment
                 .peek(it -> enrichLinkGateway.submit(mapper.enrichJob(it)))
-                .sorted(comparing(KlinkEntry::getCreatedAt));
+                .map(mapper::mapTo)
+                .toList();
+        // map and return
+        return created.stream();
     }
 
     @Override
