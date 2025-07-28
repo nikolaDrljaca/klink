@@ -22,9 +22,7 @@ public class EnrichLink {
         try {
             // TODO impl
             // parse rich link data
-            var preview = generateUrlPreview.execute(KlinkEntry.builder()
-                            .value(job.getValue())
-                            .build()) // TODO this stinks a bit
+            var preview = generateUrlPreview.execute(entry(job))
                     .orElse(null);
             if (preview == null) {
                 log.warn("Unable to generate rich link preview for {}", job.getValue());
@@ -38,5 +36,11 @@ public class EnrichLink {
         } catch (Exception e) {
             log.error("Failed to enrich {}.", job.getValue());
         }
+    }
+
+    private static KlinkEntry entry(EnrichLinkJob job) {
+        return KlinkEntry.builder()
+                .value(job.getValue())
+                .build();
     }
 }
