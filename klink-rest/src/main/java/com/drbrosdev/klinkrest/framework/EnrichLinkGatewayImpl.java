@@ -35,7 +35,7 @@ public class EnrichLinkGatewayImpl implements EnrichLinkGateway {
      */
     @Override
     public void submit(EnrichLinkJob job) {
-        log.info("Submitting enrich job for {}", job.getValue());
+        log.debug("Submitting enrich job for {}", job.getValue());
         jobQueue.offer(job);
     }
 
@@ -58,7 +58,7 @@ public class EnrichLinkGatewayImpl implements EnrichLinkGateway {
                 try {
                     var job = jobQueue.take();  // will block the current thread until a value is available
                     enrichLink.execute(job); // will block until finished
-                    log.info("Completed enrich job for {}", job.getValue());
+                    log.debug("Completed enrich job for {}", job.getValue());
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
                 }

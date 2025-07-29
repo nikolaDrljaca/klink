@@ -15,6 +15,7 @@ import com.drbrosdev.klinkrest.persistence.entity.KlinkKeyEntity;
 import com.drbrosdev.klinkrest.persistence.repository.KlinkEntryRepository;
 import com.drbrosdev.klinkrest.persistence.repository.KlinkKeyRepository;
 import com.drbrosdev.klinkrest.persistence.repository.KlinkRepository;
+import com.drbrosdev.klinkrest.persistence.repository.KlinkRichEntryRepository;
 import jakarta.annotation.Nullable;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -48,6 +49,7 @@ public class KlinkDomainServiceImpl implements KlinkDomainService {
 
     private final KlinkRepository klinkRepository;
     private final KlinkEntryRepository klinkEntryRepository;
+    private final KlinkRichEntryRepository richEntryRepository;
     private final KlinkKeyRepository klinkKeyRepository;
 
     private final KlinkDomainServiceMapper mapper;
@@ -118,17 +120,13 @@ public class KlinkDomainServiceImpl implements KlinkDomainService {
     @Override
     @Transactional(readOnly = true)
     public Stream<KlinkEntry> getEntries(UUID klinkId) {
-        return klinkEntryRepository.findByKlinkId(klinkId)
-                .stream()
-                .map(mapper::mapTo);
+        return retrieveEntriesForKlink(klinkId);
     }
 
     @Override
     @Transactional(readOnly = true)
     public KlinkChangeEvent createKlinkChangeEvent(UUID klinkId) {
-        var out = klinkEntryRepository.findByKlinkId(klinkId)
-                .stream()
-                .map(mapper::mapTo)
+        var out = retrieveEntriesForKlink(klinkId)
                 .toList();
         // there are current entries - return out
         if (isNotEmpty(out)) {
@@ -233,7 +231,7 @@ public class KlinkDomainServiceImpl implements KlinkDomainService {
                 .stream()
                 // hand off for enrichment
                 .peek(it -> enrichLinkGateway.submit(mapper.enrichJob(it)))
-                .map(mapper::mapTo)
+                .map(mapper::mapToEntry)
                 .toList();
         // map and return
         return created.stream();
@@ -314,6 +312,15 @@ public class KlinkDomainServiceImpl implements KlinkDomainService {
                             entries,
                             keys);
                 });
+    }
+
+    protected Stream<KlinkEntry> retrieveEntriesForKlink(UUID klinkId) {
+        return klinkEntryRepository.findByKlinkId(klinkId)
+                .stream()
+                .map(entry ->
+                        richEntryRepository.findByKlinkEntryId(entry.getId())
+                                .map(it -> mapper.mapTo(entry, it))
+                                .orElse(mapper.mapToEntry(entry)));
     }
 
     private Klink retrieveKlink(UUID klinkId) {

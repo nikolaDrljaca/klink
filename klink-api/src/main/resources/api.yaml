@@ -303,6 +303,12 @@ components:
         value:
           type: string
           description: "URL value unique by collection."
+        title:
+          type: string
+          description: "URL title parsed from OpenGraph data"
+        description:
+          type: string
+          description: "URL description parsed from OpenGraph data"
       required:
         - value
     CreateKlinkPayload:

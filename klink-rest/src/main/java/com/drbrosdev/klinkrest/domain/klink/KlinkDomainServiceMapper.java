@@ -7,6 +7,7 @@ import com.drbrosdev.klinkrest.domain.klink.model.KlinkKey;
 import com.drbrosdev.klinkrest.persistence.entity.KlinkEntity;
 import com.drbrosdev.klinkrest.persistence.entity.KlinkEntryEntity;
 import com.drbrosdev.klinkrest.persistence.entity.KlinkKeyEntity;
+import com.drbrosdev.klinkrest.persistence.entity.KlinkRichEntryEntity;
 import org.mapstruct.AfterMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -30,8 +31,20 @@ public interface KlinkDomainServiceMapper {
 
     KlinkKey mapTo(final KlinkKeyEntity key);
 
+    @Mapping(target = "id", source = "value.id")
+    @Mapping(target = "value", source = "value.value")
+    @Mapping(target = "createdAt", source = "value.createdAt")
+    @Mapping(target = "title", source = "richEntry.title")
+    @Mapping(target = "description", source = "richEntry.description")
+    KlinkEntry mapTo(
+            final KlinkEntryEntity value,
+            final KlinkRichEntryEntity richEntry);
+
     @Mapping(target = "value", source = "value")
-    KlinkEntry mapTo(final KlinkEntryEntity value);
+    @Mapping(target = "createdAt", source = "createdAt")
+    @Mapping(target = "title", ignore = true)
+    @Mapping(target = "description", ignore = true)
+    KlinkEntry mapToEntry(final KlinkEntryEntity value);
 
     @Mapping(target = "value", source = "value")
     @Mapping(target = "klinkEntryId", source = "id")

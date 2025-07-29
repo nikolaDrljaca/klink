@@ -13,10 +13,9 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 import java.util.UUID;
 
 import static java.util.UUID.randomUUID;
@@ -43,31 +42,31 @@ public class EnrichLink {
                 return;
             }
             // persist
-            createRichEntry(
-                    job.getKlinkEntryId(),
-                    preview);
+            richEntryRepository.save(
+                    createRichEntry(
+                            job.getKlinkEntryId(),
+                            preview));
             // trigger notify change for entries
-            notifyEntryChange(job);
+            notifyEntryChange(job)
+                    .ifPresent(richEntryRepository::notifyEntryChanged);
         } catch (Exception e) {
             log.error("Failed to enrich {}.", job.getValue());
         }
     }
 
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
-    protected void createRichEntry(
+    protected KlinkRichEntryEntity createRichEntry(
             UUID klinkEntryId,
             RichKlinkEntryPreview preview) {
-        var entry = KlinkRichEntryEntity.builder()
+        return KlinkRichEntryEntity.builder()
                 .id(randomUUID())
                 .klinkEntryId(klinkEntryId)
                 .title(preview.getTitle())
                 .description(preview.getDescription())
                 .createdAt(LocalDateTime.now())
                 .build();
-        richEntryRepository.save(entry);
     }
 
-    protected void notifyEntryChange(EnrichLinkJob job) {
+    protected Optional<String> notifyEntryChange(EnrichLinkJob job) {
         var event = KlinkEntryChangeEvent.builder()
                 .operation(Operation.UPDATED)
                 .row(KlinkEntryChangeEvent.Row.builder()
@@ -77,11 +76,11 @@ public class EnrichLink {
                         .build())
                 .build();
         try {
-            var rawEvent = objectMapper.writeValueAsString(event);
-            richEntryRepository.notifyEntryChanged(rawEvent);
+            return Optional.of(objectMapper.writeValueAsString(event));
         } catch (JsonProcessingException e) {
             // should never happen
             log.error("Failed to serialize KlinkEntryChangeEvet -- SHOULD NEVER HAPPEN!");
+            return Optional.empty();
         }
     }
 

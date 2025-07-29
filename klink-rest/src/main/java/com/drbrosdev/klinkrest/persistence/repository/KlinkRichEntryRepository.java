@@ -6,10 +6,13 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
 import java.util.UUID;
 
 @Repository
 public interface KlinkRichEntryRepository extends JpaRepository<KlinkRichEntryEntity, UUID> {
+
+    Optional<KlinkRichEntryEntity> findByKlinkEntryId(UUID klinkEntryId);
 
     @Query(
             value = "SELECT pg_notify('klink_entry_change', :json_string)",

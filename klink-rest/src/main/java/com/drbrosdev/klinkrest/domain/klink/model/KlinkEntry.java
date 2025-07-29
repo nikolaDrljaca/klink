@@ -1,5 +1,6 @@
 package com.drbrosdev.klinkrest.domain.klink.model;
 
+import jakarta.annotation.Nullable;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -16,4 +17,10 @@ public class KlinkEntry {
 
     String value;
     LocalDateTime createdAt;
+
+    // rich link data
+    @Nullable
+    String title;
+    @Nullable
+    String description;
 }
