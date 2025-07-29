@@ -34,6 +34,7 @@ public class JsoupGenerateUrlPreview implements GenerateUrlPreview {
                     .description(parseDescription(document))
                     .build());
         } catch (Exception e) {
+            log.debug("Jsoup parsing failure {}", e.getLocalizedMessage());
             return Optional.empty();
         }
     }
