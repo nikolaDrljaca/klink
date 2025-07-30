@@ -39,6 +39,7 @@ public interface KlinkActivityMapper {
             final @Nullable String description);
 
     @Mapping(target = "createdAt", ignore = true)
+    @Mapping(target = "id", ignore = true)
     KlinkEntry mapTo(KlinkEntryApiDto entry);
 
     KlinkKey mapTo(

@@ -15,6 +15,7 @@ import com.drbrosdev.klinkrest.persistence.entity.KlinkKeyEntity;
 import com.drbrosdev.klinkrest.persistence.repository.KlinkEntryRepository;
 import com.drbrosdev.klinkrest.persistence.repository.KlinkKeyRepository;
 import com.drbrosdev.klinkrest.persistence.repository.KlinkRepository;
+import com.drbrosdev.klinkrest.persistence.repository.KlinkRichEntryRepository;
 import jakarta.annotation.Nullable;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -45,9 +46,11 @@ public class KlinkDomainServiceImpl implements KlinkDomainService {
 
     private final GenerateKlinkKey generateKlinkKey;
     private final ValidateKlinkAccess validateKlinkAccess;
+    private final EnrichLinkGateway enrichLinkGateway;
 
     private final KlinkRepository klinkRepository;
     private final KlinkEntryRepository klinkEntryRepository;
+    private final KlinkRichEntryRepository richEntryRepository;
     private final KlinkKeyRepository klinkKeyRepository;
 
     private final KlinkDomainServiceMapper mapper;
@@ -80,6 +83,8 @@ public class KlinkDomainServiceImpl implements KlinkDomainService {
         var klinkEntity = klinkRepository.save(createKlinkEntity(klink));
         // create and persist entries
         var storedEntries = klinkEntryRepository.saveAll(createKlinkEntryEntity(klink));
+        // hand off entries for enrichment
+        storedEntries.forEach(it -> enrichLinkGateway.submit(mapper.enrichJob(it)));
         // create and persist keys
         var keys = klinkKeyRepository.save(createKeyEntity(klink));
         // map to domain model and return
@@ -116,17 +121,14 @@ public class KlinkDomainServiceImpl implements KlinkDomainService {
     @Override
     @Transactional(readOnly = true)
     public Stream<KlinkEntry> getEntries(UUID klinkId) {
-        return klinkEntryRepository.findByKlinkId(klinkId)
-                .stream()
-                .map(mapper::mapTo);
+        return retrieveEntriesForKlink(klinkId);
     }
 
     @Override
     @Transactional(readOnly = true)
     public KlinkChangeEvent createKlinkChangeEvent(UUID klinkId) {
-        var out = klinkEntryRepository.findByKlinkId(klinkId)
-                .stream()
-                .map(mapper::mapTo)
+        var out = retrieveEntriesForKlink(klinkId)
+                .sorted(comparing(KlinkEntry::getCreatedAt))
                 .toList();
         // there are current entries - return out
         if (isNotEmpty(out)) {
@@ -164,18 +166,6 @@ public class KlinkDomainServiceImpl implements KlinkDomainService {
             throw new IllegalArgumentException("Write access is needed to delete klink!");
         }
         klinkRepository.deleteById(klinkId);
-    }
-
-    protected KlinkKey retrieveKey(UUID klinkId) {
-        return klinkKeyRepository.findByKlinkId(klinkId)
-                .map(it -> KlinkKey.builder()
-                        .readKey(it.getReadKey())
-                        .writeKey(it.getWriteKey())
-                        .build())
-                .orElseThrow(() -> {
-                    log.error("No keys found for klinkId {}", klinkId);
-                    return new IllegalArgumentException("No keys found!");
-                });
     }
 
     @Override
@@ -227,11 +217,18 @@ public class KlinkDomainServiceImpl implements KlinkDomainService {
                         klinkId,
                         it))
                 .collect(toList());
-        // map and return
-        return klinkEntryRepository.saveAll(entities)
+        var created = klinkEntryRepository.saveAll(entities)
                 .stream()
-                .map(mapper::mapTo)
-                .sorted(comparing(KlinkEntry::getCreatedAt));
+                .map(mapper::mapToEntry)
+                .toList();
+        // submit enrich jobs
+        for (var klinkEntry : created) {
+            enrichLinkGateway.submit(mapper.enrichJob(
+                    klinkId,
+                    klinkEntry));
+        }
+        // map and return
+        return created.stream();
     }
 
     @Override
@@ -311,13 +308,35 @@ public class KlinkDomainServiceImpl implements KlinkDomainService {
                 });
     }
 
+    protected KlinkKey retrieveKey(UUID klinkId) {
+        return klinkKeyRepository.findByKlinkId(klinkId)
+                .map(it -> KlinkKey.builder()
+                        .readKey(it.getReadKey())
+                        .writeKey(it.getWriteKey())
+                        .build())
+                .orElseThrow(() -> {
+                    log.error("No keys found for klinkId {}", klinkId);
+                    return new IllegalArgumentException("No keys found!");
+                });
+    }
+
+    protected Stream<KlinkEntry> retrieveEntriesForKlink(UUID klinkId) {
+        return klinkEntryRepository.findByKlinkId(klinkId)
+                .stream()
+                .map(entry ->
+                        richEntryRepository.findByKlinkEntryId(entry.getId())
+                                .map(it -> mapper.mapTo(entry, it))
+                                .orElse(mapper.mapToEntry(entry)));
+    }
+
     private Klink retrieveKlink(UUID klinkId) {
         var klink = klinkRepository.findById(klinkId)
                 .orElseThrow(() -> new EntityNotFoundException("Klink not found for ID: " + klinkId));
-        var klinkEntries = klinkEntryRepository.findByKlinkId(klinkId);
+        var klinkEntries = retrieveEntriesForKlink(klinkId)
+                .toList();
         var klinkKeys = klinkKeyRepository.findByKlinkId(klinkId)
                 .orElseThrow(() -> new EntityNotFoundException("KlinkKeys not found for Klink ID: " + klinkId));
-        return mapper.mapTo(
+        return mapper.klinkWithEntries(
                 klink,
                 klinkEntries,
                 klinkKeys);

@@ -14,7 +14,20 @@ const asFaviconRequestUrl = (url: string) =>
 
 const KlinkEntryListItem: Component<KlinkEntryListItemProps> = (props) => {
   const faviconUrl = () => asFaviconRequestUrl(props.entry.value);
-  const url = () => props.entry.value;
+
+  const title = () => {
+    if (props.entry.title) {
+      return props.entry.title;
+    }
+    return props.entry.value;
+  };
+
+  const description = () => {
+    if (props.entry.description) {
+      return props.entry.description;
+    }
+    return props.entry.value;
+  };
 
   const LoadingBar: Component = () => <div class="skeleton h-20 w-full"></div>;
 
@@ -41,12 +54,10 @@ const KlinkEntryListItem: Component<KlinkEntryListItemProps> = (props) => {
                 rel="noopener noreferrer"
                 class="hover:underline block break-words whitespace-normal"
               >
-                <span>{props.entry.value}</span>
+                <span>{title()}</span>
               </a>
             </h3>
-            <Show when={url()}>
-              <p class="text-xs font-light underline pt-1">{url()}</p>
-            </Show>
+            <p class="text-xs font-light pt-1">{description()}</p>
           </div>
         </Suspense>
 

@@ -4,6 +4,7 @@ import com.drbrosdev.klinkrest.domain.klink.KlinkDomainService;
 import com.drbrosdev.klinkrest.domain.klink.usecase.ValidateKlinkAccess;
 import com.drbrosdev.klinkrest.framework.SseSessionManager;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -18,6 +19,7 @@ import static java.util.concurrent.CompletableFuture.completedFuture;
 
 @RestController
 @RequiredArgsConstructor
+@Log4j2
 public class KlinkSseController {
 
     private final SseSessionManager sessionManager;

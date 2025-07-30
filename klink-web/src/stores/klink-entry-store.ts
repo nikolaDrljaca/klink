@@ -1,17 +1,11 @@
 import { makePersisted } from "@solid-primitives/storage";
 import localforage from "localforage";
-import { createStore, produce } from "solid-js/store";
+import { createStore } from "solid-js/store";
 import { klinkEntryForageKey } from "~/lib/klink-utils";
 import makeKlinkApi from "~/lib/make-klink-api";
 import { KlinkChangeEvent, KlinkEntry, KlinkModel } from "~/types/domain";
 import { KlinkService as service } from "./klink-store";
-import {
-  Accessor,
-  createEffect,
-  createMemo,
-  onCleanup,
-  untrack,
-} from "solid-js";
+import { Accessor, createEffect, createMemo, onCleanup } from "solid-js";
 import { useSelectedKlink } from "./klink-hooks";
 import makeAsync from "~/lib/make-async";
 import toast from "solid-toast";
@@ -55,7 +49,13 @@ function createKlinkEntryStore(klink: KlinkModel): KlinkEntriesStore {
         source.close();
         return;
       }
-      setEntries(event.entries.map((it) => ({ value: it.value })));
+      setEntries(
+        event.entries.map((it) => ({
+          value: it.value,
+          title: it.title,
+          description: it.description,
+        })),
+      );
     };
 
     onCleanup(() => {

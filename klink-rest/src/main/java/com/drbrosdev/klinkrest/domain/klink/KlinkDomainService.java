@@ -50,4 +50,5 @@ public interface KlinkDomainService {
     List<Klink> queryExistingKlinks(List<QueryExistingKlinkItemDto> query);
 
     Stream<Klink> getKlinks();
+
 }
