@@ -9,6 +9,8 @@ export type Klink = {
 
 export type KlinkEntry = {
   value: string;
+  title?: string;
+  description?: string;
 };
 
 export type KlinkMetadata = {
@@ -21,7 +23,12 @@ export type KlinkModel = Klink & KlinkMetadata;
 
 export type KlinkChangeEvent = {
   operation: "updated" | "inserted" | "deleted";
-  entries: { value: string; createdAt: any }[];
+  entries: {
+    value: string;
+    createdAt: any;
+    title?: string;
+    description?: string;
+  }[];
 };
 
 export function klinkMetadata(klink: Klink): KlinkMetadata {
