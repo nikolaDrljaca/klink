@@ -35,7 +35,7 @@ public class EnrichLinkGatewayImpl implements EnrichLinkGateway {
      */
     @Override
     public void submit(EnrichLinkJob job) {
-        log.debug("Submitting enrich job for {}", job.getValue());
+        log.info("Submitting enrich job for {}", job.getValue());
         jobQueue.offer(job);
     }
 

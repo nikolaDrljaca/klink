@@ -16,6 +16,7 @@ import org.mapstruct.ReportingPolicy;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 @Mapper(
         componentModel = "spring",
@@ -27,6 +28,13 @@ public interface KlinkDomainServiceMapper {
     Klink mapTo(
             final KlinkEntity entity,
             final List<KlinkEntryEntity> entries,
+            final KlinkKeyEntity key);
+
+    @Mapping(target = "id", source = "entity.id")
+    @Mapping(target = "updatedAt", ignore = true)
+    Klink klinkWithEntries(
+            final KlinkEntity entity,
+            final List<KlinkEntry> entries,
             final KlinkKeyEntity key);
 
     KlinkKey mapTo(final KlinkKeyEntity key);
@@ -50,6 +58,13 @@ public interface KlinkDomainServiceMapper {
     @Mapping(target = "klinkEntryId", source = "id")
     EnrichLinkJob enrichJob(final KlinkEntryEntity entry);
 
+    @Mapping(target = "value", source = "entry.value")
+    @Mapping(target = "klinkEntryId", source = "entry.id")
+    @Mapping(target = "klinkId", source = "klinkId")
+    EnrichLinkJob enrichJob(
+            UUID klinkId,
+            final KlinkEntry entry);
+
     @AfterMapping
     default void extractLatestCreatedAt(
             @MappingTarget Klink.KlinkBuilder builder,
@@ -57,6 +72,18 @@ public interface KlinkDomainServiceMapper {
             final List<KlinkEntryEntity> entries) {
         var updatedAt = entries.stream()
                 .map(KlinkEntryEntity::getCreatedAt)
+                .max(LocalDateTime::compareTo)
+                .orElse(klink.getModifiedAt());
+        builder.updatedAt(updatedAt);
+    }
+
+    @AfterMapping
+    default void extractLatestCreatedAtWithEntries(
+            @MappingTarget Klink.KlinkBuilder builder,
+            final KlinkEntity klink,
+            final List<KlinkEntry> entries) {
+        var updatedAt = entries.stream()
+                .map(KlinkEntry::getCreatedAt)
                 .max(LocalDateTime::compareTo)
                 .orElse(klink.getModifiedAt());
         builder.updatedAt(updatedAt);

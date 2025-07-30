@@ -27,6 +27,9 @@ export default function createEntriesStore() {
   });
 
   const createEntry = async (value: string) => {
+    if (!isUrl(value)) {
+      return;
+    }
     await store().addEntry(value);
   };
 
