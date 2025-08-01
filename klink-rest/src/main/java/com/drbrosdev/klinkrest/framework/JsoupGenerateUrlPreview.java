@@ -6,6 +6,7 @@ import com.drbrosdev.klinkrest.domain.klink.usecase.GenerateUrlPreview;
 import com.drbrosdev.klinkrest.utils.UseCase;
 import jakarta.annotation.Nullable;
 import lombok.extern.log4j.Log4j2;
+import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
@@ -19,6 +20,12 @@ import static org.apache.commons.lang3.StringUtils.isNotBlank;
 @Log4j2
 public class JsoupGenerateUrlPreview implements GenerateUrlPreview {
 
+    private final Connection session = Jsoup.newSession()
+            //OR try facebookcatalog/1.0
+            .userAgent("facebookexternalhit/1.1")
+            .maxBodySize(1024) // 1MB
+            .timeout(6000); // 6 minutes
+
     @Override
     public Optional<RichKlinkEntryPreview> execute(KlinkEntry entry) {
         try {
@@ -27,7 +34,7 @@ public class JsoupGenerateUrlPreview implements GenerateUrlPreview {
                 return Optional.empty();
             }
             // load document from URL
-            var document = Jsoup.connect(entry.getValue())
+            var document = session.newRequest(entry.getValue())
                     .get();
             return Optional.of(RichKlinkEntryPreview.builder()
                     .title(parseTitle(document))
