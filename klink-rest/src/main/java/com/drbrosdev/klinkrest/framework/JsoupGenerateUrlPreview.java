@@ -23,8 +23,8 @@ public class JsoupGenerateUrlPreview implements GenerateUrlPreview {
     private final Connection session = Jsoup.newSession()
             //OR try facebookcatalog/1.0
             .userAgent("facebookexternalhit/1.1")
-            // 6 seconds
-            .timeout(6000);
+            .maxBodySize(1024) // 1MB
+            .timeout(6000); // 6 minutes
 
     @Override
     public Optional<RichKlinkEntryPreview> execute(KlinkEntry entry) {
@@ -33,13 +33,6 @@ public class JsoupGenerateUrlPreview implements GenerateUrlPreview {
             if (!validUrl(entry)) {
                 return Optional.empty();
             }
-            // TODO Refactor to use the StreamingReader
-            session.newRequest(entry.getValue())
-                    .method(Connection.Method.GET)
-                    .execute()
-                    .streamParser()
-                    .close();
-            // TODO Investigate above refactor
             // load document from URL
             var document = session.newRequest(entry.getValue())
                     .get();
