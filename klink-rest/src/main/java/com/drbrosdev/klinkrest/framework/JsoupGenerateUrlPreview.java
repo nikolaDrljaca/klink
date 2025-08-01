@@ -20,10 +20,10 @@ import static org.apache.commons.lang3.StringUtils.isNotBlank;
 @Log4j2
 public class JsoupGenerateUrlPreview implements GenerateUrlPreview {
 
+    private static final String USER_AGENT = "User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_1) AppleWebKit/601.2.4 (KHTML, like Gecko) Version/9.0.1 Safari/601.2.4 facebookexternalhit/1.1 Facebot Twitterbot/1.0";
+
     private final Connection session = Jsoup.newSession()
-            //OR try facebookcatalog/1.0
-            .userAgent("facebookexternalhit/1.1")
-            .maxBodySize(1024) // 1MB
+            .userAgent(USER_AGENT)
             .timeout(6000); // 6 minutes
 
     @Override
@@ -41,7 +41,7 @@ public class JsoupGenerateUrlPreview implements GenerateUrlPreview {
                     .description(parseDescription(document))
                     .build());
         } catch (Exception e) {
-            log.debug("Jsoup parsing failure {}", e.getLocalizedMessage());
+            log.warn("Jsoup parsing failure {}", e.getLocalizedMessage());
             return Optional.empty();
         }
     }
