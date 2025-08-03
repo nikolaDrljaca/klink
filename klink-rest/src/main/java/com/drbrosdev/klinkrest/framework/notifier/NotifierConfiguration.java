@@ -2,7 +2,6 @@ package com.drbrosdev.klinkrest.framework.notifier;
 
 import com.drbrosdev.klinkrest.domain.klink.KlinkDomainService;
 import com.drbrosdev.klinkrest.domain.klink.KlinkNotifierService;
-import com.drbrosdev.klinkrest.framework.SseSessionManager;
 import com.drbrosdev.klinkrest.framework.websocket.WebSocketSessionManager;
 import org.postgresql.Driver;
 import org.springframework.boot.CommandLineRunner;
@@ -30,6 +29,7 @@ public class NotifierConfiguration {
         return new KlinkNotifierServiceImpl(new JdbcTemplate(dataSource));
     }
 
+    /*
     @Bean
     CommandLineRunner scaffoldKlinkEntryChangeEventFlow(
             KlinkNotifierService notifierService,
@@ -49,6 +49,7 @@ public class NotifierConfiguration {
             thread.start();
         };
     }
+     */
 
     @Bean
     CommandLineRunner scaffoldKlinkEntryChangeEventFlowWs(

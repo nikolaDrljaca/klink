@@ -29,7 +29,6 @@ public class KlinkEventHandler extends TextWebSocketHandler {
                 session);
     }
 
-
     @Override
     public void afterConnectionClosed(
             WebSocketSession session,

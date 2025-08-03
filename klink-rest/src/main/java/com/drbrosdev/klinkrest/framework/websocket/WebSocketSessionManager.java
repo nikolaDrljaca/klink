@@ -60,9 +60,9 @@ public class WebSocketSessionManager {
     public void sendEvent(
             UUID klinkId,
             KlinkChangeEvent event) {
-        log.info("Received event {}", event);
         // extract sessions
         var existingSessions = sessions.get(klinkId);
+        log.info("Existing sessions during send for {} are {}", klinkId, existingSessions);
         if (isEmpty(existingSessions)) {
             return;
         }
@@ -71,6 +71,7 @@ public class WebSocketSessionManager {
             try {
                 var message = mapper.writeValueAsString(event);
                 current.sendMessage(new TextMessage(message));
+                log.info("sending message {} ", message);
             } catch (IOException e) {
                 log.error(
                         "Sending message to {} failed. Closing session.",

@@ -18,6 +18,8 @@ public class WebSocketConfiguration implements WebSocketConfigurer {
 
     private final KlinkDomainService domainService;
 
+    private final WebSocketSessionManager webSocketSessionManager;
+
     @Override
     public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
         registry.addHandler(createHandler(), "/events/klink/**")
@@ -30,6 +32,6 @@ public class WebSocketConfiguration implements WebSocketConfigurer {
 
     @Bean
     public KlinkEventHandler createHandler() {
-        return new KlinkEventHandler(new WebSocketSessionManager());
+        return new KlinkEventHandler(webSocketSessionManager);
     }
 }

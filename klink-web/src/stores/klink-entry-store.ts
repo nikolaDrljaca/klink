@@ -11,7 +11,7 @@ import makeAsync from "~/lib/make-async";
 import toast from "solid-toast";
 
 function buildSsePath(data: { id: string; readKey: string }): string {
-  const API_PATH = import.meta.env.VITE_API_PATH;
+  const API_PATH = "ws://localhost:8080/api";
   return `${API_PATH}/events/klink/${data.id}?readKey=${data.readKey}`;
 }
 
@@ -40,7 +40,8 @@ function createKlinkEntryStore(klink: KlinkModel): KlinkEntriesStore {
     if (!klink.isShared) {
       return;
     }
-    const source = new EventSource(buildSsePath(klink));
+    const source = new WebSocket(buildSsePath(klink));
+    source.onopen = (ev) => console.log("connected to ws");
     source.onmessage = (raw) => {
       const event: KlinkChangeEvent = JSON.parse(raw.data);
       // if operation is deleted -> klink is local
