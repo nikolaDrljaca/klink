@@ -1,19 +1,21 @@
 package com.drbrosdev.klinkrest.activity;
 
-import com.drbrosdev.klinkrest.framework.websocket.WebSocketSessionManager;
+import com.drbrosdev.klinkrest.framework.websocket.KlinkEventsSessionManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 
-import java.util.Optional;
 import java.util.UUID;
+
+import static com.drbrosdev.klinkrest.framework.websocket.KlinkEventsSessionValidator.KLINK_ID_ATTR;
+import static java.util.Optional.ofNullable;
 
 @RequiredArgsConstructor
 public class KlinkEventHandler extends TextWebSocketHandler {
 
-    private final WebSocketSessionManager sessionManager;
+    private final KlinkEventsSessionManager sessionManager;
 
     @Override
     protected void handleTextMessage(
@@ -39,7 +41,7 @@ public class KlinkEventHandler extends TextWebSocketHandler {
     }
 
     private static UUID parseKlinkId(WebSocketSession session) {
-        return Optional.ofNullable(session.getAttributes().get("klinkId"))
+        return ofNullable(session.getAttributes().get(KLINK_ID_ATTR))
                 .map(it -> (UUID) it)
                 .orElseThrow();
     }

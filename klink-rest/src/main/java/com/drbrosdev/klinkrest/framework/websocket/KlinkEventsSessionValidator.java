@@ -15,7 +15,9 @@ import java.util.Map;
 import static com.drbrosdev.klinkrest.domain.klink.model.KlinkKey.readOnly;
 
 @RequiredArgsConstructor
-public class KlinkEventsSessionValidationInterceptor implements HandshakeInterceptor {
+public class KlinkEventsSessionValidator implements HandshakeInterceptor {
+
+    public static final String KLINK_ID_ATTR = "klinkId";
 
     private final ValidateKlinkAccess validateKlinkAccess;
     private final ParseKlinkSessionDetails parseKlinkSessionDetails;
@@ -42,7 +44,9 @@ public class KlinkEventsSessionValidationInterceptor implements HandshakeInterce
             return false;
         }
         // set klinkId to websocketSession to access later
-        attributes.put("klinkId", details.getKlinkId());
+        attributes.put(
+                KLINK_ID_ATTR,
+                details.getKlinkId());
         return true;
     }
 

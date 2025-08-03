@@ -19,7 +19,7 @@ import static org.apache.commons.collections4.CollectionUtils.isEmpty;
 
 @Service
 @Log4j2
-public class WebSocketSessionManager {
+public class KlinkEventsSessionManager {
 
     private final Map<UUID, List<WebSocketSession>> sessions = new ConcurrentHashMap<>();
 
@@ -62,7 +62,6 @@ public class WebSocketSessionManager {
             KlinkChangeEvent event) {
         // extract sessions
         var existingSessions = sessions.get(klinkId);
-        log.info("Existing sessions during send for {} are {}", klinkId, existingSessions);
         if (isEmpty(existingSessions)) {
             return;
         }
@@ -71,7 +70,6 @@ public class WebSocketSessionManager {
             try {
                 var message = mapper.writeValueAsString(event);
                 current.sendMessage(new TextMessage(message));
-                log.info("sending message {} ", message);
             } catch (IOException e) {
                 log.error(
                         "Sending message to {} failed. Closing session.",

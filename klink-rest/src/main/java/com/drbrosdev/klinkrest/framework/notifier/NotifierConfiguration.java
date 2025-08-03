@@ -2,7 +2,7 @@ package com.drbrosdev.klinkrest.framework.notifier;
 
 import com.drbrosdev.klinkrest.domain.klink.KlinkDomainService;
 import com.drbrosdev.klinkrest.domain.klink.KlinkNotifierService;
-import com.drbrosdev.klinkrest.framework.websocket.WebSocketSessionManager;
+import com.drbrosdev.klinkrest.framework.websocket.KlinkEventsSessionManager;
 import org.postgresql.Driver;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
@@ -29,33 +29,11 @@ public class NotifierConfiguration {
         return new KlinkNotifierServiceImpl(new JdbcTemplate(dataSource));
     }
 
-    /*
     @Bean
     CommandLineRunner scaffoldKlinkEntryChangeEventFlow(
             KlinkNotifierService notifierService,
             KlinkDomainService klinkDomainService,
-            SseSessionManager sessionManager) {
-        return (args) -> {
-            var listener = notifierService.createKlinkEntryChangeHandler(notification -> {
-                var klinkId = UUID.fromString(notification.getRow()
-                        .getKlinkId());
-                var entries = klinkDomainService.createKlinkChangeEvent(klinkId);
-                sessionManager.sendEvent(
-                        klinkId,
-                        entries);
-            });
-            var thread = new Thread(listener, "klink-entry-change-listener");
-            thread.setDaemon(true);
-            thread.start();
-        };
-    }
-     */
-
-    @Bean
-    CommandLineRunner scaffoldKlinkEntryChangeEventFlowWs(
-            KlinkNotifierService notifierService,
-            KlinkDomainService klinkDomainService,
-            WebSocketSessionManager sessionManager) {
+            KlinkEventsSessionManager sessionManager) {
         return (args) -> {
             var listener = notifierService.createKlinkEntryChangeHandler(notification -> {
                 var klinkId = UUID.fromString(notification.getRow()
