@@ -17,7 +17,7 @@ function buildSsePath(data: { id: string; readKey: string }): string {
    * Update nginx config to support websocket - look at old version
    * of repo - should have a working version of the setup
    */
-  const API_PATH = "ws://localhost:8080/api";
+  const API_PATH = import.meta.env.VITE_APP_WS;
   return `${API_PATH}/events/klink/${data.id}?readKey=${data.readKey}`;
 }
 
