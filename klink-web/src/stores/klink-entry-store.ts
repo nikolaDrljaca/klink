@@ -5,13 +5,14 @@ import { klinkEntryForageKey } from "~/lib/klink-utils";
 import makeKlinkApi from "~/lib/make-klink-api";
 import { KlinkChangeEvent, KlinkEntry, KlinkModel } from "~/types/domain";
 import { KlinkService as service } from "./klink-store";
-import { Accessor, createEffect, createMemo, onCleanup } from "solid-js";
+import { Accessor, createMemo } from "solid-js";
 import { useSelectedKlink } from "./klink-hooks";
 import makeAsync from "~/lib/make-async";
 import toast from "solid-toast";
+import createKlinkEventStream from "~/lib/create-klink-event-stream";
 
 function buildSsePath(data: { id: string; readKey: string }): string {
-  const API_PATH = import.meta.env.VITE_API_PATH;
+  const API_PATH = import.meta.env.VITE_APP_WS;
   return `${API_PATH}/events/klink/${data.id}?readKey=${data.readKey}`;
 }
 
@@ -35,20 +36,18 @@ function createKlinkEntryStore(klink: KlinkModel): KlinkEntriesStore {
 
   const api = makeKlinkApi();
 
-  // setup effect to connect to sse stream
-  createEffect(() => {
-    if (!klink.isShared) {
-      return;
-    }
-    const source = new EventSource(buildSsePath(klink));
-    source.onmessage = (raw) => {
+  // setup effect to connect to event stream
+  createKlinkEventStream({
+    url: buildSsePath(klink),
+    onMessage: (raw, close) => {
       const event: KlinkChangeEvent = JSON.parse(raw.data);
-      // if operation is deleted -> klink is local
+
       if (event.operation === "deleted") {
         service.makeLocal(klink.id);
-        source.close();
+        close();
         return;
       }
+
       setEntries(
         event.entries.map((it) => ({
           value: it.value,
@@ -56,13 +55,9 @@ function createKlinkEntryStore(klink: KlinkModel): KlinkEntriesStore {
           description: it.description,
         })),
       );
-    };
-
-    onCleanup(() => {
-      if (source) {
-        source.close();
-      }
-    });
+    },
+    maxRetries: 5,
+    retryDelayMs: 4000,
   });
 
   const createEntry = (entry: KlinkEntry) => {

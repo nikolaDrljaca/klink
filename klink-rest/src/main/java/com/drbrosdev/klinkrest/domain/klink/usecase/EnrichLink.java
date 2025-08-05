@@ -38,7 +38,6 @@ public class EnrichLink {
             var preview = generateUrlPreview.execute(entry(job))
                     .orElse(null);
             if (preview == null) {
-                log.warn("Unable to generate rich link preview for {}", job.getValue());
                 return;
             }
             // persist
