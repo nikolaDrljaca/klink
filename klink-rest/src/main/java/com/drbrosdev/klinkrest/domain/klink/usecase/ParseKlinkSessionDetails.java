@@ -5,10 +5,11 @@ import jakarta.annotation.Nullable;
 import lombok.extern.log4j.Log4j2;
 
 import java.net.URI;
-import java.util.Arrays;
 import java.util.Map;
 import java.util.UUID;
-import java.util.stream.Collectors;
+
+import static java.util.Arrays.stream;
+import static java.util.stream.Collectors.toMap;
 
 @Log4j2
 public class ParseKlinkSessionDetails {
@@ -40,10 +41,10 @@ public class ParseKlinkSessionDetails {
     }
 
     private static Map<String, String> parseQueryParams(String value) {
-        return Arrays.stream(value.split("&"))
+        return stream(value.split("&"))
                 .map(it -> it.split("=", 2))
                 .filter(it -> it.length == 2)
-                .collect(Collectors.toMap(
+                .collect(toMap(
                         it -> it[0],
                         it -> it[1]));
     }

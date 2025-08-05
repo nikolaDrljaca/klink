@@ -33,13 +33,11 @@ public class KlinkEventsSessionManager {
                 klinkId,
                 (id) -> new CopyOnWriteArrayList<>());
         existingSessions.add(incoming);
+        var count = sessions.get(klinkId).size();
         log.info(
-                "Created new session for klinkId: {}",
-                klinkId);
-        log.info(
-                "Session count for {} is {}",
+                "Created new session for klinkId: {}. Count {}.",
                 klinkId,
-                sessions.get(klinkId).size());
+                count);
     }
 
     public void removeSession(

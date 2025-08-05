@@ -12,11 +12,6 @@ import toast from "solid-toast";
 import createKlinkEventStream from "~/lib/create-klink-event-stream";
 
 function buildSsePath(data: { id: string; readKey: string }): string {
-  /*
-   * TODO: introduce env variable for this path
-   * Update nginx config to support websocket - look at old version
-   * of repo - should have a working version of the setup
-   */
   const API_PATH = import.meta.env.VITE_APP_WS;
   return `${API_PATH}/events/klink/${data.id}?readKey=${data.readKey}`;
 }
