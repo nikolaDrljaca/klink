@@ -36,10 +36,17 @@ public class JsoupGenerateUrlPreview implements GenerateUrlPreview {
             // load document from URL
             var document = session.newRequest(entry.getValue())
                     .get();
-            return Optional.of(RichKlinkEntryPreview.builder()
+            var result = Optional.of(RichKlinkEntryPreview.builder()
                     .title(parseTitle(document))
                     .description(parseDescription(document))
                     .build());
+            // log result
+            result.ifPresent(it ->
+                    log.info(
+                            "Jsoup parsing result for {} is {}",
+                            entry.getValue(),
+                            it));
+            return result;
         } catch (Exception e) {
             log.warn("Jsoup parsing failure {}", e.getLocalizedMessage());
             return Optional.empty();
