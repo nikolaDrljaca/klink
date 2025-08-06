@@ -116,6 +116,7 @@ const KlinkEntries: Component = () => {
             />
           )}
         </For>
+        <div class="h-12 w-full"></div>
       </ul>
     </div>
   );
