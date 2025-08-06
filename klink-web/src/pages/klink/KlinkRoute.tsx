@@ -21,7 +21,6 @@ const KlinkRoute: Component = () => {
             <h2 class="text-lg">Tips:</h2>
             <div class="flex flex-row items-center gap-x-2">
               <kbd class="kbd kbd-sm">ctrl</kbd>
-              +
               <kbd class="kbd kbd-sm">v</kbd>
               <p class="text-md">Paste to Klink</p>
             </div>

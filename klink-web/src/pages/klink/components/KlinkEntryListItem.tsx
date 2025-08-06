@@ -33,15 +33,27 @@ const KlinkEntryListItem: Component<KlinkEntryListItemProps> = (props) => {
 
   return (
     <li class="card card-compact bg-base-300 w-full">
-      <div class="flex items-center space-x-4 p-4">
-        {/* Image */}
-        <div class="relative h-6 w-6 flex-shrink-0">
-          <Image
-            src={faviconUrl()}
-            width={32}
-            height={32}
-            alt=""
-          />
+      <div class="flex flex-col space-y-2 p-4">
+        <div class="flex flex-row items-center justify-between">
+          {/* Image */}
+          <div class="relative h-6 w-6 flex-shrink-0">
+            <Image
+              src={faviconUrl()}
+              width={32}
+              height={32}
+              alt=""
+            />
+          </div>
+
+          {/* TODO: Too much space taken by button. Redesign!  */}
+          <Show when={!props.isReadOnly}>
+            <button
+              class="btn btn-circle btn-sm btn-ghost text-error"
+              onClick={props.onDeleteClick}
+            >
+              <Trash size={12} />
+            </button>
+          </Show>
         </div>
 
         {/* Url value */}
@@ -60,16 +72,6 @@ const KlinkEntryListItem: Component<KlinkEntryListItemProps> = (props) => {
             <p class="text-xs font-light pt-1">{description()}</p>
           </div>
         </Suspense>
-
-        {/* TODO: Too much space taken by button. Redesign!  */}
-        <Show when={!props.isReadOnly}>
-          <button
-            class="btn btn-circle btn-sm btn-ghost text-error"
-            onClick={props.onDeleteClick}
-          >
-            <Trash size={12} />
-          </button>
-        </Show>
       </div>
     </li>
   );
