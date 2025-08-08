@@ -13,7 +13,7 @@ import createKlinkEventStream from "~/lib/create-klink-event-stream";
 
 function buildSsePath(data: { id: string; readKey: string }): string {
   const API_PATH = import.meta.env.VITE_APP_WS;
-  return `${API_PATH}/events/klink/${data.id}?readKey=${data.readKey}`;
+  return `${API_PATH}/events/klink/${data.id}?read_key=${data.readKey}`;
 }
 
 type KlinkEntriesStore = {

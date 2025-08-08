@@ -30,7 +30,7 @@ paths:
                 $ref: "#/components/schemas/Klink"
         '502':
           description: "Error."
-  /klink/queryExisting:
+  /klink/query-existing:
     post:
       summary: "Query existing klinks by ID."
       operationId: queryExisting
@@ -67,12 +67,12 @@ paths:
             format: uuid
           required: true
         - in: query
-          name: readKey
+          name: read_key
           schema:
             type: string
           required: true
         - in: query
-          name: writeKey
+          name: write_key
           schema:
             type: string
       responses:
@@ -97,12 +97,12 @@ paths:
             format: uuid
           required: true
         - in: query
-          name: readKey
+          name: read_key
           schema:
             type: string
           required: true
         - in: query
-          name: writeKey
+          name: write_key
           schema:
             type: string
           required: true
@@ -134,12 +134,12 @@ paths:
             format: uuid
           required: true
         - in: query
-          name: readKey
+          name: read_key
           schema:
             type: string
           required: true
         - in: query
-          name: writeKey
+          name: write_key
           schema:
             type: string
           required: true
@@ -162,12 +162,12 @@ paths:
             format: uuid
           required: true
         - in: query
-          name: readKey
+          name: read_key
           schema:
             type: string
           required: true
         - in: query
-          name: writeKey
+          name: write_key
           schema:
             type: string
           required: true
@@ -197,12 +197,12 @@ paths:
             format: uuid
           required: true
         - in: query
-          name: readKey
+          name: read_key
           schema:
             type: string
           required: true
         - in: query
-          name: writeKey
+          name: write_key
           schema:
             type: string
           required: true

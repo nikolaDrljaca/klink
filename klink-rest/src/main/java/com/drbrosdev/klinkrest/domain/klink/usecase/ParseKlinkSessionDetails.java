@@ -14,13 +14,15 @@ import static java.util.stream.Collectors.toMap;
 @Log4j2
 public class ParseKlinkSessionDetails {
 
+    public static final String READ_KEY_QUERY_PARAM = "read_key";
+
     @Nullable
     public KlinkSessionDetails execute(@Nullable URI uri) {
         if (uri == null) {
             log.warn("Failed to parse URI into klink session details!");
             return null;
         }
-        var queryParams = uri.getQuery(); // ?readKey={readKey}
+        var queryParams = uri.getQuery(); // ?read_key={readKey}
         var path = uri.getPath(); // /events/klink/{klinkId}
         var components = path.split("/");
         if (components.length != 5) {
@@ -29,7 +31,7 @@ public class ParseKlinkSessionDetails {
         }
         var klinkId = UUID.fromString(components[components.length - 1]);
         var readKey = parseQueryParams(queryParams)
-                .get("readKey");
+                .get(READ_KEY_QUERY_PARAM);
         if (readKey == null) {
             log.warn("Failed to parse read key from query params {}", queryParams);
             return null;
