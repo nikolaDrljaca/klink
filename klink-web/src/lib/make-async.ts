@@ -13,7 +13,6 @@ export default async function makeAsync<T>(
     const response = await call();
     return [null, response];
   } catch (e) {
-    console.error(e);
     if (e instanceof ResponseError) {
       return [e, null];
     }
