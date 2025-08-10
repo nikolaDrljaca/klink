@@ -1,5 +1,11 @@
 # Klink
 
+Manage and share collections of links (bookmarks) in a real-time environment. The service does not
+require a user account and is offline-first. 
+
+Keep collections offline only or share them with friends with read-only or read-write permissions.
+
+
 ## Building
 Project uses `maven` to execute its build process for all modules.
 
