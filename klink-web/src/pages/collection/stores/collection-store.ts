@@ -1,4 +1,4 @@
-import { createResource } from "solid-js";
+import { createMemo, createResource } from "solid-js";
 import useKlinkIdParam from "~/hooks/use-klinkid-params";
 import { useKlinks } from "~/stores/klink-hooks";
 import { KlinkService, KlinkService as service } from "~/stores/klink-store";
@@ -21,7 +21,7 @@ export default function collectionStore() {
   };
 
   return {
-    klinks,
+    klinks: createMemo(() => klinks().toReversed()),
     pathKlinkId,
     createKlink,
     copyKlink,
