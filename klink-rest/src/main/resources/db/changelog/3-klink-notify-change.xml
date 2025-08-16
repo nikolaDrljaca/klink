@@ -30,7 +30,7 @@ $$ LANGUAGE plpgsql;
     <changeSet id="4" author="Nikola Drljaca">
         <sql>
             -- create trigger to run notify function after change
-            CREATE TRIGGER klink_change_notify
+            CREATE OR REPLACE TRIGGER klink_change_notify
                 AFTER INSERT OR
             UPDATE OR
             DELETE
