@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
+
+    <!-- Include changelogs -->
+    <include file="changelog/1-initial-setup.xml" relativeToChangelogFile="true"/>
+    <include file="changelog/2-initial-schema.xml" relativeToChangelogFile="true"/>
+    <include file="changelog/3-klink-notify-change.xml" relativeToChangelogFile="true"/>
+    <include file="changelog/4-klink-entry-notify-change.xml" relativeToChangelogFile="true"/>
+    <include file="changelog/5-ddl-klinkentry-add-timestamp.xml" relativeToChangelogFile="true"/>
+    <include file="changelog/6-rich-link-data.xml" relativeToChangelogFile="true"/>
+
+</databaseChangeLog>

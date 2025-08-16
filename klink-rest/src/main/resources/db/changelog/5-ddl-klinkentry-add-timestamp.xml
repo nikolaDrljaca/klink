@@ -6,6 +6,12 @@
         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
 
     <changeSet id="add-timestamp-column-to-klink-entry" author="Nemanja Markovic">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <columnExists tableName="klink_entry" columnName="created_at"/>
+            </not>
+        </preConditions>
+
         <addColumn tableName="klink_entry">
             <column name="created_at" type="timestamp"
                     defaultValueComputed="CURRENT_TIMESTAMP">

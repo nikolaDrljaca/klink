@@ -1,7 +1,8 @@
 # LOCAL docker compose script
 
 services:
-  db:
+  klink-db:
+    container_name: klink-db
     image: "postgres:17-alpine"
     environment:
       POSTGRES_USER: user
@@ -16,21 +17,6 @@ services:
       interval: 15s
       timeout: 60s
       retries: 5
-
-  liquibase:
-    build: 
-      context: ./liquibase
-      dockerfile: ./Dockerfile
-    depends_on:
-      db:
-        condition: service_healthy
-    command: >
-      --url=jdbc:postgresql://db:5432/klinkdb
-      --username=user
-      --password=password
-      --changeLogFile=/scripts/changelog.xml
-      update
-    restart: "no"
 
 volumes:
   pgdata:
