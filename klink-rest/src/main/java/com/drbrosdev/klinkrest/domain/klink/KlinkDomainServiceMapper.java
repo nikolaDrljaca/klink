@@ -1,6 +1,6 @@
 package com.drbrosdev.klinkrest.domain.klink;
 
-import com.drbrosdev.klinkrest.domain.klink.model.EnrichLinkJob;
+import com.drbrosdev.klinkrest.domain.klink.model.EnrichKlinkEntryJob;
 import com.drbrosdev.klinkrest.domain.klink.model.Klink;
 import com.drbrosdev.klinkrest.domain.klink.model.KlinkEntry;
 import com.drbrosdev.klinkrest.domain.klink.model.KlinkKey;
@@ -56,12 +56,12 @@ public interface KlinkDomainServiceMapper {
 
     @Mapping(target = "value", source = "value")
     @Mapping(target = "klinkEntryId", source = "id")
-    EnrichLinkJob enrichJob(final KlinkEntryEntity entry);
+    EnrichKlinkEntryJob enrichJob(final KlinkEntryEntity entry);
 
     @Mapping(target = "value", source = "entry.value")
     @Mapping(target = "klinkEntryId", source = "entry.id")
     @Mapping(target = "klinkId", source = "klinkId")
-    EnrichLinkJob enrichJob(
+    EnrichKlinkEntryJob enrichJob(
             UUID klinkId,
             final KlinkEntry entry);
 

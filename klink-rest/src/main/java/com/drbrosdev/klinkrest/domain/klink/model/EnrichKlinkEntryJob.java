@@ -10,7 +10,7 @@ import java.util.UUID;
 @Value
 @Builder
 @AllArgsConstructor(access = AccessLevel.PRIVATE) //Hides the constructor to force usage of the Builder.
-public class EnrichLinkJob {
+public class EnrichKlinkEntryJob {
     UUID klinkId;
     UUID klinkEntryId;
 
