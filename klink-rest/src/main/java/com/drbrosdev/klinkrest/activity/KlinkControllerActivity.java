@@ -10,6 +10,7 @@ import org.openapitools.api.KlinkApi;
 import org.openapitools.model.CreateKlinkPayloadApiDto;
 import org.openapitools.model.KlinkApiDto;
 import org.openapitools.model.KlinkEntryApiDto;
+import org.openapitools.model.KlinkShortUrlApiDto;
 import org.openapitools.model.KlinkSyncStatusApiDto;
 import org.openapitools.model.PatchKlinkPayloadApiDto;
 import org.openapitools.model.QueryExistingPayloadApiDto;
@@ -76,6 +77,19 @@ public class KlinkControllerActivity implements KlinkApi {
                 klinkId,
                 mapper.mapTo(readKey, writeKey));
         return ok(mapper.mapTo(klink));
+    }
+
+    @Override
+    public ResponseEntity<KlinkShortUrlApiDto> getKlinkShortUrl(
+            UUID klinkId,
+            String readKey,
+            @Nullable String writeKey) {
+        log.info(
+                "getKlinkShortUrl called with klinkId: {}, readKey: {}, writeKey: {}",
+                klinkId,
+                readKey,
+                writeKey);
+        return null;
     }
 
     @Override

@@ -12,6 +12,7 @@ import org.mapstruct.Mapping;
 import org.mapstruct.ReportingPolicy;
 import org.openapitools.model.KlinkApiDto;
 import org.openapitools.model.KlinkEntryApiDto;
+import org.openapitools.model.KlinkShortUrlApiDto;
 import org.openapitools.model.QueryExistingPayloadApiDto;
 import org.openapitools.model.QueryExistingPayloadKlinksInnerApiDto;
 
@@ -53,6 +54,9 @@ public interface KlinkActivityMapper {
     List<QueryExistingKlinkItemDto> mapToKlinkItems(final List<QueryExistingPayloadKlinksInnerApiDto> inner);
 
     QueryExistingKlinkDto mapTo(final QueryExistingPayloadApiDto payload);
+
+    @Mapping(target = "url", source = "url")
+    KlinkShortUrlApiDto asShortUrl(String url);
 
     default Long mapTo(final LocalDateTime date) {
         var zoneId = ZoneId.systemDefault();
