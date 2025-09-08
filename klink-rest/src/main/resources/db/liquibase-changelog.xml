@@ -12,5 +12,6 @@
     <include file="changelog/4-klink-entry-notify-change.xml" relativeToChangelogFile="true"/>
     <include file="changelog/5-ddl-klinkentry-add-timestamp.xml" relativeToChangelogFile="true"/>
     <include file="changelog/6-rich-link-data.xml" relativeToChangelogFile="true"/>
+    <include file="changelog/7-short-urls.xml" relativeToChangelogFile="true"/>
 
 </databaseChangeLog>
