@@ -13,10 +13,10 @@ import java.util.concurrent.TimeUnit;
 @Configuration
 public class RetrofitClientConfiguration {
 
-    @Value("${:}")
+    @Value("${hop.service.url:}")
     private String hopBaseUrl;
 
-    @Value("${:}")
+    @Value("${hop.service.key:}")
     private String hopApiKey;
 
     @Bean
