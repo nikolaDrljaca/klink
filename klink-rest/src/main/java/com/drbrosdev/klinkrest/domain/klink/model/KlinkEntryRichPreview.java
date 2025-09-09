@@ -9,7 +9,7 @@ import lombok.Value;
 @Value
 @Builder
 @AllArgsConstructor(access = AccessLevel.PRIVATE) //Hides the constructor to force usage of the Builder.
-public class RichKlinkEntryPreview {
+public class KlinkEntryRichPreview {
     @Nullable
     String title;
 

@@ -1,7 +1,7 @@
-package com.drbrosdev.klinkrest.framework;
+package com.drbrosdev.klinkrest.gateway;
 
 import com.drbrosdev.klinkrest.domain.klink.model.KlinkEntry;
-import com.drbrosdev.klinkrest.domain.klink.model.RichKlinkEntryPreview;
+import com.drbrosdev.klinkrest.domain.klink.model.KlinkEntryRichPreview;
 import com.drbrosdev.klinkrest.domain.klink.usecase.GenerateUrlPreview;
 import com.drbrosdev.klinkrest.utils.UseCase;
 import jakarta.annotation.Nullable;
@@ -27,7 +27,7 @@ public class JsoupGenerateUrlPreview implements GenerateUrlPreview {
             .timeout(6000); // 6 minutes
 
     @Override
-    public Optional<RichKlinkEntryPreview> execute(KlinkEntry entry) {
+    public Optional<KlinkEntryRichPreview> execute(KlinkEntry entry) {
         try {
             // validate entry is URL
             if (!validUrl(entry)) {
@@ -36,7 +36,7 @@ public class JsoupGenerateUrlPreview implements GenerateUrlPreview {
             // load document from URL
             var document = session.newRequest(entry.getValue())
                     .get();
-            var result = Optional.of(RichKlinkEntryPreview.builder()
+            var result = Optional.of(KlinkEntryRichPreview.builder()
                     .title(parseTitle(document))
                     .description(parseDescription(document))
                     .build());

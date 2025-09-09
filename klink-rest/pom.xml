@@ -115,7 +115,18 @@
         <dependency>
             <groupId>org.liquibase</groupId>
             <artifactId>liquibase-core</artifactId>
-            <!-- Springboot already provides a tested Liquibase version, but you can override it to use your preffered version -->
+        </dependency>
+
+        <!-- Retrofit deps -->
+        <dependency>
+            <groupId>com.squareup.retrofit2</groupId>
+            <artifactId>retrofit</artifactId>
+            <version>3.0.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.squareup.retrofit2</groupId>
+            <artifactId>converter-jackson</artifactId>
+            <version>3.0.0</version>
         </dependency>
 
         <!-- test -->

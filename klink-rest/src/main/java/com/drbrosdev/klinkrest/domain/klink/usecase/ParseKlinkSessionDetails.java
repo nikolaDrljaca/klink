@@ -11,6 +11,10 @@ import java.util.UUID;
 import static java.util.Arrays.stream;
 import static java.util.stream.Collectors.toMap;
 
+/*
+TODO: sessionDetails and parsing is not a domain concern - this should not be here
+TODO: Move to framework package -> framework.websocket.session
+ */
 @Log4j2
 public class ParseKlinkSessionDetails {
 

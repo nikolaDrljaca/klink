@@ -4,7 +4,7 @@ import com.drbrosdev.klinkrest.domain.klink.model.EnrichKlinkEntryJob;
 import com.drbrosdev.klinkrest.domain.klink.model.KlinkEntry;
 import com.drbrosdev.klinkrest.domain.klink.model.KlinkEntryChangeEvent;
 import com.drbrosdev.klinkrest.domain.klink.model.Operation;
-import com.drbrosdev.klinkrest.domain.klink.model.RichKlinkEntryPreview;
+import com.drbrosdev.klinkrest.domain.klink.model.KlinkEntryRichPreview;
 import com.drbrosdev.klinkrest.persistence.entity.KlinkRichEntryEntity;
 import com.drbrosdev.klinkrest.persistence.repository.KlinkRichEntryRepository;
 import com.drbrosdev.klinkrest.utils.UseCase;
@@ -54,7 +54,7 @@ public class EnrichKlinkEntry {
 
     private static KlinkRichEntryEntity createRichEntry(
             UUID klinkEntryId,
-            RichKlinkEntryPreview preview) {
+            KlinkEntryRichPreview preview) {
         return KlinkRichEntryEntity.builder()
                 .id(randomUUID())
                 .klinkEntryId(klinkEntryId)
