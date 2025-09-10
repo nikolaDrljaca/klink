@@ -9,4 +9,9 @@ public interface HopService {
     @POST("/")
     Call<Hop> createHop(@Body CreateHopPayload payload);
 
+    default Call<Hop> createHop(String url) {
+        return createHop(CreateHopPayload.builder()
+                .url(url)
+                .build());
+    }
 }

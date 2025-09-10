@@ -21,12 +21,12 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "klink_short_url")
-public class KlinkShortUrl {
+public class KlinkShortUrlEntity {
     @Id
     UUID id;
 
-    @Column(name = "klink_entry_id")
-    UUID klinkEntryId;
+    @Column(name = "klink_id")
+    UUID klinkId;
 
     @Nullable
     String fullAccessUrl;

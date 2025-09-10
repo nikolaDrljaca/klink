@@ -5,9 +5,11 @@ import com.drbrosdev.klinkrest.domain.klink.model.Klink;
 import com.drbrosdev.klinkrest.domain.klink.model.KlinkChangeEvent;
 import com.drbrosdev.klinkrest.domain.klink.model.KlinkEntry;
 import com.drbrosdev.klinkrest.domain.klink.model.KlinkKey;
+import com.drbrosdev.klinkrest.domain.klink.model.KlinkShortUrl;
 import jakarta.annotation.Nullable;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Stream;
 
@@ -51,4 +53,9 @@ public interface KlinkDomainService {
 
     Stream<Klink> getKlinks();
 
+    Optional<KlinkShortUrl> getShortUrl(UUID klinkId);
+
+    KlinkShortUrl createShortUrl(
+            UUID klinkId,
+            KlinkShortUrl shortUrl);
 }
