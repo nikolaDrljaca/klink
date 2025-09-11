@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
+    <changeSet id="ddl-create-short-url-table" author="Nikola Drljaca">
+        <sql dbms="postgresql">
+            create table if not exists klink_short_url (
+                id uuid primary key,
+                klink_id uuid
+                    references klink(id)
+                    on delete cascade,
+                full_access_url text,
+                read_only_url text,
+                created_at timestamp default now() not null
+            );
+        </sql>
+    </changeSet>
+
+</databaseChangeLog>

@@ -1,13 +1,15 @@
 package com.drbrosdev.klinkrest.domain.klink;
 
-import com.drbrosdev.klinkrest.domain.klink.model.EnrichLinkJob;
+import com.drbrosdev.klinkrest.domain.klink.model.EnrichKlinkEntryJob;
 import com.drbrosdev.klinkrest.domain.klink.model.Klink;
 import com.drbrosdev.klinkrest.domain.klink.model.KlinkEntry;
 import com.drbrosdev.klinkrest.domain.klink.model.KlinkKey;
+import com.drbrosdev.klinkrest.domain.klink.model.KlinkShortUrl;
 import com.drbrosdev.klinkrest.persistence.entity.KlinkEntity;
 import com.drbrosdev.klinkrest.persistence.entity.KlinkEntryEntity;
 import com.drbrosdev.klinkrest.persistence.entity.KlinkKeyEntity;
 import com.drbrosdev.klinkrest.persistence.entity.KlinkRichEntryEntity;
+import com.drbrosdev.klinkrest.persistence.entity.KlinkShortUrlEntity;
 import org.mapstruct.AfterMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -56,14 +58,16 @@ public interface KlinkDomainServiceMapper {
 
     @Mapping(target = "value", source = "value")
     @Mapping(target = "klinkEntryId", source = "id")
-    EnrichLinkJob enrichJob(final KlinkEntryEntity entry);
+    EnrichKlinkEntryJob enrichJob(final KlinkEntryEntity entry);
 
     @Mapping(target = "value", source = "entry.value")
     @Mapping(target = "klinkEntryId", source = "entry.id")
     @Mapping(target = "klinkId", source = "klinkId")
-    EnrichLinkJob enrichJob(
+    EnrichKlinkEntryJob enrichJob(
             UUID klinkId,
             final KlinkEntry entry);
+
+    KlinkShortUrl mapTo(final KlinkShortUrlEntity entity);
 
     @AfterMapping
     default void extractLatestCreatedAt(

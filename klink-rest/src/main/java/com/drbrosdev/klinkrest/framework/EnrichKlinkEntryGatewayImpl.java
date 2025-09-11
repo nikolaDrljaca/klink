@@ -1,8 +1,8 @@
 package com.drbrosdev.klinkrest.framework;
 
-import com.drbrosdev.klinkrest.domain.klink.EnrichLinkGateway;
-import com.drbrosdev.klinkrest.domain.klink.model.EnrichLinkJob;
-import com.drbrosdev.klinkrest.domain.klink.usecase.EnrichLink;
+import com.drbrosdev.klinkrest.domain.klink.EnrichKlinkEntryGateway;
+import com.drbrosdev.klinkrest.domain.klink.model.EnrichKlinkEntryJob;
+import com.drbrosdev.klinkrest.domain.klink.usecase.EnrichKlinkEntry;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
 import lombok.RequiredArgsConstructor;
@@ -17,24 +17,24 @@ import java.util.concurrent.LinkedBlockingQueue;
 @Log4j2
 @Component
 @RequiredArgsConstructor
-public class EnrichLinkGatewayImpl implements EnrichLinkGateway {
+public class EnrichKlinkEntryGatewayImpl implements EnrichKlinkEntryGateway {
 
     /*
     In memory job queue which processes each 'enrich' job one at a time.
     A single dedicated thread is used.
      */
 
-    private final BlockingQueue<EnrichLinkJob> jobQueue = new LinkedBlockingQueue<>();
+    private final BlockingQueue<EnrichKlinkEntryJob> jobQueue = new LinkedBlockingQueue<>();
     private volatile boolean running = true;
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
 
-    private final EnrichLink enrichLink;
+    private final EnrichKlinkEntry enrichKlinkEntry;
 
     /**
      * Thread-safe method to submit jobs for processing.
      */
     @Override
-    public void submit(EnrichLinkJob job) {
+    public void submit(EnrichKlinkEntryJob job) {
         log.info("Submitting enrich job for {}", job.getValue());
         jobQueue.offer(job);
     }
@@ -57,7 +57,7 @@ public class EnrichLinkGatewayImpl implements EnrichLinkGateway {
             while (running && !Thread.currentThread().isInterrupted()) {
                 try {
                     var job = jobQueue.take();  // will block the current thread until a value is available
-                    enrichLink.execute(job); // will block until finished
+                    enrichKlinkEntry.execute(job); // will block until finished
                     log.debug("Completed enrich job for {}", job.getValue());
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();

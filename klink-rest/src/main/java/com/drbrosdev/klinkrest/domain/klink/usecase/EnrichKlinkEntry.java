@@ -1,10 +1,10 @@
 package com.drbrosdev.klinkrest.domain.klink.usecase;
 
-import com.drbrosdev.klinkrest.domain.klink.model.EnrichLinkJob;
+import com.drbrosdev.klinkrest.domain.klink.model.EnrichKlinkEntryJob;
 import com.drbrosdev.klinkrest.domain.klink.model.KlinkEntry;
 import com.drbrosdev.klinkrest.domain.klink.model.KlinkEntryChangeEvent;
 import com.drbrosdev.klinkrest.domain.klink.model.Operation;
-import com.drbrosdev.klinkrest.domain.klink.model.RichKlinkEntryPreview;
+import com.drbrosdev.klinkrest.domain.klink.model.KlinkEntryRichPreview;
 import com.drbrosdev.klinkrest.persistence.entity.KlinkRichEntryEntity;
 import com.drbrosdev.klinkrest.persistence.repository.KlinkRichEntryRepository;
 import com.drbrosdev.klinkrest.utils.UseCase;
@@ -23,7 +23,7 @@ import static java.util.UUID.randomUUID;
 @UseCase
 @Log4j2
 @RequiredArgsConstructor
-public class EnrichLink {
+public class EnrichKlinkEntry {
 
     private final GenerateUrlPreview generateUrlPreview;
 
@@ -32,7 +32,7 @@ public class EnrichLink {
     private final ObjectMapper objectMapper = new ObjectMapper()
             .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
-    public void execute(EnrichLinkJob job) {
+    public void execute(EnrichKlinkEntryJob job) {
         try {
             // parse rich link data
             var preview = generateUrlPreview.execute(entry(job))
@@ -41,10 +41,9 @@ public class EnrichLink {
                 return;
             }
             // persist
-            richEntryRepository.save(
-                    createRichEntry(
-                            job.getKlinkEntryId(),
-                            preview));
+            richEntryRepository.save(createRichEntry(
+                    job.getKlinkEntryId(),
+                    preview));
             // trigger notify change for entries
             notifyEntryChange(job)
                     .ifPresent(richEntryRepository::notifyEntryChanged);
@@ -53,9 +52,9 @@ public class EnrichLink {
         }
     }
 
-    protected KlinkRichEntryEntity createRichEntry(
+    private static KlinkRichEntryEntity createRichEntry(
             UUID klinkEntryId,
-            RichKlinkEntryPreview preview) {
+            KlinkEntryRichPreview preview) {
         return KlinkRichEntryEntity.builder()
                 .id(randomUUID())
                 .klinkEntryId(klinkEntryId)
@@ -65,7 +64,7 @@ public class EnrichLink {
                 .build();
     }
 
-    protected Optional<String> notifyEntryChange(EnrichLinkJob job) {
+    protected Optional<String> notifyEntryChange(EnrichKlinkEntryJob job) {
         var event = KlinkEntryChangeEvent.builder()
                 .operation(Operation.UPDATED)
                 .row(KlinkEntryChangeEvent.Row.builder()
@@ -83,7 +82,7 @@ public class EnrichLink {
         }
     }
 
-    private static KlinkEntry entry(EnrichLinkJob job) {
+    private static KlinkEntry entry(EnrichKlinkEntryJob job) {
         return KlinkEntry.builder()
                 .value(job.getValue())
                 .build();

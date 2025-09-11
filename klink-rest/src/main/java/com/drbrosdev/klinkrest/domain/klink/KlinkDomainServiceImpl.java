@@ -6,16 +6,19 @@ import com.drbrosdev.klinkrest.domain.klink.model.KlinkAccessLevel;
 import com.drbrosdev.klinkrest.domain.klink.model.KlinkChangeEvent;
 import com.drbrosdev.klinkrest.domain.klink.model.KlinkEntry;
 import com.drbrosdev.klinkrest.domain.klink.model.KlinkKey;
+import com.drbrosdev.klinkrest.domain.klink.model.KlinkShortUrl;
 import com.drbrosdev.klinkrest.domain.klink.model.Operation;
 import com.drbrosdev.klinkrest.domain.klink.usecase.GenerateKlinkKey;
 import com.drbrosdev.klinkrest.domain.klink.usecase.ValidateKlinkAccess;
 import com.drbrosdev.klinkrest.persistence.entity.KlinkEntity;
 import com.drbrosdev.klinkrest.persistence.entity.KlinkEntryEntity;
 import com.drbrosdev.klinkrest.persistence.entity.KlinkKeyEntity;
+import com.drbrosdev.klinkrest.persistence.entity.KlinkShortUrlEntity;
 import com.drbrosdev.klinkrest.persistence.repository.KlinkEntryRepository;
 import com.drbrosdev.klinkrest.persistence.repository.KlinkKeyRepository;
 import com.drbrosdev.klinkrest.persistence.repository.KlinkRepository;
 import com.drbrosdev.klinkrest.persistence.repository.KlinkRichEntryRepository;
+import com.drbrosdev.klinkrest.persistence.repository.KlinkShortUrlRepository;
 import jakarta.annotation.Nullable;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -25,6 +28,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -46,12 +50,13 @@ public class KlinkDomainServiceImpl implements KlinkDomainService {
 
     private final GenerateKlinkKey generateKlinkKey;
     private final ValidateKlinkAccess validateKlinkAccess;
-    private final EnrichLinkGateway enrichLinkGateway;
+    private final EnrichKlinkEntryGateway enrichKlinkEntryGateway;
 
     private final KlinkRepository klinkRepository;
     private final KlinkEntryRepository klinkEntryRepository;
     private final KlinkRichEntryRepository richEntryRepository;
     private final KlinkKeyRepository klinkKeyRepository;
+    private final KlinkShortUrlRepository klinkShortUrlRepository;
 
     private final KlinkDomainServiceMapper mapper;
 
@@ -84,7 +89,7 @@ public class KlinkDomainServiceImpl implements KlinkDomainService {
         // create and persist entries
         var storedEntries = klinkEntryRepository.saveAll(createKlinkEntryEntity(klink));
         // hand off entries for enrichment
-        storedEntries.forEach(it -> enrichLinkGateway.submit(mapper.enrichJob(it)));
+        storedEntries.forEach(it -> enrichKlinkEntryGateway.submit(mapper.enrichJob(it)));
         // create and persist keys
         var keys = klinkKeyRepository.save(createKeyEntity(klink));
         // map to domain model and return
@@ -116,6 +121,12 @@ public class KlinkDomainServiceImpl implements KlinkDomainService {
 
             case READ_WRITE -> klink;
         };
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Klink getKlink(UUID klinkId) {
+        return retrieveKlink(klinkId);
     }
 
     @Override
@@ -223,7 +234,7 @@ public class KlinkDomainServiceImpl implements KlinkDomainService {
                 .toList();
         // submit enrich jobs
         for (var klinkEntry : created) {
-            enrichLinkGateway.submit(mapper.enrichJob(
+            enrichKlinkEntryGateway.submit(mapper.enrichJob(
                     klinkId,
                     klinkEntry));
         }
@@ -306,6 +317,34 @@ public class KlinkDomainServiceImpl implements KlinkDomainService {
                             entries,
                             keys);
                 });
+    }
+
+    @Override
+    public Optional<KlinkShortUrl> getShortUrl(UUID klinkId) {
+        return klinkShortUrlRepository.findByKlinkId(klinkId)
+                .map(mapper::mapTo);
+    }
+
+    @Override
+    public KlinkShortUrl createShortUrl(
+            UUID klinkId,
+            KlinkShortUrl shortUrl) {
+        var existing = klinkShortUrlRepository.findByKlinkId(klinkId)
+                .orElse(null);
+        if (existing == null) {
+            // create new and store
+            var entity = KlinkShortUrlEntity.builder()
+                    .fullAccessUrl(shortUrl.getFullAccessUrl())
+                    .readOnlyUrl(shortUrl.getReadOnlyUrl())
+                    .klinkId(klinkId)
+                    .createdAt(now())
+                    .build();
+            return mapper.mapTo(klinkShortUrlRepository.save(entity));
+        }
+        // update existing
+        existing.setFullAccessUrl(shortUrl.getFullAccessUrl());
+        existing.setReadOnlyUrl(shortUrl.getReadOnlyUrl());
+        return mapper.mapTo(klinkShortUrlRepository.save(existing));
     }
 
     protected KlinkKey retrieveKey(UUID klinkId) {
