@@ -6,13 +6,14 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Value;
 
+
 @Value
-@Builder
+@Builder(toBuilder = true)
 @AllArgsConstructor(access = AccessLevel.PRIVATE) //Hides the constructor to force usage of the Builder.
-public class RichKlinkEntryPreview {
+public class KlinkShortUrl {
     @Nullable
-    String title;
+    String fullAccessUrl;
 
     @Nullable
-    String description;
+    String readOnlyUrl;
 }

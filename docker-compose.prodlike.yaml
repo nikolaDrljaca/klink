@@ -25,6 +25,22 @@ services:
     depends_on:
       db:
         condition: service_healthy
+    environment:
+      HOP_API_KEY: ed5b50b4-a8ef-43d6-8622-9f67f35700e5
+
+  hop-service:
+    container_name: xurl-hop-service
+    build:
+      context: https://github.com/nikolaDrljaca/xurl.git
+    ports:
+      - "5000:5000"
+    volumes:
+      - "~/.dockerdata:/data"
+    environment:
+      DB_URL: "jdbc:sqlite:/data/hop-db.sqlite"
+      API_KEY: "ed5b50b4-a8ef-43d6-8622-9f67f35700e5"
+      VALKEY_HOST: "localhost"
+      VALKEY_PORT: "6379"
 
   db:
     container_name: klink-db

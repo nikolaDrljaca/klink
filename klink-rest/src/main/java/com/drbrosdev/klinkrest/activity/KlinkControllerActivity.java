@@ -1,6 +1,7 @@
 package com.drbrosdev.klinkrest.activity;
 
 import com.drbrosdev.klinkrest.activity.mapper.KlinkActivityMapper;
+import com.drbrosdev.klinkrest.application.GenerateKlinkShortUrl;
 import com.drbrosdev.klinkrest.domain.klink.KlinkDomainService;
 import jakarta.annotation.Nullable;
 import lombok.RequiredArgsConstructor;
@@ -10,6 +11,7 @@ import org.openapitools.api.KlinkApi;
 import org.openapitools.model.CreateKlinkPayloadApiDto;
 import org.openapitools.model.KlinkApiDto;
 import org.openapitools.model.KlinkEntryApiDto;
+import org.openapitools.model.KlinkShortUrlApiDto;
 import org.openapitools.model.KlinkSyncStatusApiDto;
 import org.openapitools.model.PatchKlinkPayloadApiDto;
 import org.openapitools.model.QueryExistingPayloadApiDto;
@@ -27,6 +29,7 @@ import static org.springframework.http.ResponseEntity.ok;
 public class KlinkControllerActivity implements KlinkApi {
 
     private final KlinkDomainService klinkDomainService;
+    private final GenerateKlinkShortUrl generateKlinkShortUrl;
 
     private final KlinkActivityMapper mapper;
 
@@ -76,6 +79,22 @@ public class KlinkControllerActivity implements KlinkApi {
                 klinkId,
                 mapper.mapTo(readKey, writeKey));
         return ok(mapper.mapTo(klink));
+    }
+
+    @Override
+    public ResponseEntity<KlinkShortUrlApiDto> getKlinkShortUrl(
+            UUID klinkId,
+            String readKey,
+            @Nullable String writeKey) {
+        log.info(
+                "getKlinkShortUrl called with klinkId: {}, readKey: {}, writeKey: {}",
+                klinkId,
+                readKey,
+                writeKey);
+        return ok(mapper.asShortUrl(generateKlinkShortUrl.execute(
+                klinkId,
+                readKey,
+                writeKey)));
     }
 
     @Override
