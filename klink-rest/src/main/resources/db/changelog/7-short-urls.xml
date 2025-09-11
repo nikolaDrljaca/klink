@@ -8,8 +8,8 @@
         <sql dbms="postgresql">
             create table if not exists klink_short_url (
                 id uuid primary key,
-                klink_uuid
-                    references klink (id)
+                klink_id uuid
+                    references klink(id)
                     on delete cascade,
                 full_access_url text,
                 read_only_url text,

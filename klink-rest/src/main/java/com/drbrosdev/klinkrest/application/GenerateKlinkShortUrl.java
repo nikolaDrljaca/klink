@@ -6,11 +6,10 @@ import com.drbrosdev.klinkrest.domain.klink.model.KlinkAccessLevel;
 import com.drbrosdev.klinkrest.domain.klink.model.KlinkKey;
 import com.drbrosdev.klinkrest.domain.klink.model.KlinkShortUrl;
 import com.drbrosdev.klinkrest.domain.klink.usecase.ValidateKlinkAccess;
-import com.drbrosdev.klinkrest.gateway.hop.CreateHopPayload;
 import com.drbrosdev.klinkrest.gateway.hop.HopService;
 import com.drbrosdev.klinkrest.utils.UseCase;
 import jakarta.annotation.Nullable;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Value;
 
@@ -21,10 +20,10 @@ import static java.util.Objects.requireNonNull;
 
 @UseCase
 @Log4j2
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class GenerateKlinkShortUrl {
 
-    @Value("${spring.application.name:}")
+    @Value("${app.base-path:}")
     private String appBasePath;
 
     private final HopService hopService;
@@ -36,47 +35,48 @@ public class GenerateKlinkShortUrl {
             UUID klinkId,
             String readKey,
             @Nullable String writeKey) {
-        /*
-        1 Look for existing shortUrl in db
-        if found and non-null: unwrap and based on access level return appropriate short url (from db entry)
-        if NOT found:
-            create a share link (look at logic on the client)
-            pass it to hop service
-            on success store into db and return result of service call
-            on failure log and return share link (the not short one obv)
-         */
         var inputKey = createKey(readKey, writeKey);
-        var klink = klinkDomainService.getKlink(klinkId, inputKey);
+        var klink = klinkDomainService.getKlink(klinkId);
         var accessLevel = requireNonNull(validateKlinkAccess.execute(
                 klink.getKey(),
                 inputKey));
-        var existingShortUrl = klinkDomainService.getShortUrl(klinkId);
+        var existingShortUrl = klinkDomainService.getShortUrl(klinkId)
+                .map(it -> unwrapShortUrl(it, accessLevel));
         if (existingShortUrl.isPresent()) {
-            return unwrapShortUrl(existingShortUrl.get(), accessLevel);
+            log.info(
+                    "Found existing short url for {} {}",
+                    klink.getName(),
+                    accessLevel);
+            return existingShortUrl.get();
         }
+
         var shareUrl = createShareUrl(
                 klink,
                 accessLevel);
+
         try {
-            var hop = hopService.createHop(shareUrl)
+            var hop = requireNonNull(hopService.createHop(shareUrl)
                     .execute()
-                    .body();
-            // TODO: review functionality and support upsert here
+                    .body());
+            var shortUrl = KlinkShortUrl.builder();
+            switch (accessLevel) {
+                case READ_ONLY -> shortUrl.readOnlyUrl(hop.getUrl());
+                case READ_WRITE -> shortUrl.fullAccessUrl(hop.getUrl());
+            }
+
             klinkDomainService.createShortUrl(
                     klinkId,
-                    KlinkShortUrl.builder()
-                            // TODO: here set full access or readOnly based on accessLevel
-                            .build());
-            return requireNonNull(hop)
-                    .getUrl();
+                    shortUrl.build());
+
+            return hop.getUrl();
         } catch (Exception e) {
             log.warn("Could not reach hop-service. Failed to create short url.");
-            log.info("Falling back to share url");
+            log.info("Falling back to share url.");
             return shareUrl;
         }
     }
 
-    private static String createShareUrl(
+    private String createShareUrl(
             Klink klink,
             KlinkAccessLevel accessLevel) {
         var encoder = Base64.getEncoder()

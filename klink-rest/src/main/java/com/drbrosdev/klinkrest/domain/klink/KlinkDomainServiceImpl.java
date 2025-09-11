@@ -125,6 +125,12 @@ public class KlinkDomainServiceImpl implements KlinkDomainService {
 
     @Override
     @Transactional(readOnly = true)
+    public Klink getKlink(UUID klinkId) {
+        return retrieveKlink(klinkId);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
     public Stream<KlinkEntry> getEntries(UUID klinkId) {
         return retrieveEntriesForKlink(klinkId);
     }
@@ -323,14 +329,22 @@ public class KlinkDomainServiceImpl implements KlinkDomainService {
     public KlinkShortUrl createShortUrl(
             UUID klinkId,
             KlinkShortUrl shortUrl) {
-        // TODO: Update to support upsert!
-        var entity = KlinkShortUrlEntity.builder()
-                .fullAccessUrl(shortUrl.getFullAccessUrl())
-                .readOnlyUrl(shortUrl.getReadOnlyUrl())
-                .klinkId(klinkId)
-                .createdAt(now())
-                .build();
-        return mapper.mapTo(klinkShortUrlRepository.save(entity));
+        var existing = klinkShortUrlRepository.findByKlinkId(klinkId)
+                .orElse(null);
+        if (existing == null) {
+            // create new and store
+            var entity = KlinkShortUrlEntity.builder()
+                    .fullAccessUrl(shortUrl.getFullAccessUrl())
+                    .readOnlyUrl(shortUrl.getReadOnlyUrl())
+                    .klinkId(klinkId)
+                    .createdAt(now())
+                    .build();
+            return mapper.mapTo(klinkShortUrlRepository.save(entity));
+        }
+        // update existing
+        existing.setFullAccessUrl(shortUrl.getFullAccessUrl());
+        existing.setReadOnlyUrl(shortUrl.getReadOnlyUrl());
+        return mapper.mapTo(klinkShortUrlRepository.save(existing));
     }
 
     protected KlinkKey retrieveKey(UUID klinkId) {
