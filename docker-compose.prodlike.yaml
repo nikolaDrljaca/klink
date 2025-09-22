@@ -22,12 +22,15 @@ services:
     build:
       context: .
       dockerfile: klink-rest/Dockerfile
+    environment:
+      HOP_URL: "http://hop-service:5000"
+      HOP_API_KEY: "ed5b50b4-a8ef-43d6-8622-9f67f35700e5"
+      APP_BASE_PATH: "http://localhost:3000"
     depends_on:
       db:
         condition: service_healthy
-    environment:
-      HOP_API_KEY: ed5b50b4-a8ef-43d6-8622-9f67f35700e5
 
+  # NOTE: Only for integrated testing in prodlike - not to be inserted into the production script
   hop-service:
     container_name: xurl-hop-service
     build:

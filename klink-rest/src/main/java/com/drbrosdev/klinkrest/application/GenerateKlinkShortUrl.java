@@ -70,8 +70,8 @@ public class GenerateKlinkShortUrl {
 
             return hop.getUrl();
         } catch (Exception e) {
-            log.warn("Could not reach hop-service. Failed to create short url.");
-            log.info("Falling back to share url.");
+            log.error(e.getLocalizedMessage());
+            log.warn("Could not reach hop-service. Failed to create short url. Falling back to share url.");
             return shareUrl;
         }
     }

@@ -59,6 +59,9 @@ const ShareKlinkModal: Component<ShareKlinkModalProps> = (props) => {
           </Show>
 
           <button class="btn btn-primary w-full" onClick={onCopy}>
+            <Show when={store.isShareLoading()}>
+              <span class="loading loading-spinner"></span>
+            </Show>
             Copy to Clipboard
           </button>
 
@@ -92,6 +95,7 @@ const ShareKlinkModal: Component<ShareKlinkModalProps> = (props) => {
             Upload
           </button>
         </Match>
+
       </Switch>
     </div>
   );
