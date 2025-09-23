@@ -37,6 +37,7 @@ import static java.time.LocalDateTime.now;
 import static java.util.Collections.emptyList;
 import static java.util.Comparator.comparing;
 import static java.util.Optional.ofNullable;
+import static java.util.UUID.randomUUID;
 import static java.util.function.Function.identity;
 import static java.util.function.Predicate.not;
 import static java.util.stream.Collectors.toList;
@@ -334,6 +335,7 @@ public class KlinkDomainServiceImpl implements KlinkDomainService {
         if (existing == null) {
             // create new and store
             var entity = KlinkShortUrlEntity.builder()
+                    .id(randomUUID())
                     .fullAccessUrl(shortUrl.getFullAccessUrl())
                     .readOnlyUrl(shortUrl.getReadOnlyUrl())
                     .klinkId(klinkId)

@@ -22,6 +22,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @Table(name = "klink_short_url")
 public class KlinkShortUrlEntity {
+
     @Id
     UUID id;
 

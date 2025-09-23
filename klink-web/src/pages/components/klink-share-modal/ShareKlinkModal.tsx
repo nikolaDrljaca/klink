@@ -58,7 +58,7 @@ const ShareKlinkModal: Component<ShareKlinkModalProps> = (props) => {
             </div>
           </Show>
 
-          <button class="btn btn-primary w-full" onClick={onCopy}>
+          <button class="btn btn-primary w-full" onClick={onCopy} disabled={store.isShareLoading()}>
             <Show when={store.isShareLoading()}>
               <span class="loading loading-spinner"></span>
             </Show>
