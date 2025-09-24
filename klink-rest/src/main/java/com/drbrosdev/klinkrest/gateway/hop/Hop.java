@@ -14,4 +14,5 @@ import lombok.extern.jackson.Jacksonized;
 public class Hop {
     String key;
     String url;
+    String fullUrl;
 }
