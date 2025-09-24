@@ -26,6 +26,8 @@ services:
     environment:
       # will be added on coolify
       HOP_API_KEY: ${HOP_API_KEY}
+      HOP_BASE_PATH: ${HOP_BASE_PATH}
+      APP_BASE_PATH: "https://klink.drbros.tech"
 
   db:
     container_name: klink-db
