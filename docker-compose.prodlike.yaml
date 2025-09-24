@@ -44,6 +44,7 @@ services:
       API_KEY: "ed5b50b4-a8ef-43d6-8622-9f67f35700e5"
       VALKEY_HOST: "localhost"
       VALKEY_PORT: "6379"
+      BASE_PATH: "http://localhost:5000"
 
   db:
     container_name: klink-db
