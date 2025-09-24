@@ -1,6 +1,7 @@
 package com.drbrosdev.klinkrest.framework;
 
 import com.drbrosdev.klinkrest.gateway.hop.HopService;
+import lombok.extern.log4j.Log4j2;
 import okhttp3.OkHttpClient;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -11,6 +12,7 @@ import retrofit2.converter.jackson.JacksonConverterFactory;
 import java.util.concurrent.TimeUnit;
 
 @Configuration
+@Log4j2
 public class RetrofitClientConfiguration {
 
     @Value("${hop.service.url:}")
@@ -21,6 +23,10 @@ public class RetrofitClientConfiguration {
 
     @Bean
     public OkHttpClient configureClient() {
+        log.info(
+                "Configuring hop-service client with {} and key {}",
+                hopBaseUrl,
+                hopApiKey);
         return new OkHttpClient().newBuilder()
                 .readTimeout(10, TimeUnit.SECONDS)
                 .connectTimeout(5, TimeUnit.SECONDS)

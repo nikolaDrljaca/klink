@@ -170,7 +170,6 @@ paths:
           name: write_key
           schema:
             type: string
-          required: true
       responses:
         '200':
           description: 'Related klink short url.'
