@@ -60,18 +60,18 @@ public class GenerateKlinkShortUrl {
                     .body());
             var shortUrl = KlinkShortUrl.builder();
             switch (accessLevel) {
-                case READ_ONLY -> shortUrl.readOnlyUrl(hop.getUrl());
-                case READ_WRITE -> shortUrl.fullAccessUrl(hop.getUrl());
+                case READ_ONLY -> shortUrl.readOnlyUrl(hop.getFullUrl());
+                case READ_WRITE -> shortUrl.fullAccessUrl(hop.getFullUrl());
             }
 
             klinkDomainService.createShortUrl(
                     klinkId,
                     shortUrl.build());
 
-            return hop.getUrl();
+            return hop.getFullUrl();
         } catch (Exception e) {
-            log.warn("Could not reach hop-service. Failed to create short url.");
-            log.info("Falling back to share url.");
+            log.error(e.getLocalizedMessage());
+            log.warn("Could not reach hop-service. Failed to create short url. Falling back to share url.");
             return shareUrl;
         }
     }
