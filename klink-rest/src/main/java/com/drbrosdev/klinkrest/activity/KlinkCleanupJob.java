@@ -24,7 +24,7 @@ public class KlinkCleanupJob {
     @Scheduled(cron = "${cleanupSchedule}")
     public void deleteExpiredKlinks() {
         if (!isDeleteScheduleTaskActive) {
-            log.info("KlinkCleanupJob is not active, skipping deletion of expired Klinks");
+            log.info("KlinkCleanupJob is not active, skipping deletion of expired Klinks.");
             return;
         }
 

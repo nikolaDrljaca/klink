@@ -3,6 +3,7 @@ package com.drbrosdev.klinkrest.framework.notifier;
 import com.drbrosdev.klinkrest.domain.klink.KlinkDomainService;
 import com.drbrosdev.klinkrest.domain.klink.KlinkNotifierService;
 import com.drbrosdev.klinkrest.framework.websocket.KlinkEventsSessionManager;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.postgresql.Driver;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
@@ -20,13 +21,17 @@ public class NotifierConfiguration {
     Notifier should use a separate database connection from the hikari pool.
      */
     @Bean
-    KlinkNotifierService notifierService(DataSourceProperties props) {
+    KlinkNotifierService notifierService(
+            DataSourceProperties props,
+            ObjectMapper objectMapper) {
         var dataSource = new SimpleDriverDataSource(
                 new Driver(),
                 props.determineUrl(),
                 props.determineUsername(),
                 props.determinePassword());
-        return new KlinkNotifierServiceImpl(new JdbcTemplate(dataSource));
+        return new KlinkNotifierServiceImpl(
+                new JdbcTemplate(dataSource),
+                objectMapper);
     }
 
     @Bean

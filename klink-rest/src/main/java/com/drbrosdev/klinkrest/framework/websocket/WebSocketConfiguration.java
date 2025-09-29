@@ -2,7 +2,6 @@ package com.drbrosdev.klinkrest.framework.websocket;
 
 import com.drbrosdev.klinkrest.activity.KlinkEventHandler;
 import com.drbrosdev.klinkrest.domain.klink.KlinkDomainService;
-import com.drbrosdev.klinkrest.domain.klink.usecase.ParseKlinkSessionDetails;
 import com.drbrosdev.klinkrest.domain.klink.usecase.ValidateKlinkAccess;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
@@ -24,7 +23,6 @@ public class WebSocketConfiguration implements WebSocketConfigurer {
         registry.addHandler(new KlinkEventHandler(klinkEventsSessionManager), "/events/klink/**")
                 .addInterceptors(new KlinkEventsSessionValidator(
                         new ValidateKlinkAccess(),
-                        new ParseKlinkSessionDetails(),
                         domainService))
                 .setAllowedOrigins("*");
     }

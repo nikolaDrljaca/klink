@@ -3,13 +3,12 @@ package com.drbrosdev.klinkrest.domain.klink.usecase;
 import com.drbrosdev.klinkrest.domain.klink.model.EnrichKlinkEntryJob;
 import com.drbrosdev.klinkrest.domain.klink.model.KlinkEntry;
 import com.drbrosdev.klinkrest.domain.klink.model.KlinkEntryChangeEvent;
-import com.drbrosdev.klinkrest.domain.klink.model.Operation;
 import com.drbrosdev.klinkrest.domain.klink.model.KlinkEntryRichPreview;
+import com.drbrosdev.klinkrest.domain.klink.model.Operation;
 import com.drbrosdev.klinkrest.persistence.entity.KlinkRichEntryEntity;
 import com.drbrosdev.klinkrest.persistence.repository.KlinkRichEntryRepository;
 import com.drbrosdev.klinkrest.utils.UseCase;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -29,8 +28,7 @@ public class EnrichKlinkEntry {
 
     private final KlinkRichEntryRepository richEntryRepository;
 
-    private final ObjectMapper objectMapper = new ObjectMapper()
-            .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+    private final ObjectMapper objectMapper;
 
     public void execute(EnrichKlinkEntryJob job) {
         try {

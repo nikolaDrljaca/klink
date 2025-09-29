@@ -1,7 +1,7 @@
 package com.drbrosdev.klinkrest.activity;
 
 import com.drbrosdev.klinkrest.activity.mapper.KlinkActivityMapper;
-import com.drbrosdev.klinkrest.application.GenerateKlinkShortUrl;
+import com.drbrosdev.klinkrest.application.ShareKlink;
 import com.drbrosdev.klinkrest.domain.klink.KlinkDomainService;
 import jakarta.annotation.Nullable;
 import lombok.RequiredArgsConstructor;
@@ -29,7 +29,7 @@ import static org.springframework.http.ResponseEntity.ok;
 public class KlinkControllerActivity implements KlinkApi {
 
     private final KlinkDomainService klinkDomainService;
-    private final GenerateKlinkShortUrl generateKlinkShortUrl;
+    private final ShareKlink shareKlink;
 
     private final KlinkActivityMapper mapper;
 
@@ -91,7 +91,7 @@ public class KlinkControllerActivity implements KlinkApi {
                 klinkId,
                 readKey,
                 writeKey);
-        return ok(mapper.asShortUrl(generateKlinkShortUrl.execute(
+        return ok(mapper.asShortUrl(shareKlink.execute(
                 klinkId,
                 readKey,
                 writeKey)));

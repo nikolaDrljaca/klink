@@ -4,8 +4,8 @@ import com.drbrosdev.klinkrest.domain.klink.KlinkNotifierService;
 import com.drbrosdev.klinkrest.domain.klink.model.KlinkEntryChangeEvent;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.postgresql.PGConnection;
 import org.postgresql.PGNotification;
@@ -19,6 +19,7 @@ import static java.util.Optional.empty;
 import static java.util.Optional.ofNullable;
 
 @Log4j2
+@RequiredArgsConstructor
 public class KlinkNotifierServiceImpl implements KlinkNotifierService {
 
     private static final String KLINK_ENTRY_CHANGE = "klink_entry_change";
@@ -26,12 +27,6 @@ public class KlinkNotifierServiceImpl implements KlinkNotifierService {
     private final JdbcTemplate template;
 
     private final ObjectMapper objectMapper;
-
-    public KlinkNotifierServiceImpl(JdbcTemplate template) {
-        this.template = template;
-        this.objectMapper = new ObjectMapper()
-                .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-    }
 
     @Override
     public Runnable createKlinkEntryChangeHandler(Consumer<KlinkEntryChangeEvent> consumer) {

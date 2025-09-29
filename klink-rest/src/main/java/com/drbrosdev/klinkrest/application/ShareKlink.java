@@ -21,7 +21,7 @@ import static java.util.Objects.requireNonNull;
 @UseCase
 @Log4j2
 @RequiredArgsConstructor
-public class GenerateKlinkShortUrl {
+public class ShareKlink {
 
     @Value("${app.base-path:}")
     private String appBasePath;
@@ -37,11 +37,12 @@ public class GenerateKlinkShortUrl {
             @Nullable String writeKey) {
         var inputKey = createKey(readKey, writeKey);
         var klink = klinkDomainService.getKlink(klinkId);
-        var accessLevel = requireNonNull(validateKlinkAccess.execute(
+        var accessLevel = validateKlinkAccess.execute(
                 klink.getKey(),
-                inputKey));
+                inputKey);
         var existingShortUrl = klinkDomainService.getShortUrl(klinkId)
                 .map(it -> unwrapShortUrl(it, accessLevel));
+
         if (existingShortUrl.isPresent()) {
             log.info(
                     "Found existing short url for {} {}",
@@ -103,7 +104,9 @@ public class GenerateKlinkShortUrl {
         };
     }
 
-    private static KlinkKey createKey(String readKey, @Nullable String writeKey) {
+    private static KlinkKey createKey(
+            String readKey,
+            @Nullable String writeKey) {
         if (writeKey == null) {
             return KlinkKey.readOnly(readKey);
         }

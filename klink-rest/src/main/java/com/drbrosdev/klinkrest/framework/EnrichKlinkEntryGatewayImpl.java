@@ -23,7 +23,6 @@ public class EnrichKlinkEntryGatewayImpl implements EnrichKlinkEntryGateway {
     In memory job queue which processes each 'enrich' job one at a time.
     A single dedicated thread is used.
      */
-
     private final BlockingQueue<EnrichKlinkEntryJob> jobQueue = new LinkedBlockingQueue<>();
     private volatile boolean running = true;
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
