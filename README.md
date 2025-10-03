@@ -12,11 +12,13 @@ Project uses `maven` to execute its build process for all modules.
 Simply run `mvn clean install` in project root.
 
 ## Local Development
-Services and clients should be started as is. 
+Services and clients can be started in a few ways:
+* With the included IntelliJ run configurations.
+* With the following commands
+    * `mvn spring-boot:run` from the `klink-rest` directory
+    * `npm run dev` from the `klink-web` directory
 
-All modules have an IntelliJ run configuration. Use them.
-
-In all cases, use the local docker compose script to start the database and liquibase containers.
+In all cases, use the local docker compose script to start the database container.
 ```sh
 make run-local
 make stop-local
