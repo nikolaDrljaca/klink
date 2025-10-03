@@ -15,7 +15,7 @@ Simply run `mvn clean install` in project root.
 Services and clients can be started in a few ways:
 * With the included IntelliJ run configurations.
 * With the following commands
-    * `mvn spring-boot:run` from the `klink-rest` directory
+    * `mvn spring-boot:run -Dspring-boot.run.profiles=local -DskipTests` from the `klink-rest` directory
     * `npm run dev` from the `klink-web` directory
 
 In all cases, use the local docker compose script to start the database container.
