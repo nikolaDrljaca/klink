@@ -56,7 +56,7 @@ public class KlinkEventsSessionValidator implements HandshakeInterceptor {
         // set klinkId to websocketSession to access later
         attributes.put(
                 KLINK_ID_ATTR,
-                readKey);
+                klinkId);
         return true;
     }
 
