@@ -26,7 +26,7 @@ import static org.springframework.http.ResponseEntity.ok;
 @Log4j2
 @RestController
 @RequiredArgsConstructor
-public class KlinkControllerActivity implements KlinkApi {
+public class KlinkApiDelegate implements KlinkApi {
 
     private final KlinkDomainService klinkDomainService;
     private final ShareKlink shareKlink;

@@ -26,6 +26,7 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -276,6 +277,7 @@ public class KlinkDomainServiceImpl implements KlinkDomainService {
         var klinkIds = queryLookup.keySet()
                 .stream()
                 .toList();
+        // TODO: N+1 - can be optimized by utilizing a specific query
         return klinkRepository.findByIdIn(klinkIds)
                 .map(it -> {
                     var entries = klinkEntryRepository.findByKlinkId(it.getId());
@@ -371,16 +373,36 @@ public class KlinkDomainServiceImpl implements KlinkDomainService {
     }
 
     private Klink retrieveKlink(UUID klinkId) {
-        var klink = klinkRepository.findById(klinkId)
-                .orElseThrow(() -> new EntityNotFoundException("Klink not found for ID: " + klinkId));
-        var klinkEntries = retrieveEntriesForKlink(klinkId)
+        var resultSet = klinkRepository.findKlinkById(klinkId);
+        if (resultSet.isEmpty()) {
+            throw new EntityNotFoundException("Klink not found for ID: " + klinkId);
+        }
+        var first = resultSet.get(0);
+        var key = KlinkKey.builder()
+                .readKey(first.getReadKey())
+                .writeKey(first.getWriteKey())
+                .build();
+        var entries = resultSet.stream()
+                .map(it -> KlinkEntry.builder()
+                        .id(it.getKlinkEntryId())
+                        .value(it.getKlinkEntry())
+                        .description(it.getKlinkEntryDescription())
+                        .title(it.getKlinkEntryTitle())
+                        .createdAt(it.getEntryCreatedAt())
+                        .build())
                 .toList();
-        var klinkKeys = klinkKeyRepository.findByKlinkId(klinkId)
-                .orElseThrow(() -> new EntityNotFoundException("KlinkKeys not found for Klink ID: " + klinkId));
-        return mapper.klinkWithEntries(
-                klink,
-                klinkEntries,
-                klinkKeys);
+        var updatedAt = entries.stream()
+                .map(KlinkEntry::getCreatedAt)
+                .max(LocalDateTime::compareTo)
+                .orElse(first.getKlinkModifiedAt());
+        return Klink.builder()
+                .id(first.getKlinkId())
+                .name(first.getKlinkName())
+                .description(first.getKlinkDescription())
+                .key(key)
+                .entries(entries)
+                .updatedAt(updatedAt)
+                .build();
     }
 
     private void updateKlink(
