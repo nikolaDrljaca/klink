@@ -20,11 +20,19 @@ export default function importKlinkStore() {
     if (!data.latest) {
       return;
     }
-    KlinkService.createKlink(data.latest as Klink, data.latest.entries);
+    const klink: Klink = {
+      id: data.latest.id,
+      name: data.latest.name,
+      description: data.latest.description,
+      updatedAt: new Date(data.latest.updatedAt),
+      readKey: data.latest.readKey,
+      writeKey: data.latest.writeKey
+    }
+    KlinkService.createKlink(klink, data.latest.entries);
   };
 
   const updatedAt = () =>
-    relativeTime.format(relativeTime.unixFromResponse(data.latest.updatedAt));
+    relativeTime.format(new Date((data.latest.updatedAt)));
 
   return {
     data,

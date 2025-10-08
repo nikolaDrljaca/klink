@@ -11,7 +11,6 @@ import { klinkEntryForageKey } from "~/lib/klink-utils";
 import { makeEncoder } from "~/lib/make-encoder";
 import { makeKeyEncoder } from "~/lib/make-key-encoder";
 import makeKlinkApi from "~/lib/make-klink-api";
-import makeRelativeTime from "~/lib/relative-time";
 import { Klink, KlinkEntry, klinkMetadata } from "~/types/domain";
 
 const store = createStore<Record<string, Klink>>({});
@@ -24,7 +23,6 @@ const [klinks, setKlinks] = makePersisted(
 );
 
 const api = makeKlinkApi();
-const relativeTime = makeRelativeTime();
 
 // service functions
 
@@ -37,7 +35,7 @@ function copyExistingKlink(id: string) {
     id: crypto.randomUUID(),
     name: `Copy of ${temp.name}`,
     description: temp.description ?? "",
-    updatedAt: Date.now(),
+    updatedAt: new Date(),
     readKey: null,
     writeKey: null,
   };
@@ -49,7 +47,7 @@ function createNewKlink(data: { name: string; description?: string }) {
     id: crypto.randomUUID(),
     name: data.name,
     description: data.description,
-    updatedAt: Date.now(),
+    updatedAt: new Date(),
     readKey: null,
     writeKey: null,
   };
@@ -131,13 +129,13 @@ async function editKlink(
   const metadata = klinkMetadata(klink);
   // declare function for local update
   const updateKlink = (
-    value: { name: string; description?: string; updatedAt: number },
+    value: { name: string; description?: string; updatedAt: Date },
   ) => {
     const updated: Klink = {
       ...klink,
       name: value.name,
       description: value.description,
-      updatedAt: value.updatedAt,
+      updatedAt: value.updatedAt
     };
     setKlinks(klink.id, updated);
   };
@@ -157,7 +155,7 @@ async function editKlink(
     updateKlink({
       name: updated.name,
       description: updated.description,
-      updatedAt: relativeTime.unixFromResponse(updated.updatedAt),
+      updatedAt: new Date(updated.updatedAt)
     });
     return;
   }
@@ -166,7 +164,7 @@ async function editKlink(
   updateKlink({
     name: data.name,
     description: data.description,
-    updatedAt: Date.now(),
+    updatedAt: new Date(),
   });
 }
 
@@ -192,7 +190,7 @@ async function shareKlink(id: string) {
     ...klink,
     readKey: response.readKey,
     writeKey: response.writeKey,
-    updatedAt: relativeTime.unixFromResponse(response.updatedAt),
+    updatedAt: new Date(response.updatedAt)
   };
   setKlinks(klink.id, updated);
 }
@@ -232,7 +230,7 @@ async function syncKlinks() {
       const updated = sharedKlinks.get(item.id);
       item.name = updated.name;
       item.description = updated.description;
-      item.updatedAt = relativeTime.unixFromResponse(updated.updatedAt);
+      item.updatedAt = new Date(updated.updatedAt)
     } else {
       // local klink is no longer shared -- delete its keys
       item.readKey = null;
@@ -251,7 +249,7 @@ function makeLocal(klinkId: string) {
     ...current,
     readKey: null,
     writeKey: null,
-    updatedAt: Date.now(),
+    updatedAt: new Date(),
   };
   setKlinks(klinkId, updated);
 }

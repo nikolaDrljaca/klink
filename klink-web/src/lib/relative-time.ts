@@ -46,13 +46,8 @@ function formatRelative(
     return formatter.format(value, unit);
 }
 
-function unixFromResponse(value: number): number {
-    return +(new Date(value * 1000));
-}
-
 const relativeTime = {
     format: formatRelative,
-    unixFromResponse
 }
 
 export default function makeRelativeTime() {

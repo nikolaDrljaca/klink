@@ -2,7 +2,7 @@ export type Klink = {
   id: string;
   name: string;
   description: string | null;
-  updatedAt: number;
+  updatedAt: Date,
   readKey: string | null;
   writeKey: string | null;
 };

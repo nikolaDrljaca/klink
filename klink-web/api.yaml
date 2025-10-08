@@ -303,9 +303,8 @@ components:
           type: string
           example: "Links to random youtube videos."
         updatedAt:
-          type: integer
-          format: int64
-          example: "1735127917 Unix Time."
+          type: string
+          example: "ISO_INSTANT format, eg: 2025-09-22T19:36:41.367Z"
         entries:
           type: array
           items:
@@ -383,27 +382,6 @@ components:
       enum:
         - IN_SYNC
         - OUT_OF_SYNC
-    SyncPersistenceData:
-      type: object
-      properties:
-        key:
-          type: string
-          description: "Klink id - UUID as string."
-        newValue:
-          type: string
-          description: "Stringified JSON value of type List-KlinkEntryApiDto-."
-        timeStamp:
-          type: integer
-          format: int64
-          description: "Unix timestamp."
-        url:
-          type: string
-          description: "Can be ignored."
-      required:
-        - key
-        - newValue
-        - timeStamp
-        - url
     QueryExistingPayload:
       type: object
       properties:
