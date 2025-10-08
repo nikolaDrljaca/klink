@@ -17,7 +17,8 @@ import org.openapitools.model.QueryExistingPayloadApiDto;
 import org.openapitools.model.QueryExistingPayloadKlinksInnerApiDto;
 
 import java.time.LocalDateTime;
-import java.time.ZoneId;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.UUID;
 
@@ -58,8 +59,8 @@ public interface KlinkActivityMapper {
     @Mapping(target = "url", source = "url")
     KlinkShortUrlApiDto asShortUrl(String url);
 
-    default Long mapTo(final LocalDateTime date) {
-        var zoneId = ZoneId.systemDefault();
-        return date.atZone(zoneId).toEpochSecond();
+    default String mapTo(final LocalDateTime date) {
+        return date.atOffset(ZoneOffset.UTC)
+                .format(DateTimeFormatter.ISO_INSTANT);
     }
 }
