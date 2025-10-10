@@ -32,7 +32,7 @@ export default function importKlinkStore() {
   };
 
   const updatedAt = () =>
-    relativeTime.format(new Date((data.latest.updatedAt)));
+    relativeTime.format(new Date((data().updatedAt)));
 
   return {
     data,
