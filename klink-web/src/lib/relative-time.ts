@@ -36,9 +36,9 @@ function determineFormatUnit(timeDiff: number): Intl.RelativeTimeFormatUnit {
 }
 
 function formatRelative(
-    date: Date | number
-) {
-    const input = typeof date === 'number' ? new Date(date) : date;
+    date: Date | number | string
+): string {
+    const input = typeof date === 'number' || typeof date === 'string' ? new Date(date) : date;
     const now = new Date();
     const diff = input.getTime() - now.getTime();
     const unit = determineFormatUnit(diff);
