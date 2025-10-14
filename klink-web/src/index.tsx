@@ -12,4 +12,12 @@ if (import.meta.env.DEV && !(root instanceof HTMLElement)) {
   );
 }
 
+// register service worker to cache app when offline
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js')
+      .then();
+  });
+}
+
 render(() => <App />, root!);

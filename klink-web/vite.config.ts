@@ -1,6 +1,7 @@
 import { defineConfig } from "vite";
 import path from "path";
 import solidPlugin from "vite-plugin-solid";
+import { VitePWA } from 'vite-plugin-pwa';
 // import devtools from 'solid-devtools/vite';
 
 export default defineConfig({
@@ -11,6 +12,16 @@ export default defineConfig({
         */
     // devtools(),
     solidPlugin(),
+    VitePWA({
+      strategies: 'generateSW',
+      registerType: 'autoUpdate',
+      injectRegister: 'auto',
+      workbox: {
+        globPatterns: ['**/*.{js,css,html,ico,png,ttf}'],
+        runtimeCaching: []
+      },
+      manifest: false
+    })
   ],
   server: {
     port: 3000,
