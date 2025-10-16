@@ -363,6 +363,7 @@ public class KlinkDomainServiceImpl implements KlinkDomainService {
                 });
     }
 
+    //NOTE: N+1 lookup can be optimized with a dedicated query
     protected Stream<KlinkEntry> retrieveEntriesForKlink(UUID klinkId) {
         return klinkEntryRepository.findByKlinkId(klinkId)
                 .stream()
