@@ -20,7 +20,10 @@ public class WebSocketConfiguration implements WebSocketConfigurer {
 
     @Override
     public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
-        registry.addHandler(new KlinkEventHandler(klinkEventsSessionManager), "/events/klink/**")
+        var klinkEventHandler = new KlinkEventHandler(
+                klinkEventsSessionManager,
+                domainService);
+        registry.addHandler(klinkEventHandler, "/events/klink/**")
                 .addInterceptors(new KlinkEventsSessionValidator(
                         new ValidateKlinkAccess(),
                         domainService))
