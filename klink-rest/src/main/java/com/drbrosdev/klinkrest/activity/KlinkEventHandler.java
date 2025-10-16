@@ -1,5 +1,6 @@
 package com.drbrosdev.klinkrest.activity;
 
+import com.drbrosdev.klinkrest.domain.klink.KlinkDomainService;
 import com.drbrosdev.klinkrest.framework.websocket.KlinkEventsSessionManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.socket.CloseStatus;
@@ -17,6 +18,8 @@ public class KlinkEventHandler extends TextWebSocketHandler {
 
     private final KlinkEventsSessionManager sessionManager;
 
+    private final KlinkDomainService klinkDomainService;
+
     @Override
     protected void handleTextMessage(
             WebSocketSession session,
@@ -26,9 +29,16 @@ public class KlinkEventHandler extends TextWebSocketHandler {
 
     @Override
     public void afterConnectionEstablished(WebSocketSession session) {
+        var klinkId = parseKlinkId(session);
+        // create the session
         sessionManager.createSession(
-                parseKlinkId(session),
+                klinkId,
                 session);
+        // send down initial event
+        var changeEvent = klinkDomainService.createKlinkChangeEvent(klinkId);
+        sessionManager.sendEvent(
+                klinkId,
+                changeEvent);
     }
 
     @Override

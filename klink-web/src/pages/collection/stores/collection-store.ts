@@ -7,7 +7,8 @@ export default function collectionStore() {
   const pathKlinkId = useKlinkIdParam();
   const klinks = useKlinks();
 
-  const [data, { refetch }] = createResource(KlinkService.syncKlinks);
+  // NOTE: Make sure to call sync only when `klinks` are loaded
+  const [data, { refetch }] = createResource(klinks, async () => KlinkService.syncKlinks());
 
   const copyKlink = (id: string) => {
     service.copyExistingKlink(id);

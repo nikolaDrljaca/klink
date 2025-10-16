@@ -280,12 +280,12 @@ public class KlinkDomainServiceImpl implements KlinkDomainService {
         // TODO: N+1 - can be optimized by utilizing a specific query
         return klinkRepository.findByIdIn(klinkIds)
                 .map(it -> {
-                    var entries = klinkEntryRepository.findByKlinkId(it.getId());
                     var keys = klinkKeyRepository.findByKlinkId(it.getId())
                             .orElseThrow();
                     return mapper.mapTo(
                             it,
-                            entries,
+                            // NOTE: entries are not necessary here
+                            emptyList(),
                             keys);
                 })
                 .filter(it -> ofNullable(queryLookup.get(it.getId()))
@@ -363,6 +363,7 @@ public class KlinkDomainServiceImpl implements KlinkDomainService {
                 });
     }
 
+    //NOTE: N+1 lookup can be optimized with a dedicated query
     protected Stream<KlinkEntry> retrieveEntriesForKlink(UUID klinkId) {
         return klinkEntryRepository.findByKlinkId(klinkId)
                 .stream()
