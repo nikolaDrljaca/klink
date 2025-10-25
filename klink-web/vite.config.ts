@@ -25,6 +25,7 @@ export default defineConfig({
   ],
   server: {
     port: 3000,
+    host: true,
     proxy: {
       // Requests from the LOCAL vite server to localhost:3000/api will be proxied to localhost:8080
       // avoiding a CORS issue
