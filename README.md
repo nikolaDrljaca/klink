@@ -24,6 +24,8 @@ make run-local
 make stop-local
 ```
 
+Alternatively, you can use `make serve` to start the database container and Spring app.
+
 ## Testing before pushing to Prod
 Given that we don't have a server to use as a DEV/QA environment, a prod-like docker compose stack has been created which should effectively act the same way the production stack does.
 
