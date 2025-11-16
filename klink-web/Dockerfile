@@ -1,5 +1,5 @@
 # Stage 0: Copy and generate open-api stubs
-FROM openapitools/openapi-generator-cli:v7.8.0 as api
+FROM openapitools/openapi-generator-cli:v7.17.0 as api
 WORKDIR /app
 COPY api.yaml ./
 RUN bash /usr/local/bin/docker-entrypoint.sh generate -i api.yaml -o src/generated -g typescript-fetch

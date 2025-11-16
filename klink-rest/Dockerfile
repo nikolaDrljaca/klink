@@ -7,7 +7,7 @@ COPY . .
 RUN mvn -pl klink-rest -am clean package -DskipTests
 
 # Use slim JDK image to run built JAR
-FROM openjdk:17-jdk-slim
+FROM eclipse-temurin:17-alpine
 WORKDIR /app
 COPY --from=builder /app/klink-rest/target/klink-rest-*.jar app.jar
 EXPOSE 8080
