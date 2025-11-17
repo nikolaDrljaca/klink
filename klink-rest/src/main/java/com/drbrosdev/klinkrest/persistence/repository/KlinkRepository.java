@@ -31,9 +31,9 @@ public interface KlinkRepository extends JpaRepository<KlinkEntity, UUID> {
             rld.title as klinkEntryTitle,
             rld.description as klinkEntryDescription
         from klink k
-                 join klink_key kk on kk.klink_id = k.id
-                 join klink_entry ke on ke.klink_id = k.id
-                 join rich_link_data rld on ke.id = rld.klink_entry_id
+                 left join klink_key kk on kk.klink_id = k.id
+                 left join klink_entry ke on ke.klink_id = k.id
+                 left join rich_link_data rld on ke.id = rld.klink_entry_id
         where k.id = :klinkId
     """, nativeQuery = true)
     List<KlinkFullRow> findKlinkById(@Param("klinkId") UUID klinkId);
