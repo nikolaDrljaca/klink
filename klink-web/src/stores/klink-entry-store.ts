@@ -11,11 +11,6 @@ import makeAsync from "~/lib/make-async";
 import toast from "solid-toast";
 import createKlinkEventStream from "~/lib/create-klink-event-stream";
 
-function buildSsePath(data: { id: string; readKey: string }): string {
-  const API_PATH = import.meta.env.VITE_APP_WS;
-  return `${API_PATH}/events/klink/${data.id}?read_key=${data.readKey}`;
-}
-
 type KlinkEntriesStore = {
   klink: KlinkModel;
   entries: KlinkEntry[];
@@ -38,7 +33,7 @@ function createKlinkEntryStore(klink: KlinkModel): KlinkEntriesStore {
 
   // setup effect to connect to event stream
   createKlinkEventStream({
-    url: buildSsePath(klink),
+    klink: klink,
     onMessage: (raw, close) => {
       const event: KlinkChangeEvent = JSON.parse(raw.data);
 

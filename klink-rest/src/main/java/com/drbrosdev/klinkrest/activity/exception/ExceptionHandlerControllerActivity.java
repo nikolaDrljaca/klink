@@ -12,6 +12,9 @@ public class ExceptionHandlerControllerActivity {
 
     @ExceptionHandler(value = {Exception.class})
     public ResponseEntity<Void> handleExceptions(Exception ex) {
+        if (log.isDebugEnabled()) {
+            log.error("DETAIL error:", ex);
+        }
         log.error(
                 "Error: {}",
                 ex.getLocalizedMessage());
