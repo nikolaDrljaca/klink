@@ -25,7 +25,6 @@ services:
         condition: service_healthy
     environment:
       # will be added on coolify
-      HOP_API_KEY: ${HOP_API_KEY}
       HOP_URL: ${HOP_BASE_PATH}
       APP_BASE_PATH: "https://klink.drbros.tech"
 
