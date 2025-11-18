@@ -24,7 +24,6 @@ services:
       dockerfile: klink-rest/Dockerfile
     environment:
       HOP_URL: "http://hop-service:5000"
-      HOP_API_KEY: "ed5b50b4-a8ef-43d6-8622-9f67f35700e5"
       APP_BASE_PATH: "http://localhost:3000"
     depends_on:
       db:
@@ -32,16 +31,15 @@ services:
 
   # NOTE: Only for integrated testing in prodlike - not to be inserted into the production script
   hop-service:
-    container_name: xurl-hop-service
+    container_name: yurl-hop-service
     build:
-      context: https://github.com/nikolaDrljaca/xurl.git
+      context: https://github.com/nikolaDrljaca/yurl.git
     ports:
       - "5000:5000"
     volumes:
       - "~/.dockerdata:/data"
     environment:
       DB_URL: "jdbc:sqlite:/data/hop-db.sqlite"
-      API_KEY: "ed5b50b4-a8ef-43d6-8622-9f67f35700e5"
       VALKEY_HOST: "localhost"
       VALKEY_PORT: "6379"
       BASE_PATH: "http://localhost:5000"
