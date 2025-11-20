@@ -35,11 +35,13 @@ public class ShareKlink {
             UUID klinkId,
             String readKey,
             @Nullable String writeKey) {
-        var inputKey = createKey(readKey, writeKey);
+        var inputKey = KlinkKey.createKey(readKey, writeKey);
+        // You only need the keys here - app module can do this on it's own
         var klink = klinkDomainService.getKlink(klinkId);
         var accessLevel = validateKlinkAccess.execute(
                 klink.getKey(),
                 inputKey);
+
         var existingShortUrl = klinkDomainService.getShortUrl(klinkId)
                 .map(it -> unwrapShortUrl(it, accessLevel));
 
@@ -102,17 +104,5 @@ public class ShareKlink {
             case READ_ONLY -> shortUrl.getReadOnlyUrl();
             case READ_WRITE -> shortUrl.getFullAccessUrl();
         };
-    }
-
-    private static KlinkKey createKey(
-            String readKey,
-            @Nullable String writeKey) {
-        if (writeKey == null) {
-            return KlinkKey.readOnly(readKey);
-        }
-        return KlinkKey.builder()
-                .readKey(readKey)
-                .writeKey(writeKey)
-                .build();
     }
 }

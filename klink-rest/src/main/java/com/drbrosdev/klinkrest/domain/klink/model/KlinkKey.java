@@ -1,5 +1,6 @@
 package com.drbrosdev.klinkrest.domain.klink.model;
 
+import jakarta.annotation.Nullable;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -16,6 +17,18 @@ public class KlinkKey {
         return KlinkKey.builder()
                 .readKey(readKey)
                 .writeKey(null)
+                .build();
+    }
+
+    public static KlinkKey createKey(
+            String readKey,
+            @Nullable String writeKey) {
+        if (writeKey == null) {
+            return KlinkKey.readOnly(readKey);
+        }
+        return KlinkKey.builder()
+                .readKey(readKey)
+                .writeKey(writeKey)
                 .build();
     }
 }

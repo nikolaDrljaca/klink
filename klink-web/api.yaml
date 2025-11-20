@@ -148,12 +148,12 @@ paths:
           description: 'Collection deleted'
         '502':
           description: 'Error'
-  /klink/{klinkId}/urls:
+  /klink/{klinkId}/short-url:
     get:
       summary: "Get klink short urls designed for sharing."
       operationId: getKlinkShortUrl
       tags:
-        - klink
+        - shortUrl
       parameters:
         - in: path
           name: klinkId
@@ -304,7 +304,7 @@ components:
           example: "Links to random youtube videos."
         updatedAt:
           type: string
-          example: "ISO_INSTANT format, eg: 2025-09-22T19:36:41.367Z"
+          example: "ISO_INSTANT format, eg: 2025-09-22T19:36:41.393478Z"
         entries:
           type: array
           items:

@@ -11,7 +11,6 @@ import org.openapitools.api.KlinkApi;
 import org.openapitools.model.CreateKlinkPayloadApiDto;
 import org.openapitools.model.KlinkApiDto;
 import org.openapitools.model.KlinkEntryApiDto;
-import org.openapitools.model.KlinkShortUrlApiDto;
 import org.openapitools.model.KlinkSyncStatusApiDto;
 import org.openapitools.model.PatchKlinkPayloadApiDto;
 import org.openapitools.model.QueryExistingPayloadApiDto;
@@ -81,6 +80,7 @@ public class KlinkApiDelegate implements KlinkApi {
         return ok(mapper.mapTo(klink));
     }
 
+    /*
     @Override
     public ResponseEntity<KlinkShortUrlApiDto> getKlinkShortUrl(
             UUID klinkId,
@@ -96,6 +96,7 @@ public class KlinkApiDelegate implements KlinkApi {
                 readKey,
                 writeKey)));
     }
+     */
 
     @Override
     public ResponseEntity<List<KlinkApiDto>> queryExisting(QueryExistingPayloadApiDto klinkIds) {

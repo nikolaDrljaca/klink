@@ -148,12 +148,12 @@ paths:
           description: 'Collection deleted'
         '502':
           description: 'Error'
-  /klink/{klinkId}/urls:
+  /klink/{klinkId}/short-url:
     get:
       summary: "Get klink short urls designed for sharing."
       operationId: getKlinkShortUrl
       tags:
-        - klink
+        - shortUrl
       parameters:
         - in: path
           name: klinkId
@@ -250,7 +250,7 @@ paths:
           description: "Klink entries deleted."
         '502':
           description: "Error."
-  /klink/{klinkId}/sync:
+  /klink/{klinkId}/sync: # can be removed
     post:
       summary: "Synchronize a collection by ID."
       operationId: syncKlink
