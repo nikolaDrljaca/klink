@@ -37,6 +37,7 @@ import java.util.stream.Stream;
 import static java.time.LocalDateTime.now;
 import static java.util.Collections.emptyList;
 import static java.util.Comparator.comparing;
+import static java.util.Objects.nonNull;
 import static java.util.Optional.ofNullable;
 import static java.util.UUID.randomUUID;
 import static java.util.function.Function.identity;
@@ -384,6 +385,8 @@ public class KlinkDomainServiceImpl implements KlinkDomainService {
                 .writeKey(first.getWriteKey())
                 .build();
         var entries = resultSet.stream()
+                // consider only rows from the result set where klink_entry.value is present
+                .filter(it -> nonNull(it.getKlinkEntry()))
                 .map(it -> KlinkEntry.builder()
                         .id(it.getKlinkEntryId())
                         .value(it.getKlinkEntry())
