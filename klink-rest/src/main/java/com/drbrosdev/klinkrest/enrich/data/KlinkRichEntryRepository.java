@@ -1,6 +1,5 @@
-package com.drbrosdev.klinkrest.persistence.repository;
+package com.drbrosdev.klinkrest.enrich.data;
 
-import com.drbrosdev.klinkrest.persistence.entity.KlinkRichEntryEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

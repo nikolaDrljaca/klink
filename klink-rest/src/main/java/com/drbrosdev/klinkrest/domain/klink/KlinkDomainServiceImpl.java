@@ -17,7 +17,7 @@ import com.drbrosdev.klinkrest.persistence.entity.KlinkShortUrlEntity;
 import com.drbrosdev.klinkrest.persistence.repository.KlinkEntryRepository;
 import com.drbrosdev.klinkrest.persistence.repository.KlinkKeyRepository;
 import com.drbrosdev.klinkrest.persistence.repository.KlinkRepository;
-import com.drbrosdev.klinkrest.persistence.repository.KlinkRichEntryRepository;
+import com.drbrosdev.klinkrest.enrich.data.KlinkRichEntryRepository;
 import com.drbrosdev.klinkrest.persistence.repository.KlinkShortUrlRepository;
 import jakarta.annotation.Nullable;
 import jakarta.persistence.EntityNotFoundException;
@@ -52,7 +52,6 @@ public class KlinkDomainServiceImpl implements KlinkDomainService {
 
     private final GenerateKlinkKey generateKlinkKey;
     private final ValidateKlinkAccess validateKlinkAccess;
-    private final EnrichKlinkEntryGateway enrichKlinkEntryGateway;
 
     private final KlinkRepository klinkRepository;
     private final KlinkEntryRepository klinkEntryRepository;
@@ -90,8 +89,6 @@ public class KlinkDomainServiceImpl implements KlinkDomainService {
         var klinkEntity = klinkRepository.save(createKlinkEntity(klink));
         // create and persist entries
         var storedEntries = klinkEntryRepository.saveAll(createKlinkEntryEntity(klink));
-        // hand off entries for enrichment
-        storedEntries.forEach(it -> enrichKlinkEntryGateway.submit(mapper.enrichJob(it)));
         // create and persist keys
         var keys = klinkKeyRepository.save(createKeyEntity(klink));
         // map to domain model and return
@@ -129,12 +126,6 @@ public class KlinkDomainServiceImpl implements KlinkDomainService {
     @Transactional(readOnly = true)
     public Klink getKlink(UUID klinkId) {
         return retrieveKlink(klinkId);
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public Stream<KlinkEntry> getEntries(UUID klinkId) {
-        return retrieveEntriesForKlink(klinkId);
     }
 
     @Override
@@ -234,12 +225,6 @@ public class KlinkDomainServiceImpl implements KlinkDomainService {
                 .stream()
                 .map(mapper::mapToEntry)
                 .toList();
-        // submit enrich jobs
-        for (var klinkEntry : created) {
-            enrichKlinkEntryGateway.submit(mapper.enrichJob(
-                    klinkId,
-                    klinkEntry));
-        }
         // map and return
         return created.stream();
     }

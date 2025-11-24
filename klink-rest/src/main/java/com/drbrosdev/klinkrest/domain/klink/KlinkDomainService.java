@@ -29,8 +29,6 @@ public interface KlinkDomainService {
 
     Klink getKlink(UUID klinkId);
 
-    Stream<KlinkEntry> getEntries(UUID klinkId);
-
     KlinkChangeEvent createKlinkChangeEvent(UUID klinkId);
 
     void deleteKlink(

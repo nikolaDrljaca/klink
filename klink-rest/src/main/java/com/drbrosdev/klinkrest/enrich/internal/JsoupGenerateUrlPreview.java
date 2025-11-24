@@ -1,8 +1,7 @@
-package com.drbrosdev.klinkrest.gateway;
+package com.drbrosdev.klinkrest.enrich.internal;
 
 import com.drbrosdev.klinkrest.domain.klink.model.KlinkEntry;
 import com.drbrosdev.klinkrest.domain.klink.model.KlinkEntryRichPreview;
-import com.drbrosdev.klinkrest.domain.klink.usecase.GenerateUrlPreview;
 import com.drbrosdev.klinkrest.utils.UseCase;
 import jakarta.annotation.Nullable;
 import lombok.extern.log4j.Log4j2;
@@ -18,7 +17,7 @@ import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 @UseCase
 @Log4j2
-public class JsoupGenerateUrlPreview implements GenerateUrlPreview {
+public class JsoupGenerateUrlPreview {
 
     private static final String USER_AGENT = "User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_1) AppleWebKit/601.2.4 (KHTML, like Gecko) Version/9.0.1 Safari/601.2.4 facebookexternalhit/1.1 Facebot Twitterbot/1.0";
 
@@ -26,7 +25,6 @@ public class JsoupGenerateUrlPreview implements GenerateUrlPreview {
             .userAgent(USER_AGENT)
             .timeout(6000); // 6 minutes
 
-    @Override
     public Optional<KlinkEntryRichPreview> execute(KlinkEntry entry) {
         try {
             // validate entry is URL

@@ -1,8 +1,6 @@
-package com.drbrosdev.klinkrest.framework;
+package com.drbrosdev.klinkrest.enrich.internal;
 
-import com.drbrosdev.klinkrest.domain.klink.EnrichKlinkEntryGateway;
-import com.drbrosdev.klinkrest.domain.klink.model.EnrichKlinkEntryJob;
-import com.drbrosdev.klinkrest.domain.klink.usecase.EnrichKlinkEntry;
+import com.drbrosdev.klinkrest.enrich.EnrichKlinkEntryEvent;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
 import lombok.RequiredArgsConstructor;
@@ -17,13 +15,13 @@ import java.util.concurrent.LinkedBlockingQueue;
 @Log4j2
 @Component
 @RequiredArgsConstructor
-public class EnrichKlinkEntryGatewayImpl implements EnrichKlinkEntryGateway {
+public class EnrichKlinkEntryJobProcessor {
 
     /*
     In memory job queue which processes each 'enrich' job one at a time.
     A single dedicated thread is used.
      */
-    private final BlockingQueue<EnrichKlinkEntryJob> jobQueue = new LinkedBlockingQueue<>();
+    private final BlockingQueue<EnrichKlinkEntryEvent> jobQueue = new LinkedBlockingQueue<>();
     private volatile boolean running = true;
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
 
@@ -32,9 +30,8 @@ public class EnrichKlinkEntryGatewayImpl implements EnrichKlinkEntryGateway {
     /**
      * Thread-safe method to submit jobs for processing.
      */
-    @Override
-    public void submit(EnrichKlinkEntryJob job) {
-        log.info("Submitting enrich job for {}", job.getValue());
+    public void submit(EnrichKlinkEntryEvent job) {
+        log.info("Submitting enrich job for {}", job.value());
         jobQueue.offer(job);
     }
 
@@ -57,7 +54,7 @@ public class EnrichKlinkEntryGatewayImpl implements EnrichKlinkEntryGateway {
                 try {
                     var job = jobQueue.take();  // will block the current thread until a value is available
                     enrichKlinkEntry.execute(job); // will block until finished
-                    log.debug("Completed enrich job for {}", job.getValue());
+                    log.debug("Completed enrich job for {}", job.value());
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
                 }

@@ -1,4 +1,4 @@
-package com.drbrosdev.klinkrest.persistence.entity;
+package com.drbrosdev.klinkrest.enrich.data;
 
 import jakarta.annotation.Nullable;
 import jakarta.persistence.Column;

@@ -8,7 +8,7 @@ import com.drbrosdev.klinkrest.domain.klink.model.KlinkShortUrl;
 import com.drbrosdev.klinkrest.persistence.entity.KlinkEntity;
 import com.drbrosdev.klinkrest.persistence.entity.KlinkEntryEntity;
 import com.drbrosdev.klinkrest.persistence.entity.KlinkKeyEntity;
-import com.drbrosdev.klinkrest.persistence.entity.KlinkRichEntryEntity;
+import com.drbrosdev.klinkrest.enrich.data.KlinkRichEntryEntity;
 import com.drbrosdev.klinkrest.persistence.entity.KlinkShortUrlEntity;
 import org.mapstruct.AfterMapping;
 import org.mapstruct.Mapper;

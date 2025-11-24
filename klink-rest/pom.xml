@@ -131,7 +131,19 @@
 
         <dependency>
             <groupId>org.springframework.modulith</groupId>
-            <artifactId>spring-modulith-api</artifactId>
+            <artifactId>spring-modulith-starter-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.modulith</groupId>
+            <artifactId>spring-modulith-events-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.modulith</groupId>
+            <artifactId>spring-modulith-events-jdbc</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.modulith</groupId>
+            <artifactId>spring-modulith-events-jackson</artifactId>
         </dependency>
         <dependency>
             <groupId>org.springframework.modulith</groupId>
@@ -200,7 +212,7 @@
                         <interfaceOnly>true</interfaceOnly> <!-- Generate only the interfaces for controllers -->
                         <skipDefaultInterface>true</skipDefaultInterface>
                         <useJakartaEe>true</useJakartaEe> <!-- Use Jakarta instead of javax -->
-                        <useTags>true</useTags> <!-- use tags to create interface classnames -->
+<!--                        <useTags>true</useTags> &lt;!&ndash; use tags to create interface classnames &ndash;&gt;-->
                     </configOptions>
                 </configuration>
             </plugin>

@@ -1,6 +1,8 @@
 package com.drbrosdev.klinkrest.activity;
 
 import com.drbrosdev.klinkrest.activity.mapper.KlinkActivityMapper;
+import com.drbrosdev.klinkrest.application.CreateKlink;
+import com.drbrosdev.klinkrest.application.CreateKlinkEntries;
 import com.drbrosdev.klinkrest.application.ShareKlink;
 import com.drbrosdev.klinkrest.domain.klink.KlinkDomainService;
 import jakarta.annotation.Nullable;
@@ -11,6 +13,7 @@ import org.openapitools.api.KlinkApi;
 import org.openapitools.model.CreateKlinkPayloadApiDto;
 import org.openapitools.model.KlinkApiDto;
 import org.openapitools.model.KlinkEntryApiDto;
+import org.openapitools.model.KlinkShortUrlApiDto;
 import org.openapitools.model.KlinkSyncStatusApiDto;
 import org.openapitools.model.PatchKlinkPayloadApiDto;
 import org.openapitools.model.QueryExistingPayloadApiDto;
@@ -28,7 +31,10 @@ import static org.springframework.http.ResponseEntity.ok;
 public class KlinkApiDelegate implements KlinkApi {
 
     private final KlinkDomainService klinkDomainService;
+
     private final ShareKlink shareKlink;
+    private final CreateKlinkEntries createKlinkEntries;
+    private final CreateKlink createKlink;
 
     private final KlinkActivityMapper mapper;
 
@@ -38,7 +44,7 @@ public class KlinkApiDelegate implements KlinkApi {
                 "createKlink called with payload: {}",
                 createKlinkPayloadApiDto);
         return ok(mapper.mapTo(
-                klinkDomainService.createKlink(
+                createKlink.execute(
                         createKlinkPayloadApiDto.getId(),
                         createKlinkPayloadApiDto.getName(),
                         createKlinkPayloadApiDto.getDescription(),
@@ -57,7 +63,7 @@ public class KlinkApiDelegate implements KlinkApi {
                 readKey,
                 writeKey,
                 klinkEntryApiDto);
-        klinkDomainService.createKlinkEntries(
+        createKlinkEntries.execute(
                 klinkId,
                 mapper.mapTo(readKey, writeKey),
                 mapper.mapToEntries(klinkEntryApiDto));
@@ -80,7 +86,6 @@ public class KlinkApiDelegate implements KlinkApi {
         return ok(mapper.mapTo(klink));
     }
 
-    /*
     @Override
     public ResponseEntity<KlinkShortUrlApiDto> getKlinkShortUrl(
             UUID klinkId,
@@ -96,7 +101,6 @@ public class KlinkApiDelegate implements KlinkApi {
                 readKey,
                 writeKey)));
     }
-     */
 
     @Override
     public ResponseEntity<List<KlinkApiDto>> queryExisting(QueryExistingPayloadApiDto klinkIds) {

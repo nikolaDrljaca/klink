@@ -153,7 +153,7 @@ paths:
       summary: "Get klink short urls designed for sharing."
       operationId: getKlinkShortUrl
       tags:
-        - shortUrl
+        - klink
       parameters:
         - in: path
           name: klinkId
