@@ -1,21 +1,30 @@
 # PROD docker compose script
-version: '3.4'
-
 services:
-  client:
+  klink-web:
+    image: klink-web:2025.1
     container_name: klink-web
     build:
       context: ./klink-web
       dockerfile: ./Dockerfile
     environment:
       NODE_ENV: production
-    ports:
-      - '3000:3000'
     depends_on:
-      rest: 
+      klink-service: 
         condition: service_started
+    # hardening
+    user: "101:101"
+    read_only: true
+    tmpfs:
+      - /var/cache/nginx:uid=101,gid=101,mode=0755
+      - /var/run:uid=101,gid=101,mode=0755
+    security_opt:
+      - "no-new-privileges=true"
+    restart: on-failure:5
+    cpus: '0.25'
+    mem_limit: 128m
 
-  rest:
+  klink-service:
+    image: klink-service:2025.1
     container_name: klink-service
     build:
       context: .
@@ -27,6 +36,15 @@ services:
       # will be added on coolify
       HOP_URL: ${HOP_BASE_PATH}
       APP_BASE_PATH: "https://klink.drbros.tech"
+      JAVA_OPTS: >
+        -Xms256m
+        -Xmx256m
+    # hardening
+    security_opt:
+      - "no-new-privileges=true"
+    restart: on-failure:5
+    cpus: '1'
+    mem_limit: 512m
 
   db:
     container_name: klink-db

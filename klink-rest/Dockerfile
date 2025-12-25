@@ -8,6 +8,11 @@ RUN mvn -pl klink-rest -am clean package -DskipTests
 
 # Use slim JDK image to run built JAR
 FROM eclipse-temurin:17-alpine
+
+# add low privilege user
+RUN addgroup appgroup; adduser  --ingroup appgroup --disabled-password appuser
+USER appuser
+
 WORKDIR /app
 COPY --from=builder /app/klink-rest/target/klink-rest-*.jar app.jar
 EXPOSE 8080

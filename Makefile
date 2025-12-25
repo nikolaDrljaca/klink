@@ -1,12 +1,11 @@
 # Run Configurations
-run-local:
+local-up:
 	docker compose -f docker-compose.local.yaml up --build -d
-stop-local:
+local-down:
 	docker compose -f docker-compose.local.yaml down
-run-prodlike:
-	echo 'Running PRODLIKE stack. Building `hop-service` will take some time.'
+prodlike-up:
 	docker compose -f docker-compose.prodlike.yaml up --build -d
-stop-prodlike:
+prodlike-down:
 	docker compose -f docker-compose.prodlike.yaml down
 serve:
 	docker compose -f docker-compose.local.yaml up --build -d

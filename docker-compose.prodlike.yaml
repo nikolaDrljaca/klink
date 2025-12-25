@@ -1,8 +1,8 @@
 # PRODLike docker compose script
-version: '3.4'
-
 services:
-  client:
+
+  klink-web:
+    image: klink-web:2025.1
     container_name: klink-web
     build:
       context: ./klink-web
@@ -14,10 +14,22 @@ services:
     ports:
       - '3000:3000'
     depends_on:
-      rest: 
+      klink-service: 
         condition: service_started
+    # hardening
+    user: "101:101"
+    read_only: true
+    tmpfs:
+      - /var/cache/nginx:uid=101,gid=101,mode=0755
+      - /var/run:uid=101,gid=101,mode=0755
+    security_opt:
+      - "no-new-privileges=true"
+    restart: on-failure:5
+    cpus: '0.25'
+    mem_limit: 128m
 
-  rest:
+  klink-service:
+    image: klink-service:2025.1
     container_name: klink-service
     build:
       context: .
@@ -25,24 +37,19 @@ services:
     environment:
       HOP_URL: "http://hop-service:5000"
       APP_BASE_PATH: "http://localhost:3000"
+      JAVA_OPTS: >
+        -Xms256m
+        -Xmx256m
     depends_on:
       db:
         condition: service_healthy
+    # hardening
+    security_opt:
+      - "no-new-privileges=true"
+    restart: on-failure:5
+    cpus: '1'
+    mem_limit: 512m
 
-  # NOTE: Only for integrated testing in prodlike - not to be inserted into the production script
-  hop-service:
-    container_name: yurl-hop-service
-    build:
-      context: https://github.com/nikolaDrljaca/yurl.git
-    ports:
-      - "5000:5000"
-    volumes:
-      - "~/.dockerdata:/data"
-    environment:
-      DB_URL: "jdbc:sqlite:/data/hop-db.sqlite"
-      VALKEY_HOST: "localhost"
-      VALKEY_PORT: "6379"
-      BASE_PATH: "http://localhost:5000"
 
   db:
     container_name: klink-db
