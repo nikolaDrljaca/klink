@@ -23,7 +23,10 @@ ARG VITE_BUILD_MODE=production
 RUN npm run build -- --mode=$VITE_BUILD_MODE
 
 # Stage 2: Serve with Nginx
-FROM nginx:latest
+FROM nginx:1.29-alpine
+# add low privilege user
+RUN chown -R nginx:nginx /var/cache/nginx /var/run
+USER nginx
 # Copy to templates so env variables can be injected
 COPY nginx.conf /etc/nginx/templates/nginx.conf.template
 # Copy the built files from the previous stage
