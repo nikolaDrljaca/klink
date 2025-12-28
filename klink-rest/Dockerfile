@@ -9,6 +9,9 @@ RUN mvn -pl klink-rest -am clean package -DskipTests
 # Use slim JDK image to run built JAR
 FROM eclipse-temurin:17-alpine
 
+# include curl package
+RUN apk --no-cache add curl
+
 # add low privilege user
 RUN addgroup appgroup; adduser  --ingroup appgroup --disabled-password appuser
 USER appuser

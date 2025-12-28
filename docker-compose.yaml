@@ -11,7 +11,6 @@ services:
     depends_on:
       klink-service: 
         condition: service_started
-    # hardening
     security_opt:
       - "no-new-privileges=true"
     restart: on-failure:5
@@ -34,12 +33,16 @@ services:
       JAVA_OPTS: >
         -Xms256m
         -Xmx256m
-    # hardening
     security_opt:
       - "no-new-privileges=true"
     restart: on-failure:5
     cpus: '1'
     mem_limit: 512m
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://klink-service:8080/api/actuator/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
 
   db:
     container_name: klink-db
