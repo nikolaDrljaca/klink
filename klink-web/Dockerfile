@@ -1,11 +1,11 @@
 # Stage 0: Copy and generate open-api stubs
-FROM openapitools/openapi-generator-cli:v7.17.0 as api
+FROM openapitools/openapi-generator-cli:v7.17.0 AS api
 WORKDIR /app
 COPY api.yaml ./
 RUN bash /usr/local/bin/docker-entrypoint.sh generate -i api.yaml -o src/generated -g typescript-fetch
 
 # Stage 1: Build the Vite application
-FROM node:18 as builder
+FROM node:18 AS builder
 # Set the working directory inside the container
 WORKDIR /app
 # Copy package.json and package-lock.json to install dependencies

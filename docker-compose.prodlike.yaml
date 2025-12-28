@@ -44,6 +44,11 @@ services:
     restart: on-failure:5
     cpus: '1'
     mem_limit: 512m
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://klink-service:8080/api/actuator/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
 
 
   db:
