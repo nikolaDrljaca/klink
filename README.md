@@ -26,6 +26,12 @@ make local-down
 
 Alternatively, you can use `make serve` to start the database container and Spring app.
 
+### Using `just`
+
+Instead of `make` its possible to use `just` to run recipes of commands.
+
+To view possible recipes, install `just` and run `just` command in project root.
+
 ## Testing before pushing to Prod
 Given that we don't have a server to use as a DEV/QA environment, a prod-like docker compose stack has been created which should effectively act the same way the production stack does.
 
