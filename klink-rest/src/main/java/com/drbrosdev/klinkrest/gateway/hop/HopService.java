@@ -6,7 +6,7 @@ import retrofit2.http.POST;
 
 public interface HopService {
 
-    @POST("/l")
+    @POST("/shorten")
     Call<Hop> createHop(@Body CreateHopPayload payload);
 
     default Call<Hop> createHop(String url) {
