@@ -24,6 +24,8 @@ RUN npm run build -- --mode=$VITE_BUILD_MODE
 
 # Stage 2: Serve with Nginx
 FROM nginx:1.29-alpine
+# add curl to enable health check
+RUN apk add --no-cache curl
 # Copy to templates so env variables can be injected
 COPY nginx.conf /etc/nginx/templates/nginx.conf.template
 # Copy the built files from the previous stage

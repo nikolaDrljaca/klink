@@ -11,6 +11,11 @@ services:
     depends_on:
       klink-service: 
         condition: service_started
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://klink-web:3000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
     security_opt:
       - "no-new-privileges=true"
     restart: on-failure:5
